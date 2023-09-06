@@ -1,0 +1,9 @@
+*.par
+*.opt
+*.log
+*.lst
+*.lxi
+*.dat
+225a/
+*.tmp
+*.gdx
