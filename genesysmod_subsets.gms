@@ -26,38 +26,6 @@
 * #############################################################
 
 
-set PowerSupply(t);
-PowerSupply(t) = no;
-PowerSupply('Res_Wind_Offshore_Deep') = yes;
-PowerSupply('Res_Wind_Offshore_Shallow') = yes;
-PowerSupply('Res_Wind_Offshore_Transitional') = yes;
-PowerSupply('Res_Wind_Onshore_opt') = yes;
-PowerSupply('Res_Wind_Onshore_avg') = yes;
-PowerSupply('Res_Wind_Onshore_inf') = yes;
-PowerSupply('Res_PV_Rooftop_Residential') = yes;
-PowerSupply('Res_PV_Rooftop_commercial') = yes;
-PowerSupply('Res_PV_utility_opt') = yes;
-PowerSupply('Res_PV_utility_avg') = yes;
-PowerSupply('Res_PV_utility_inf') = yes;
-PowerSupply('RES_PV_Utility_Tracking') = yes;
-PowerSupply('Res_CSP') = yes;
-PowerSupply('Res_Geothermal') = yes;
-PowerSupply('Res_Hydro_Small') = yes;
-PowerSupply('Res_Hydro_Large') = yes;
-PowerSupply('Res_Ocean') = yes;
-PowerSupply('P_Coal_Hardcoal') = yes;
-PowerSupply('P_Coal_Lignite') = yes;
-PowerSupply('P_Nuclear') = yes;
-PowerSupply('P_Oil') = yes;
-PowerSupply('P_Biomass') = yes;
-PowerSupply('P_Biomass_CCS') = yes;
-PowerSupply('P_Coal_Lignite_CCS') = yes;
-PowerSupply('P_Coal_Hardcoal_CCS') = yes;
-PowerSupply('P_Gas_CCS') = yes;
-PowerSupply('P_H2_OCGT') = yes;
-PowerSupply('P_Gas_CCGT') = yes;
-PowerSupply('P_Gas_OCGT') = yes;
-PowerSupply('P_Gas_Engines') = yes;
 
 set PowerBiomass(t);
 PowerBiomass(t) = no;
