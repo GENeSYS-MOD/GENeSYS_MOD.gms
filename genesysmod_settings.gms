@@ -35,9 +35,8 @@ y('2020') = no;
 
 DepreciationMethod(r) = 1;
 GeneralDiscountRate(r) = 0.05;
-TechnologyDiscountRate(r,Companies) = 0.05;
-TechnologyDiscountRate(r,Companies) = 0.05;
-TechnologyDiscountRate(r,Households) = 0.05;
+TechnologyDiscountRate(r,t)$(TagTechnologyToSubsets(t,'Households')) = 0.05;
+TechnologyDiscountRate(r,t)$(not TagTechnologyToSubsets(t,'Households')) = 0.05;
 SocialDiscountRate(r) = %socialdiscountrate%;
 
 
@@ -45,7 +44,7 @@ scalar InvestmentLimit  Freedom for investment choices to spread across periods.
                       /1.9/;
 scalar NewRESCapacity /0.1/;
 ProductionGrowthLimit(y,'Power') = 0.05;
-ProductionGrowthLimit(y,HeatFuels) = 0.05;
+ProductionGrowthLimit(y,f)$(TagFuelToSubsets(f,'HeatFuels')) = 0.05;
 ProductionGrowthLimit(y,f)$(TagFuelToSubsets(f,'TransportFuels')) = 0.05;
 ProductionGrowthLimit(y,'Air') = 0.025;
 scalar StorageLimitOffset /0.015/;
