@@ -35,9 +35,8 @@ y('2020') = no;
 
 DepreciationMethod(r) = 1;
 GeneralDiscountRate(r) = 0.05;
-TechnologyDiscountRate(r,Companies) = 0.05;
-TechnologyDiscountRate(r,Companies) = 0.05;
-TechnologyDiscountRate(r,Households) = 0.05;
+TechnologyDiscountRate(r,t)$(TagTechnologyToSubsets(t,'Households')) = 0.05;
+TechnologyDiscountRate(r,t)$(not TagTechnologyToSubsets(t,'Households')) = 0.05;
 SocialDiscountRate(r) = %socialdiscountrate%;
 
 
