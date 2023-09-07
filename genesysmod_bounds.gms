@@ -121,7 +121,7 @@ CapacityFactor(r,'HLI_Solar_Thermal',l,y) = CapacityFactor(r,'RES_PV_Utility_Avg
 *
 NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'Transformation')) = 0;
 NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'PowerSupply')) = 0;
-NewCapacity.fx('%year%',SectorCoupling,r) = 0;
+NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'SectorCoupling')) = 0;
 NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'Transformation')) = 0;
 NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'StorageDummies')) = 0;
 
@@ -228,28 +228,28 @@ $endif
 *
 $ifthen %switch_ramping% == 1
 RampingUpFactor(r,'RES_Hydro_Large',y) = 0.25;
-RampingUpFactor(r,PowerBiomass,y) = 0.04;
+RampingUpFactor(r,t,y)$(TagTechnologyToSubsets(t,'PowerBiomass')) = 0.04;
 RampingUpFactor(r,t,y)$(TagTechnologyToSubsets(t,'FossilPower')) = 0.04;
-RampingUpFactor(r,Coal,y) = 0.02;
-RampingUpFactor(r,Gas,y) = 0.2;
+RampingUpFactor(r,t,y)$(TagTechnologyToSubsets(t,'Coal')) = 0.02;
+RampingUpFactor(r,t,y)$(TagTechnologyToSubsets(t,'Gas')) = 0.2;
 RampingUpFactor(r,'P_Nuclear',y) = 0.01;
 RampingUpFactor(r,HeatSlowRamper,y) = 0.1;
 RampingUpFactor(r,HeatQuickRamper,y) = 0;
 
 RampingDownFactor(r,'RES_Hydro_Large',y) = 0.25;
-RampingDownFactor(r,PowerBiomass,y) = 0.04;
+RampingDownFactor(r,t,y)$(TagTechnologyToSubsets(t,'PowerBiomass')) = 0.04;
 RampingDownFactor(r,t,y)$(TagTechnologyToSubsets(t,'FossilPower')) = 0.04;
-RampingDownFactor(r,Coal,y) = 0.02;
-RampingDownFactor(r,Gas,y) = 0.2;
+RampingDownFactor(r,t,y)$(TagTechnologyToSubsets(t,'Coal')) = 0.02;
+RampingDownFactor(r,t,y)$(TagTechnologyToSubsets(t,'Gas')) = 0.2;
 RampingDownFactor(r,'P_Nuclear',y) = 0.01;
 RampingDownFactor(r,HeatSlowRamper,y) = 0.1;
 RampingDownFactor(r,HeatQuickRamper,y) = 0;
 
 ProductionChangeCost(r,'RES_Hydro_Large',y) = 50/3.6;
-ProductionChangeCost(r,PowerBiomass,y) = 100/3.6;
+ProductionChangeCost(r,t,y)$(TagTechnologyToSubsets(t,'PowerBiomass')) = 100/3.6;
 ProductionChangeCost(r,t,y)$(TagTechnologyToSubsets(t,'FossilPower')) = 100/3.6;
-ProductionChangeCost(r,Coal,y) = 50/3.6;
-ProductionChangeCost(r,Gas,y) = 20/3.6;
+ProductionChangeCost(r,t,y)$(TagTechnologyToSubsets(t,'Coal')) = 50/3.6;
+ProductionChangeCost(r,t,y)$(TagTechnologyToSubsets(t,'Gas')) = 20/3.6;
 ProductionChangeCost(r,'P_Nuclear',y) = 200/3.6;
 ProductionChangeCost(r,HeatSlowRamper,y) = 100/3.6;
 ProductionChangeCost(r,HeatQuickRamper,y) = 0;
