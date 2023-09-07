@@ -35,7 +35,7 @@ parameter z_fuelcosts;
 z_fuelcosts('Hardcoal',y,r) = VariableCost(r,'Z_Import_Hardcoal','1',y);
 z_fuelcosts('Lignite',y,r) = VariableCost(r,'R_Coal_Lignite','1',y);
 z_fuelcosts('Nuclear',y,r) = VariableCost(r,'R_Nuclear','1',y);
-z_fuelcosts('Biomass',y,r) = sum(Biomass,VariableCost(r,Biomass,'1',y))/card(Biomass) ;
+z_fuelcosts('Biomass',y,r) = sum(t$(TagTechnologyToSubsets(t,'Biomass')),VariableCost(r,t,'1',y))/card(t) ;
 z_fuelcosts('Gas_Natural',y,r) = VariableCost(r,'Z_Import_Gas','1',y);
 z_fuelcosts('Oil',y,r) = VariableCost(r,'Z_Import_Oil','1',y);
 z_fuelcosts('H2',y,r) = VariableCost(r,'Z_Import_H2','1',y);
@@ -195,7 +195,7 @@ output_energydemandstatistics('Primary Energy [% of Total]','Total','EU27',f,y) 
 output_energydemandstatistics('Electricity Generation [TWh]','Power',r,f,y) = sum((t,m)$(not TagTechnologyToSector(t,'Storages')),(sum(l,RateOfProductionByTechnologyByMode(y,l,t,m,'Power',r)$(InputActivityRatio(r,t,f,m,y)) * YearSplit(l,y))))/3.6;
 output_energydemandstatistics('Electricity Generation [TWh]','Power',r,'Solar',y) = sum(t$(TagTechnologyToSubsets(t,'Solar')),ProductionByTechnologyAnnual.l(y,t,'Power',r))/3.6;
 output_energydemandstatistics('Electricity Generation [TWh]','Power',r,'Wind',y) = sum(t$(TagTechnologyToSubsets(t,'Wind')),ProductionByTechnologyAnnual.l(y,t,'Power',r))/3.6;
-output_energydemandstatistics('Electricity Generation [TWh]','Power',r,'Hydro',y) = sum(Hydro,ProductionByTechnologyAnnual.l(y,Hydro,'Power',r))/3.6;
+output_energydemandstatistics('Electricity Generation [TWh]','Power',r,'Hydro',y) = sum(t$(TagTechnologyToSubsets(t,'Hydro')),ProductionByTechnologyAnnual.l(y,t,'Power',r))/3.6;
 
 output_energydemandstatistics('Electricity Mix [%]','Power',r,'Solar',y) = output_energydemandstatistics('Electricity Generation [TWh]','Power',r,'Solar',y)/(sum(t,ProductionByTechnologyAnnual.l(y,t,'Power',r)$(not TagTechnologyToSector(t,'Storages')))/3.6);
 output_energydemandstatistics('Electricity Mix [%]','Power',r,'Wind',y) = output_energydemandstatistics('Electricity Generation [TWh]','Power',r,'Wind',y)/(sum(t,ProductionByTechnologyAnnual.l(y,t,'Power',r)$(not TagTechnologyToSector(t,'Storages')))/3.6);
