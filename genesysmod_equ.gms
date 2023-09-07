@@ -358,6 +358,10 @@ equation ACC2_FuelProductionByTechnologyAnnual(YEAR_FULL,TECHNOLOGY,FUEL,REGION_
 ACC2_FuelProductionByTechnologyAnnual(y,t,f,r)$(sum(m, OutputActivityRatio(r,t,f,m,y)) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0 and TotalCapacityAnnual.up(y,t,r) > 0).. sum(l, sum(m$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y)) * YearSplit(l,y)) =e= ProductionByTechnologyAnnual(y,t,f,r);
 ProductionByTechnologyAnnual.fx(y,t,f,r)$(sum(m, OutputActivityRatio(r,t,f,m,y)) = 0 or AvailabilityFactor(r,t,y) = 0 or TotalAnnualMaxCapacity(r,t,y) = 0 or TotalTechnologyModelPeriodActivityUpperLimit(r,t) = 0 or TotalCapacityAnnual.up(y,t,r) = 0) = 0;
 
+equation ACC3_FuelUseByTechnologyAnnual(YEAR_FULL,TECHNOLOGY,FUEL,REGION_FULL);
+ACC3_FuelUseByTechnologyAnnual(y,t,f,r)$(sum(m, InputActivityRatio(r,t,f,m,y)) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0 and TotalCapacityAnnual.up(y,t,r) > 0).. sum(l, (sum(m$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*InputActivityRatio(r,t,f,m,y))*YearSplit(l,y))) =e= UseByTechnologyAnnual(y,t,f,r);
+UseByTechnologyAnnual.fx(y,t,f,r)$(sum(m, InputActivityRatio(r,t,f,m,y)) = 0 or AvailabilityFactor(r,t,y) = 0 or TotalAnnualMaxCapacity(r,t,y) = 0 or TotalTechnologyModelPeriodActivityUpperLimit(r,t) = 0 or TotalCapacityAnnual.up(y,t,r) = 0) = 0;
+
 
 
 *
@@ -394,6 +398,10 @@ SC5_AnnualStorageChangeLimit(y,r,f)$(Yearval(y) > %year% and ProductionGrowthLim
 
 $endif
 
+
+*
+* ############## CCS-specific constraints #############
+*
 $ifthen %switch_ccs% == 1
 equation CCS1_CCSAdditionLimit(YEAR_FULL,REGION_FULL,FUEL);
 CCS1_CCSAdditionLimit(y,r,f)$(Yearval(y) > %year% and not sameas(f,'DAC_Dummy')).. sum(t$(TagTechnologyToSubsets(t,'CCS')),ProductionByTechnologyAnnual(y,t,f,r)-ProductionByTechnologyAnnual(y-1,t,f,r)) =l= YearlyDifferenceMultiplier(y-1)*(ProductionGrowthLimit(y,'Air'))*sum((t),ProductionByTechnologyAnnual(y-1,t,f,r));
@@ -526,18 +534,14 @@ RM3_ReserveMargin_Constraint(y,l,r)$(ReserveMargin(r,y) > 0).. DemandNeedingRese
 * ############### RE Production Target #############* NTS: Should change demand for production
 *
 
-equation RE2_TechIncluded(YEAR_FULL,REGION_FULL,FUEL);
-RE2_TechIncluded(y,r,f).. sum(t$(TagTechnologyToSubsets(t,'Renewables')),ProductionByTechnologyAnnual(y,t,f,r)) =e= TotalREProductionAnnual(y,r,f);
+equation RE1_ComputeTotalAnnualREProduction(YEAR_FULL,REGION_FULL,FUEL);
+RE1_ComputeTotalAnnualREProduction(y,r,f).. sum(t$(TagTechnologyToSubsets(t,'Renewables')),ProductionByTechnologyAnnual(y,t,f,r)) =e= TotalREProductionAnnual(y,r,f);
 
-equation RE4_EnergyConstraint(YEAR_FULL,REGION_FULL,FUEL);
-RE4_EnergyConstraint(y,r,f).. REMinProductionTarget(r,f,y)*sum((l,t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y))*RETagFuel(r,f,y) =l= TotalREProductionAnnual(y,r,f);
+equation RE2_AnnualREProductionLowerLimit(YEAR_FULL,REGION_FULL,FUEL);
+RE2_AnnualREProductionLowerLimit(y,r,f).. REMinProductionTarget(r,f,y)*sum((l,t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y))*RETagFuel(r,f,y) =l= TotalREProductionAnnual(y,r,f);
 
-equation RE5_FuelUseByTechnologyAnnual(YEAR_FULL,TECHNOLOGY,FUEL,REGION_FULL);
-RE5_FuelUseByTechnologyAnnual(y,t,f,r)$(sum(m, InputActivityRatio(r,t,f,m,y)) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0 and TotalCapacityAnnual.up(y,t,r) > 0).. sum(l, (sum(m$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*InputActivityRatio(r,t,f,m,y))*YearSplit(l,y))) =e= UseByTechnologyAnnual(y,t,f,r);
-UseByTechnologyAnnual.fx(y,t,f,r)$(sum(m, InputActivityRatio(r,t,f,m,y)) = 0 or AvailabilityFactor(r,t,y) = 0 or TotalAnnualMaxCapacity(r,t,y) = 0 or TotalTechnologyModelPeriodActivityUpperLimit(r,t) = 0 or TotalCapacityAnnual.up(y,t,r) = 0) = 0;
-
-equation RE6_RETargetPath(YEAR_FULL,REGION_FULL,FUEL);
-RE6_RETargetPath(y,r,f)$(YearVal(y)>%year% and SpecifiedAnnualDemand(r,f,y)).. TotalREProductionAnnual(y,r,f) =g= TotalREProductionAnnual(y-1,r,f)*((SpecifiedAnnualDemand(r,f,y)/SpecifiedAnnualDemand(r,f,y-1)));
+equation RE3_RETargetPath(YEAR_FULL,REGION_FULL,FUEL);
+RE3_RETargetPath(y,r,f)$(YearVal(y)>%year% and SpecifiedAnnualDemand(r,f,y)).. TotalREProductionAnnual(y,r,f) =g= TotalREProductionAnnual(y-1,r,f)*((SpecifiedAnnualDemand(r,f,y)/SpecifiedAnnualDemand(r,f,y-1)));
 
 *
 * ################ Emissions Accounting ##############
@@ -555,9 +559,26 @@ equation E4_EmissionsPenaltyByTechnology(YEAR_FULL,TECHNOLOGY,REGION_FULL);
 E4_EmissionsPenaltyByTechnology(y,t,r).. sum(e, AnnualTechnologyEmissionPenaltyByEmission(y,t,e,r)) =e= AnnualTechnologyEmissionsPenalty(y,t,r);
 equation E5_DiscountedEmissionsPenaltyByTechnology(YEAR_FULL,TECHNOLOGY,REGION_FULL);
 E5_DiscountedEmissionsPenaltyByTechnology(y,t,r).. AnnualTechnologyEmissionsPenalty(y,t,r)/((1+SocialDiscountRate(r))**(YearVal(y)-smin(yy, YearVal(yy))+0.5)) =e= DiscountedTechnologyEmissionsPenalty(y,t,r);
-equation E6_EmissionsAccounting1(YEAR_FULL,EMISSION,REGION_FULL);
-E6_EmissionsAccounting1(y,e,r).. sum(t, AnnualTechnologyEmission(y,t,e,r)) =e= AnnualEmissions(y,e,r);
+equation E6_AnnualEmissionsAccounting(YEAR_FULL,EMISSION,REGION_FULL);
+E6_AnnualEmissionsAccounting(y,e,r).. sum(t, AnnualTechnologyEmission(y,t,e,r)) =e= AnnualEmissions(y,e,r);
 
+equation E7_ModelPeriodEmissionsAccounting(EMISSION,REGION_FULL);
+$ifthen %switch_weighted_emissions% == 1
+E7_ModelPeriodEmissionsAccounting(e,r)..
+  sum(y$(YearVal(y+1)-YearVal(y) > 0), WeightedAnnualEmissions(y,e,r)*(YearVal(y+1)-YearVal(y)))
++ sum(y$(YearVal(y)=smax(yy,YearVal(yy))),  WeightedAnnualEmissions(y,e,r))
+=e= ModelPeriodEmissions(e,r)- ModelPeriodExogenousEmission(r,e);
+equation E7a_WeightedEmissions(year_full,EMISSION,REGION_FULL);
+E7a_WeightedEmissions(y,e,r)$(YearVal(y)<smax(yy,YearVal(yy))).. (AnnualEmissions(y,e,r)+AnnualEmissions(y+1,e,r))/2 =e= WeightedAnnualEmissions(y,e,r);
+equation E7b_WeightedLastYearEmissions(year_full,EMISSION,REGION_FULL);
+E7b_WeightedLastYearEmissions(y,e,r)$(YearVal(y)=smax(yy,YearVal(yy))).. AnnualEmissions(y,e,r) =e= WeightedAnnualEmissions(y,e,r);
+
+$else
+E7_ModelPeriodEmissionsAccounting(e,r)..
+sum(y$(YearVal(y+1)-YearVal(y) > 0), AnnualEmissions(y,e,r)*(YearVal(y+1)-YearVal(y)))
++ sum(y$(YearVal(y)=smax(yy,YearVal(yy))),  AnnualEmissions(y,e,r))
+=e= ModelPeriodEmissions(e,r)- ModelPeriodExogenousEmission(r,e);
+$endif
 
 equation E8_RegionalAnnualEmissionsLimit(YEAR_FULL,EMISSION,REGION_FULL);
 E8_RegionalAnnualEmissionsLimit(y,e,r).. AnnualEmissions(y,e,r)+AnnualExogenousEmission(r,e,y) =l= RegionalAnnualEmissionLimit(r,e,y);
@@ -568,34 +589,11 @@ E10_ModelPeriodEmissionsLimit(e).. sum(r,ModelPeriodEmissions(e,r)) =l= ModelPer
 equation E11_RegionalModelPeriodEmissionsLimit(EMISSION,REGION_FULL);
 E11_RegionalModelPeriodEmissionsLimit(e,r)$(RegionalModelPeriodEmissionLimit(e,r) < 999999).. ModelPeriodEmissions(e,r) =l= RegionalModelPeriodEmissionLimit(e,r);
 
-equation E7_EmissionsAccounting2(EMISSION,REGION_FULL);
-$ifthen %switch_weighted_emissions% == 1
-E7_EmissionsAccounting2(e,r)..
-  sum(y$(YearVal(y+1)-YearVal(y) > 0), WeightedAnnualEmissions(y,e,r)*(YearVal(y+1)-YearVal(y)))
-+ sum(y$(YearVal(y)=smax(yy,YearVal(yy))),  WeightedAnnualEmissions(y,e,r))
-=e= ModelPeriodEmissions(e,r)- ModelPeriodExogenousEmission(r,e);
-equation E12a_WeightedEmissions(year_full,EMISSION,REGION_FULL);
-E12a_WeightedEmissions(y,e,r)$(YearVal(y)<smax(yy,YearVal(yy))).. (AnnualEmissions(y,e,r)+AnnualEmissions(y+1,e,r))/2 =e= WeightedAnnualEmissions(y,e,r);
-equation E12b_WeightedLastYearEmissions(year_full,EMISSION,REGION_FULL);
-E12b_WeightedLastYearEmissions(y,e,r)$(YearVal(y)=smax(yy,YearVal(yy))).. AnnualEmissions(y,e,r) =e= WeightedAnnualEmissions(y,e,r);
+equation E12_AnnualSectorEmissions(YEAR_FULL,EMISSION,SECTOR,REGION_FULL);
+E12_AnnualSectorEmissions(y,e,se,r).. sum(t$(TagTechnologyToSector(t,se) <> 0), AnnualTechnologyEmission(y,t,e,r)) =e= AnnualSectoralEmissions(y,e,se,r);
 
-$else
-E7_EmissionsAccounting2(e,r)..
-sum(y$(YearVal(y+1)-YearVal(y) > 0), AnnualEmissions(y,e,r)*(YearVal(y+1)-YearVal(y)))
-+ sum(y$(YearVal(y)=smax(yy,YearVal(yy))),  AnnualEmissions(y,e,r))
-=e= ModelPeriodEmissions(e,r)- ModelPeriodExogenousEmission(r,e);
-
-$endif
-
-*
-* ################ Sectoral Emissions Accounting ##############
-*
-
-equation ES1_AnnualSectorEmissions(YEAR_FULL,EMISSION,SECTOR,REGION_FULL);
-ES1_AnnualSectorEmissions(y,e,se,r).. sum(t$(TagTechnologyToSector(t,se) <> 0), AnnualTechnologyEmission(y,t,e,r)) =e= AnnualSectoralEmissions(y,e,se,r);
-
-equation ES2_AnnualSectorEmissionsLimit(YEAR_FULL,EMISSION,SECTOR);
-ES2_AnnualSectorEmissionsLimit(y,e,se).. sum(r, AnnualSectoralEmissions(y,e,se,r)) =l= AnnualSectoralEmissionLimit(e,se,y);
+equation E13_AnnualSectorEmissionsLimit(YEAR_FULL,EMISSION,SECTOR);
+E13_AnnualSectorEmissionsLimit(y,e,se).. sum(r, AnnualSectoralEmissions(y,e,se,r)) =l= AnnualSectoralEmissionLimit(e,se,y);
 
 *
 * ######### Storage Constraints #############
@@ -714,11 +712,11 @@ $ifthen %switch_base_year_bounds% == 1
 * ##############* General BaseYear Limits and trajectories #############
 *
 
-equation B4a_RegionalBaseYearProductionLowerBound(YEAR_FULL,REGION_FULL,t,f);
-B4a_RegionalBaseYearProductionLowerBound(y,r,t,f)$(RegionalBaseYearProduction(r,t,f,y) <> 0).. ProductionByTechnologyAnnual(y,t,f,r) =g= RegionalBaseYearProduction(r,t,f,y)*(1-BaseYearSlack(f)) - RegionalBaseYearProduction_neg(y,r,t,f);
+equation BYB1_RegionalBaseYearProductionLowerBound(YEAR_FULL,REGION_FULL,t,f);
+BYB1_RegionalBaseYearProductionLowerBound(y,r,t,f)$(RegionalBaseYearProduction(r,t,f,y) <> 0).. ProductionByTechnologyAnnual(y,t,f,r) =g= RegionalBaseYearProduction(r,t,f,y)*(1-BaseYearSlack(f)) - RegionalBaseYearProduction_neg(y,r,t,f);
 
-equation B4b_RegionalBaseYearProductionUpperBound(YEAR_FULL,REGION_FULL,t,f);
-B4b_RegionalBaseYearProductionUpperBound(y,r,t,'Power')$(RegionalBaseYearProduction(r,t,'Power',y) <> 0).. ProductionByTechnologyAnnual(y,t,'Power',r) =l= RegionalBaseYearProduction(r,t,'Power',y)+BaseYearOvershoot(r,t,'Power',y);
+equation BYB2_RegionalBaseYearProductionUpperBound(YEAR_FULL,REGION_FULL,t,f);
+BYB2_RegionalBaseYearProductionUpperBound(y,r,t,'Power')$(RegionalBaseYearProduction(r,t,'Power',y) <> 0).. ProductionByTechnologyAnnual(y,t,'Power',r) =l= RegionalBaseYearProduction(r,t,'Power',y)+BaseYearOvershoot(r,t,'Power',y);
 
 $endif
 
@@ -777,18 +775,16 @@ $endif.equ_peaking_minrun
 
 $endif.equ_peaking_capacity
 
-
-$ifthen %switch_endogenous_employment% == 1
-
 *
 * ##############* Employment effects #############
 *
+$ifthen %switch_endogenous_employment% == 1
 positive variable TotalJobs(r_full,y_full);
 
 $include genesysmod_employment.gms
 
-equation Jobs1_TotalJobs(r_full,y_full);
-Jobs1_TotalJobs(r,y)..  sum((t,f),((NewCapacity(y,t,r)*EFactorManufacturing(t,y)*RegionalAdjustmentFactor('%model_region%',y)*LocalManufacturingFactor('%model_region%',y))
+equation ADD_Employment(r_full,y_full);
+ADD_Employment(r,y)..  sum((t,f),((NewCapacity(y,t,r)*EFactorManufacturing(t,y)*RegionalAdjustmentFactor('%model_region%',y)*LocalManufacturingFactor('%model_region%',y))
                  +(NewCapacity(y,t,r)*EFactorConstruction(t,y)*RegionalAdjustmentFactor('%model_region%',y))
                  +(TotalCapacityAnnual(y,t,r)*EFactorOM(t,y)*RegionalAdjustmentFactor('%model_region%',y))
                  +(UseByTechnologyAnnual(y,t,f,r)*EFactorFuelSupply(t,y)))*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)
@@ -796,7 +792,6 @@ Jobs1_TotalJobs(r,y)..  sum((t,f),((NewCapacity(y,t,r)*EFactorManufacturing(t,y)
                  +(UseByTechnologyAnnual(y,'HHI_BF_BOF','Hardcoal',r))*EFactorCoalJobs('Coal_Heat',y)*CoalSupply(r,y)))
                  +(CoalSupply(r,y)*CoalDigging('%model_region%','Coal_Export','%emissionPathway%_%emissionScenario%',y)*EFactorCoalJobs('Coal_Export',y)))
                  =e= TotalJobs(r,y);
-
 $endif
 
 
