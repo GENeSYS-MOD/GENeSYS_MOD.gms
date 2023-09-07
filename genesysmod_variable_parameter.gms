@@ -55,3 +55,7 @@ ProductionAnnual(y,f,r) = sum((l,t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), Rat
 
 parameter UseAnnual(y_full,FUEL,REGION_FULL);
 UseAnnual(y,f,r) = sum((l,t,m)$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity.l(y,l,t,m,r)*InputActivityRatio(r,t,f,m,y)*YearSplit(l,y));
+
+
+parameter ModelPeriodCostByRegion(REGION_FULL);
+ModelPeriodCostByRegion(r) = sum((y), TotalDiscountedCost.l(y,r));

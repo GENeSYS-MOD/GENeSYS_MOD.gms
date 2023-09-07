@@ -351,7 +351,7 @@ TC2_DiscountedAnnualTradeCosts(y,r)..  AnnualTotalTradeCosts(y,r)/((1+GeneralDis
 *
 
 equation ACC1_ComputeTotalAnnualRateOfActivity(YEAR_FULL,TECHNOLOGY,MODE_OF_OPERATION,REGION_FULL);
-Acc3_AverageAnnualRateOfActivity(y,t,m,r)$(CanBuildTechnology(y,t,r) > 0).. sum(l, RateOfActivity(y,l,t,m,r)*YearSplit(l,y)) =e= TotalAnnualTechnologyActivityByMode(y,t,m,r);
+ACC1_ComputeTotalAnnualRateOfActivity(y,t,m,r)$(CanBuildTechnology(y,t,r) > 0).. sum(l, RateOfActivity(y,l,t,m,r)*YearSplit(l,y)) =e= TotalAnnualTechnologyActivityByMode(y,t,m,r);
 TotalAnnualTechnologyActivityByMode.fx(y,t,m,r)$(CanBuildTechnology(y,t,r) = 0) = 0;
 
 equation ACC2_FuelProductionByTechnologyAnnual(YEAR_FULL,TECHNOLOGY,FUEL,REGION_FULL);
@@ -381,7 +381,7 @@ equation SC2_LimitAnnualCapacityAdditions(YEAR_FULL,REGION_FULL,TECHNOLOGY);
 SC2_LimitAnnualCapacityAdditions(y,r,t)$(TagTechnologyToSubsets(t,'Renewables') and ord(y)>1).. NewCapacity(y,t,r) =l= YearlyDifferenceMultiplier(y-1)*NewRESCapacity*TotalAnnualMaxCapacity(r,t,y);
 
 equation SC3_SmoothingRenewableIntegration(YEAR_FULL,REGION_FULL,TECHNOLOGY,FUEL);
-CC5c_PhaseInLowerLimit(y,r,t,f)$(Yearval(y) > %year% and TagTechnologyToSubsets(t,'PhaseInSet')).. ProductionByTechnologyAnnual(y,t,f,r) =g= ProductionByTechnologyAnnual(y-1,t,f,r)*PhaseIn(y)*((SpecifiedAnnualDemand(r,f,y)/SpecifiedAnnualDemand(r,f,y-1))$(SpecifiedAnnualDemand(r,f,y))+1$(not SpecifiedAnnualDemand(r,f,y)));
+SC3_SmoothingRenewableIntegration(y,r,t,f)$(Yearval(y) > %year% and TagTechnologyToSubsets(t,'PhaseInSet')).. ProductionByTechnologyAnnual(y,t,f,r) =g= ProductionByTechnologyAnnual(y-1,t,f,r)*PhaseIn(y)*((SpecifiedAnnualDemand(r,f,y)/SpecifiedAnnualDemand(r,f,y-1))$(SpecifiedAnnualDemand(r,f,y))+1$(not SpecifiedAnnualDemand(r,f,y)));
 
 equation SC3_SmoothingFossilPhaseOuts(YEAR_FULL,REGION_FULL,TECHNOLOGY,FUEL);
 SC3_SmoothingFossilPhaseOuts(y,r,t,f)$(Yearval(y) > %year% and TagTechnologyToSubsets(t,'PhaseOutSet')).. ProductionByTechnologyAnnual(y,t,f,r) =l= ProductionByTechnologyAnnual(y-1,t,f,r)*PhaseOut(y)*((SpecifiedAnnualDemand(r,f,y)/SpecifiedAnnualDemand(r,f,y-1))$(SpecifiedAnnualDemand(r,f,y))+1$(not SpecifiedAnnualDemand(r,f,y)));

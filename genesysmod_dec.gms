@@ -248,7 +248,6 @@ positive variable AnnualFixedOperatingCost(y_full,TECHNOLOGY,REGION_FULL);
 positive variable VariableOperatingCost(y_full,TIMESLICE_FULL,TECHNOLOGY,REGION_FULL);
 positive variable TotalDiscountedCost(y_full,REGION_FULL);
 positive variable TotalDiscountedCostByTechnology(y_full,TECHNOLOGY,REGION_FULL)
-positive variable ModelPeriodCostByRegion (REGION_FULL);
 
 positive variable AnnualCurtailmentCost(YEAR_FULL,FUEL,REGION_FULL);
 positive variable DiscountedAnnualCurtailmentCost(YEAR_FULL,FUEL,REGION_FULL);
