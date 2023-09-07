@@ -589,11 +589,11 @@ ES2_AnnualSectorEmissionsLimit(y,e,se).. sum(r, AnnualSectoralEmissions(y,e,se,r
 
 equation S1a_StorageLevelYearStartUpperLimit(STORAGE, REGION_FULL, YEAR_FULL);
 S1a_StorageLevelYearStartUpperLimit(s,r,y).. StorageLevelYearStart(s,y,r) =l=  StorageLevelYearStartUpperLimit *
-((sum((yy,t)$(OperationalLifeStorage(r,s,yy) >= Yearval(y)-Yearval(yy) and Yearval(y)-Yearval(yy) >= 0 and TechnologyToStorage(y,'1',t,s)), NewCapacity(yy,t,r)*StorageMaxChargeRate(r,s))) + sum(t$TechnologyToStorage(y,'1',t,s),ResidualCapacity(r,t,y)*StorageMaxChargeRate(r,s)));
+((sum(yy$(OperationalLifeStorage(r,s,yy) >= Yearval(y)-Yearval(yy) and Yearval(y)-Yearval(yy) >= 0), NewStorageCapacity(s,yy,r))) + ResidualStorageCapacity(r,s,y)));
 
 equation S1b_StorageLevelYearStartLowerLimit(STORAGE, REGION_FULL, YEAR_FULL);
 S1b_StorageLevelYearStartLowerLimit(s,r,y).. StorageLevelYearStart(s,y,r) =g=  StorageLevelYearStartLowerLimit *
-((sum((yy,t)$(OperationalLifeStorage(r,s,yy) >= Yearval(y)-Yearval(yy) and Yearval(y)-Yearval(yy) >= 0 and TechnologyToStorage(y,'1',t,s)), NewCapacity(yy,t,r)*StorageMaxChargeRate(r,s))) + sum(t$TechnologyToStorage(y,'1',t,s),ResidualCapacity(r,t,y)*StorageMaxChargeRate(r,s)));
+((sum(yy$(OperationalLifeStorage(r,s,yy) >= Yearval(y)-Yearval(yy) and Yearval(y)-Yearval(yy) >= 0), NewStorageCapacity(s,yy,r))) + ResidualStorageCapacity(r,s,y)));
 
 equation S2_StorageLevelTSStart(REGION_FULL, STORAGE, YEAR_FULL, TIMESLICE_FULL);
 S2_StorageLevelTSStart(r,s,y, l)..  (StorageLevelTSStart(s,y,l-1,r) +
