@@ -223,37 +223,4 @@ ProductionByTechnologyAnnual.fx(y,t,f,r)$(TagTechnologyToSubsets(t,'CCS')) = 0;
 $endif
 
 
-*
-* ####### Ramping #############
-*
-$ifthen %switch_ramping% == 1
-RampingUpFactor(r,'RES_Hydro_Large',y) = 0.25;
-RampingUpFactor(r,t,y)$(TagTechnologyToSubsets(t,'PowerBiomass')) = 0.04;
-RampingUpFactor(r,t,y)$(TagTechnologyToSubsets(t,'FossilPower')) = 0.04;
-RampingUpFactor(r,t,y)$(TagTechnologyToSubsets(t,'Coal')) = 0.02;
-RampingUpFactor(r,t,y)$(TagTechnologyToSubsets(t,'Gas')) = 0.2;
-RampingUpFactor(r,'P_Nuclear',y) = 0.01;
-RampingUpFactor(r,t,y)$(TagTechnologyToSubsets(t,'HeatSlowRamper')) = 0.1;
-RampingUpFactor(r,t,y)$(TagTechnologyToSubsets(t,'HeatQuickRamper')) = 0;
 
-RampingDownFactor(r,'RES_Hydro_Large',y) = 0.25;
-RampingDownFactor(r,t,y)$(TagTechnologyToSubsets(t,'PowerBiomass')) = 0.04;
-RampingDownFactor(r,t,y)$(TagTechnologyToSubsets(t,'FossilPower')) = 0.04;
-RampingDownFactor(r,t,y)$(TagTechnologyToSubsets(t,'Coal')) = 0.02;
-RampingDownFactor(r,t,y)$(TagTechnologyToSubsets(t,'Gas')) = 0.2;
-RampingDownFactor(r,'P_Nuclear',y) = 0.01;
-RampingDownFactor(r,t,y)$(TagTechnologyToSubsets(t,'HeatSlowRamper')) = 0.1;
-RampingDownFactor(r,t,y)$(TagTechnologyToSubsets(t,'HeatQuickRamper')) = 0;
-
-ProductionChangeCost(r,'RES_Hydro_Large',y) = 50/3.6;
-ProductionChangeCost(r,t,y)$(TagTechnologyToSubsets(t,'PowerBiomass')) = 100/3.6;
-ProductionChangeCost(r,t,y)$(TagTechnologyToSubsets(t,'FossilPower')) = 100/3.6;
-ProductionChangeCost(r,t,y)$(TagTechnologyToSubsets(t,'Coal')) = 50/3.6;
-ProductionChangeCost(r,t,y)$(TagTechnologyToSubsets(t,'Gas')) = 20/3.6;
-ProductionChangeCost(r,'P_Nuclear',y) = 200/3.6;
-ProductionChangeCost(r,t,y)$(TagTechnologyToSubsets(t,'HeatSlowRamper')) = 100/3.6;
-ProductionChangeCost(r,t,y)$(TagTechnologyToSubsets(t,'HeatQuickRamper')) = 0;
-
-MinActiveProductionPerTimeslice(y,l,'Power','RES_Hydro_Large',r) = 0.1;
-MinActiveProductionPerTimeslice(y,l,'Power','RES_Hydro_Small',r) = 0.05;
-$endif

@@ -62,7 +62,7 @@ $if not set solver                       $setglobal solver gurobi
 $if not set model_region                 $setglobal model_region europe
 $if not set data_base_region             $setglobal data_base_region DE
 $if not set global_data_file             $setglobal global_data_file Global_Data_v14_oE_phe_10_11_2022
-$if not set data_file                    $setglobal data_file Data_Europe_oE_tF_combined_v00_kl_21_03_2022_new
+$if not set data_file                    $setglobal data_file Data_Europe_oE_tF_combined_v01_nim_07_09_2023_new
 $if not set eployment_data_file          $setglobal employment_data_file Employment_v01_06_11_2019
 $if not set hourly_data_file             $setglobal hourly_data_file Hourly_Data_Europe_v12_kl_20_04_2022
 $if not set threads                      $setglobal threads 8

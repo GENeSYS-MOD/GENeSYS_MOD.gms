@@ -329,10 +329,10 @@ $ifthen.dec_ramping %switch_ramping% == 1
 *
 * ######## Ramping #############
 *
-parameter RampingUpFactor(REGION_FULL,TECHNOLOGY,y_full);
-parameter RampingDownFactor(REGION_FULL,TECHNOLOGY,y_full);
+parameter RampingUpFactor(TECHNOLOGY,y_full);
+parameter RampingDownFactor(TECHNOLOGY,y_full);
 
-parameter ProductionChangeCost(REGION_FULL,TECHNOLOGY,y_full);
+parameter ProductionChangeCost(TECHNOLOGY,y_full);
 
 parameter MinActiveProductionPerTimeslice(YEAR_FULL,TIMESLICE_FULL,FUEL,TECHNOLOGY,REGION_FULL);
 

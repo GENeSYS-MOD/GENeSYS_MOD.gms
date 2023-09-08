@@ -191,7 +191,6 @@ MinStorageCharge(r_full,s,y)$(MinStorageCharge(r_full,s,y)=0) = MinStorageCharge
 CapitalCostStorage(r_full,s,y)$(CapitalCostStorage(r_full,s,y)=0) = CapitalCostStorage('World',s,y);
 
 
-
 *
 * ####### Including Subsets #############
 *
@@ -266,10 +265,38 @@ YearVal(y) = y.val ;
 $include genesysmod_timeseries_reduction.gms
 
 
+*
+* ####### Ramping #############
+*
+$ifthen %switch_ramping% == 1
+
+$onecho >%tempdir%temp_%data_file%_par2.tmp
+se=0
+        par=RampingUpFactor                Rng=Par_RampingUpFactor!A5                      rdim=2        cdim=0
+        par=RampingDownFactor              Rng=Par_RampingDownFactor!A5                    rdim=2        cdim=0
+        par=ProductionChangeCost           Rng=Par_ProductionChangeCost!A5                 rdim=2        cdim=0
+
+        
+$offecho
+
+$ifi %switch_only_load_gdx%==0 $call "gdxxrw %inputdir%%data_file%.xlsx @%tempdir%temp_%data_file%_par2.tmp o=%gdxdir%%data_file%_par2.gdx MaxDupeErrors=99 CheckDate ";
+$GDXin %gdxdir%%data_file%_par2.gdx
+$onUNDF
+$loadm RampingUpFactor RampingDownFactor
+$loadm ProductionChangeCost
+$offUNDF
 
 
-$ifthen %switch_employment_calculation% == 1
+MinActiveProductionPerTimeslice(y,l,'Power','RES_Hydro_Large',R_FULL) = 0.1;
+MinActiveProductionPerTimeslice(y,l,'Power','RES_Hydro_Small',R_FULL) = 0.05;
+$endif
+
+
+
+*
 * ########## Dataload of Employment Excel ##########
+*
+$ifthen %switch_employment_calculation% == 1
 
 $onecho >%tempdir%temp_%employment_data_file%.tmp
 se=0
