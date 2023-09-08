@@ -33,11 +33,11 @@ y('2020') = no;
 
 * ################### OTHER GENERAL INPUTS ###################
 
-DepreciationMethod(r) = 1;
+DepreciationMethod = 1;
 GeneralDiscountRate(r) = 0.05;
 TechnologyDiscountRate(r,t)$(TagTechnologyToSubsets(t,'Households')) = 0.05;
 TechnologyDiscountRate(r,t)$(not TagTechnologyToSubsets(t,'Households')) = 0.05;
-SocialDiscountRate(r) = %socialdiscountrate%;
+SocialDiscountRate(r) = 0.05;
 
 
 scalar InvestmentLimit  Freedom for investment choices to spread across periods. A value of 1 would mean equal share for each period.
@@ -51,6 +51,3 @@ scalar StorageLimitOffset /0.015/;
 
 BaseYearSlack(f) = 0.035;
 BaseYearSlack('Power') = 0.035;
-
-* THIS NEEDS TO BE REMOVED. WRITE THE VALUE IN DATA INSTEAD
-GrowthRateTradeCapacity(y,'Power',r,rr) = 0.1;

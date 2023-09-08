@@ -422,17 +422,17 @@ $endif
 * ##############* Salvage Value #############
 *
 equation SV1_SalvageValueAtEndOfPeriod1(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-SV1_SalvageValueAtEndOfPeriod1(y,t,r)$(DepreciationMethod(r)=1 and ((YearVal(y) + OperationalLife(r,t)-1 > smax(yy, YearVal(yy))) and (TechnologyDiscountRate(r,t) > 0)))..
+SV1_SalvageValueAtEndOfPeriod1(y,t,r)$(DepreciationMethod=1 and ((YearVal(y) + OperationalLife(r,t)-1 > smax(yy, YearVal(yy))) and (TechnologyDiscountRate(r,t) > 0)))..
 SalvageValue(y,t,r) =e= CapitalCost(r,t,y)*NewCapacity(y,t,r)*(1-(((1+TechnologyDiscountRate(r,t))**(smax(yy, YearVal(yy)) - YearVal(y)+1) -1)
 /((1+TechnologyDiscountRate(r,t))**OperationalLife(r,t)-1)));
 equation SV2_SalvageValueAtEndOfPeriod2(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-SV2_SalvageValueAtEndOfPeriod2(y,t,r)$((((YearVal(y) + OperationalLife(r,t)-1 > smax(yy, YearVal(yy))) and (TechnologyDiscountRate(r,t) = 0)) or (DepreciationMethod(r)=2 and (YearVal(y) + OperationalLife(r,t)-1 > smax(yy, YearVal(yy))))))..
+SV2_SalvageValueAtEndOfPeriod2(y,t,r)$((((YearVal(y) + OperationalLife(r,t)-1 > smax(yy, YearVal(yy))) and (TechnologyDiscountRate(r,t) = 0)) or (DepreciationMethod=2 and (YearVal(y) + OperationalLife(r,t)-1 > smax(yy, YearVal(yy))))))..
 SalvageValue(y,t,r) =e= CapitalCost(r,t,y)*NewCapacity(y,t,r)*(1-(smax(yy, YearVal(yy))- YearVal(y)+1)/OperationalLife(r,t));
 equation SV3_SalvageValueAtEndOfPeriod3(YEAR_FULL,TECHNOLOGY,REGION_FULL);
 SV3_SalvageValueAtEndOfPeriod3(y,t,r)$(YearVal(y) + OperationalLife(r,t)-1 <= smax(yy, YearVal(yy)))..
 SalvageValue(y,t,r) =e= 0;
 equation SV1b_SalvageValueAtEndOfPeriod1(YEAR_FULL,REGION_FULL);
-SV1b_SalvageValueAtEndOfPeriod1(y,r)$(DepreciationMethod(r)=1 and ((YearVal(y) + 40 > smax(yy, YearVal(yy)))))..
+SV1b_SalvageValueAtEndOfPeriod1(y,r)$(DepreciationMethod=1 and ((YearVal(y) + 40 > smax(yy, YearVal(yy)))))..
 DiscountedSalvageValueTransmission(y,r) =e= (sum((f,rr),TradeCapacityGrowthCosts(f,r,rr)*TradeRoute(y,f,r,rr)*NewTradeCapacity(y,f,r,rr)*(1-(((1+GeneralDiscountRate(r))**(smax(yy, YearVal(yy)) - YearVal(y)+1) -1)
 /((1+GeneralDiscountRate(r))**40)))))/((1+GeneralDiscountRate(r))**(1+smax(yy, YearVal(yy)) - smin(yy, YearVal(yy))));
 
@@ -643,9 +643,9 @@ SI2_DiscountingCapitalInvestmentStorage(s,y,r)..  CapitalInvestmentStorage(s,y,r
 equation SI3a_SalvageValueStorageAtEndOfPeriod1(STORAGE,YEAR_FULL,REGION_FULL);
 SI3a_SalvageValueStorageAtEndOfPeriod1(s,y,r)$((yearval(y)+OperationalLifeStorage(r,s,y)-1) le sum(yy_full$(ord(yy_full)=card(yy_full)),yearval(yy_full)) )..    0 =e= SalvageValueStorage(s,y,r);
 equation SI3b_SalvageValueStorageAtEndOfPeriod2(STORAGE,YEAR_FULL,REGION_FULL);
-SI3b_SalvageValueStorageAtEndOfPeriod2(s,y,r)$((DepreciationMethod(r)=1 and (yearval(y)+OperationalLifeStorage(r,s,y)-1) > sum(yy_full$(ord(yy_full)=card(yy_full)),yearval(yy_full)) and GeneralDiscountRate(r)=0) or (DepreciationMethod(r)=2 and (yearval(y)+OperationalLifeStorage(r,s,y)-1) > sum(yy_full$(ord(yy_full)=card(yy_full)),yearval(yy_full)) and GeneralDiscountRate(r)=0)).. CapitalInvestmentStorage(s,y,r)*(1- sum(yy_full$(ord(yy_full)=card(yy_full)),yearval(yy_full))  - yearval(y)+1)/OperationalLifeStorage(r,s,y) =e= SalvageValueStorage(s,y,r);
+SI3b_SalvageValueStorageAtEndOfPeriod2(s,y,r)$((DepreciationMethod=1 and (yearval(y)+OperationalLifeStorage(r,s,y)-1) > sum(yy_full$(ord(yy_full)=card(yy_full)),yearval(yy_full)) and GeneralDiscountRate(r)=0) or (DepreciationMethod=2 and (yearval(y)+OperationalLifeStorage(r,s,y)-1) > sum(yy_full$(ord(yy_full)=card(yy_full)),yearval(yy_full)) and GeneralDiscountRate(r)=0)).. CapitalInvestmentStorage(s,y,r)*(1- sum(yy_full$(ord(yy_full)=card(yy_full)),yearval(yy_full))  - yearval(y)+1)/OperationalLifeStorage(r,s,y) =e= SalvageValueStorage(s,y,r);
 equation SI3c_SalvageValueStorageAtEndOfPeriod3(STORAGE,YEAR_FULL,REGION_FULL);
-SI3c_SalvageValueStorageAtEndOfPeriod3(s,y,r)$(DepreciationMethod(r)=1 and ((yearval(y)+OperationalLifeStorage(r,s,y)-1) > sum(yy_full$(ord(yy_full)=card(yy_full)),yearval(yy_full)) and GeneralDiscountRate(r)>0)).. CapitalInvestmentStorage(s,y,r)*(1-(((1+GeneralDiscountRate(r))**(sum(yy_full$(ord(yy_full)=card(yy_full)),yearval(yy_full)) - yearval(y)+1)-1)/((1+GeneralDiscountRate(r))**OperationalLifeStorage(r,s,y)-1))) =e= SalvageValueStorage(s,y,r);
+SI3c_SalvageValueStorageAtEndOfPeriod3(s,y,r)$(DepreciationMethod=1 and ((yearval(y)+OperationalLifeStorage(r,s,y)-1) > sum(yy_full$(ord(yy_full)=card(yy_full)),yearval(yy_full)) and GeneralDiscountRate(r)>0)).. CapitalInvestmentStorage(s,y,r)*(1-(((1+GeneralDiscountRate(r))**(sum(yy_full$(ord(yy_full)=card(yy_full)),yearval(yy_full)) - yearval(y)+1)-1)/((1+GeneralDiscountRate(r))**OperationalLifeStorage(r,s,y)-1))) =e= SalvageValueStorage(s,y,r);
 equation SI4_SalvageValueStorageDiscountedToStartYear(STORAGE,YEAR_FULL,REGION_FULL);
 SI4_SalvageValueStorageDiscountedToStartYear(s,y,r).. SalvageValueStorage(s,y,r)/((1+GeneralDiscountRate(r))**(1+smax(yy, YearVal(yy)) - smin(yy, YearVal(yy)))) =e= DiscountedSalvageValueStorage(s,y,r);
 equation SI5_TotalDiscountedCostByStorage(STORAGE,YEAR_FULL,REGION_FULL);

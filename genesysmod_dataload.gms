@@ -1,15 +1,6 @@
-* ###################### genesysmod_dataload.gms #######################
-*
 * GENeSYS-MOD v3.1 [Global Energy System Model]  ~ March 2022
 *
-* Based on OSEMOSYS 2011.07.07 conversion to GAMS by Ken Noble, Noble-Soft Systems - August 2012
-*
-* Updated to newest OSeMOSYS-Version (2016.08) and further improved with additional equations 2016 - 2022
-* by Konstantin L�ffler, Thorsten Burandt, Karlo Hainsch
-*
 * #############################################################
-*
-* Copyright 2020 Technische Universit�t Berlin and DIW Berlin
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -132,7 +123,7 @@ $offecho
 $ifi %switch_only_load_gdx%==0 $call "gdxxrw %inputdir%%data_file%.xlsx @%tempdir%temp_%data_file%_par.tmp o=%gdxdir%%data_file%_par.gdx MaxDupeErrors=99 CheckDate ";
 $GDXin %gdxdir%%data_file%_par.gdx
 $onUNDF
-$loadm 
+$loadm
 $loadm SpecifiedAnnualDemand ReserveMarginTagFuel
 $loadm EmissionsPenalty ReserveMargin AnnualExogenousEmission  AnnualEmissionLimit RegionalAnnualEmissionLimit ReserveMarginTagTechnology
 $loadm ReserveMarginTagFuel Readin_TradeRoute2015 Readin_PowerTradeCapacity GrowthRateTradeCapacity TradeCapacityGrowthCosts Readin_TradeCosts
@@ -211,7 +202,7 @@ se=0
         par=TagTechnologyToSubsets                Rng=Par_TagTechnologyToSubsets!A2                rdim=2        cdim=0
         par=TagFuelToSubsets                      Rng=Par_TagFuelToSubsets!A2                      rdim=2        cdim=0
 
-        
+
 $offecho
 
 $ifi %switch_only_load_gdx%==0 $call "gdxxrw %inputdir%Tag_Subsets.xlsx @%tempdir%temp_Tag_Subsets_par.tmp o=%gdxdir%Tag_Subsets_par.gdx MaxDupeErrors=99 CheckDate ";
@@ -286,7 +277,7 @@ CapacityFactor(r,t,'Q1N',y)$(TagTechnologyToSubset(t,'Solar')) = 0;
 CapacityFactor(r,t,'Q2N',y)$(TagTechnologyToSubset(t,'Solar')) = 0;
 CapacityFactor(r,t,'Q3N',y)$(TagTechnologyToSubset(t,'Solar')) = 0;
 CapacityFactor(r,t,'Q4N',y)$(TagTechnologyToSubset(t,'Solar')) = 0;
-$endif           
+$endif
 
 
 

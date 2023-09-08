@@ -73,7 +73,7 @@ parameter YearSplit(TIMESLICE_FULL,y_full) Defines the length of one timeslice a
 parameter GeneralDiscountRate(REGION_FULL) Defines the discountrate to be used for general infrastructure investments. Unit: Percent;
 parameter SocialDiscountRate(REGION_FULL) Defines the discountrate to be used for negative externalities for emissions. Unit: Percent;
 parameter TechnologyDiscountRate(REGION_FULL,TECHNOLOGY) Defines the discountrate to be used for technology investments. Unit: Percent;
-parameter DepreciationMethod(REGION_FULL) Defines the method to use for depreciation of assets. Options: 1 or 2;
+parameter DepreciationMethod Defines the method to use for depreciation of assets. Options: 1 or 2;
 
 *
 * ####### Demands #############
