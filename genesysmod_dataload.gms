@@ -263,19 +263,8 @@ YearVal(y) = y.val ;
 *
 * ####### Load from hourly Data #############
 *
-$ifthen %timeseries% == elmod
-$offlisting
 $include genesysmod_timeseries_reduction.gms
 
-$elseif %timeseries% == classic
-$offlisting
-$include genesysmod_timeseries_timeslices.gms
-
-CapacityFactor(r,t,'Q1N',y)$(TagTechnologyToSubset(t,'Solar')) = 0;
-CapacityFactor(r,t,'Q2N',y)$(TagTechnologyToSubset(t,'Solar')) = 0;
-CapacityFactor(r,t,'Q3N',y)$(TagTechnologyToSubset(t,'Solar')) = 0;
-CapacityFactor(r,t,'Q4N',y)$(TagTechnologyToSubset(t,'Solar')) = 0;
-$endif
 
 
 
