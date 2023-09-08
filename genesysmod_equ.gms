@@ -373,7 +373,7 @@ equation CC2_DiscountedCapitalInvestments(YEAR_FULL,TECHNOLOGY,REGION_FULL);
 CC2_DiscountedCapitalInvestments(y,t,r).. CapitalInvestment(y,t,r)/((1+TechnologyDiscountRate(r,t))**(YearVal(y)-StartYear)) =e= DiscountedCapitalInvestment(y,t,r);
 
 *
-* ############### Investment & Capacity Limits / Smooting Constraints #############
+* ############### Investment & Capacity Limits / Smoothing Constraints #############
 *
 
 $ifthen %switch_investLimit% == 1
