@@ -211,8 +211,6 @@ $onUNDF
 $loadm TagTechnologyToSubsets TagFuelToSubsets
 $offUNDF
 
-$include genesysmod_subsets.gms
-
 StartYear = %year% ;
 
 $ifthen %switch_all_regions% == 1
