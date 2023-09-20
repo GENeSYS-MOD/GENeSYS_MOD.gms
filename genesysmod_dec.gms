@@ -163,8 +163,8 @@ parameter ReserveMargin(REGION_FULL,YEAR_FULL);
 *
 * ######## RE Generation Target ############
 *
-parameter RETagTechnology(REGION_FULL,TECHNOLOGY,YEAR_FULL);
-parameter RETagFuel(REGION_FULL,FUEL,YEAR_FULL);
+parameter RETagTechnology(TECHNOLOGY,YEAR_FULL);
+parameter RETagFuel(FUEL,YEAR_FULL);
 parameter REMinProductionTarget(REGION_FULL,FUEL,YEAR_FULL);
 
 *
@@ -402,3 +402,6 @@ parameter SupplyJobs;
 parameter CoalJobs;
 parameter output_energyjobs;
 $endif
+
+
+positive variable CurtailedCapacity(REGION_FULL,TIMESLICE_FULL,TECHNOLOGY,YEAR_FULL);

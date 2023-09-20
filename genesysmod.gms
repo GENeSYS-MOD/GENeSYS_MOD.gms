@@ -49,7 +49,7 @@ $if not set set_storagelevelstart_low    $setglobal set_storagelevelstart_low 0.
 $if not set switch_peaking_capacity      $setglobal switch_peaking_capacity 1
 $if not set switch_peaking_with_trade    $setglobal switch_peaking_with_trade 0
 $if not set switch_peaking_with_storages $setglobal switch_peaking_with_storages 1
-$if not set switch_peaking_minrun        $setglobal switch_peaking_minrun 1
+$if not set switch_peaking_minrun        $setglobal switch_peaking_minrun 0
 $if not set set_peaking_slack            $setglobal set_peaking_slack 1.0
 *consider vRES only partially (1.0 consider vRES fully, 0.0 ignore vRES in peaking equation)
 $if not set set_peaking_res_cf           $setglobal set_peaking_res_cf 0.5
@@ -62,7 +62,7 @@ $if not set solver                       $setglobal solver gurobi
 $if not set model_region                 $setglobal model_region europe
 $if not set data_base_region             $setglobal data_base_region DE
 $if not set global_data_file             $setglobal global_data_file Global_Data_v14_oE_phe_10_11_2022
-$if not set data_file                    $setglobal data_file Data_Europe_oE_tF_combined_v01_nim_07_09_2023_new
+$if not set data_file                    $setglobal data_file Data_Europe_oE_tF_combined_v02_kl_20_09_2023_new
 $if not set eployment_data_file          $setglobal employment_data_file Employment_v01_06_11_2019
 $if not set hourly_data_file             $setglobal hourly_data_file Hourly_Data_Europe_v12_kl_20_04_2022
 $if not set threads                      $setglobal threads 8
