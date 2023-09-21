@@ -180,7 +180,7 @@ parameter RegionalAnnualEmissionLimit(REGION_FULL,EMISSION,YEAR_FULL);
 parameter ModelPeriodExogenousEmission(REGION_FULL,EMISSION);
 parameter ModelPeriodEmissionLimit(EMISSION);
 parameter RegionalModelPeriodEmissionLimit(EMISSION,REGION_FULL);
-parameter CurtailmentCostFactor(REGION_FULL,FUEL,YEAR_FULL);
+parameter CurtailmentCostFactor;
 
 *
 * ######### Trade #############
@@ -230,8 +230,8 @@ positive variable ProductionByTechnologyAnnual(y_full,TECHNOLOGY,FUEL,REGION_FUL
 positive variable UseByTechnologyAnnual(y_full,TECHNOLOGY,FUEL,REGION_FULL);
 
 positive variable TotalActivityPerYear(REGION_FULL,TIMESLICE_FULL,TECHNOLOGY,YEAR_FULL);
-positive variable Curtailment(y_full,TIMESLICE_FULL,f,r_full);
-positive variable CurtailmentAnnual(y_full,f,r_full);
+positive variable CurtailedEnergyAnnual(y_full,f,r_full);
+positive variable CurtailedCapacity(REGION_FULL,TIMESLICE_FULL,TECHNOLOGY,YEAR_FULL);
 positive variable DispatchDummy(r_full,TIMESLICE_FULL,t,y_full);
 
 *
@@ -404,4 +404,3 @@ parameter output_energyjobs;
 $endif
 
 
-positive variable CurtailedCapacity(REGION_FULL,TIMESLICE_FULL,TECHNOLOGY,YEAR_FULL);

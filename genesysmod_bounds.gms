@@ -41,13 +41,14 @@ SelfSufficiency(y, f, r) = 0;
 *
 * ####### Default Values #############
 *
-
-RETagTechnology(r,t,y)$(TagTechnologyToSubsets(t,'Renewables')) = 1;
-RETagFuel(r,'Power',y) = 1;
-RETagFuel(r,'Heat_Low_Residential',y) = 1;
-RETagFuel(r,'Heat_Low_Industrial',y) = 1;
-RETagFuel(r,'Heat_Medium_Industrial',y) = 1;
-RETagFuel(r,'Heat_High_Industrial',y) = 1;
+*needs to be removed, now in data
+RETagTechnology(t,y)$(TagTechnologyToSubsets(t,'Renewables')) = 1;
+*needs to be removed, now in data
+RETagFuel('Power',y) = 1;
+RETagFuel('Heat_Low_Residential',y) = 1;
+RETagFuel('Heat_Low_Industrial',y) = 1;
+RETagFuel('Heat_Medium_Industrial',y) = 1;
+RETagFuel('Heat_High_Industrial',y) = 1;
 
 TotalAnnualMaxCapacityInvestment(r,t,y) = 999999;
 TotalAnnualMinCapacityInvestment(r,t,y) = 0 ;
@@ -145,14 +146,9 @@ TagDispatchableTechnology(t)$(TagTechnologyToSubsets(t,'Wind')) = 0;
 AvailabilityFactor(REGION,t,y)$(TagTechnologyToSubsets(t,'Solar')) = 1;
 *TagDispatchableTechnology(t)$(TagTechnologyToSubsets(t,'Transport')) = 0;
 TagDispatchableTechnology('RES_Hydro_Small') = 0;
-Curtailment.fx(y,l,f,r)$(TagFuelToSubsets(f,'TransportFuels')) = 0;
-Curtailment.up(y,l,'Heat_High_Industrial',r) = 1;
-Curtailment.up(y,l,'Heat_Medium_Industrial',r) = 1;
-Curtailment.up(y,l,'Heat_Low_Industrial',r) = 1;
-Curtailment.up(y,l,'Heat_Low_Residential',r) = 0.5;
-Curtailment.up(y,l,'Heat_District',r) = 1;
 
-CurtailmentCostFactor(r,f,y) = 0;
+
+CurtailmentCostFactor = 0.1;
 
 *
 * ####### Dummy-Technologies [enable for test purposes, if model runs infeasible] #############

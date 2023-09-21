@@ -34,7 +34,6 @@ cost.. z =e= sum((y,r), TotalDiscountedCost(y,r))
 + sum((y,r,f,t),RegionalBaseYearProduction_neg(y,r,t,f)*9999)
 + sum((y,r,f,t),BaseYearOvershoot(r,t,f,y)*999)
 - sum((y,r),DiscountedSalvageValueTransmission(y,r))
-+ sum((r,l,t,y),CurtailedCapacity(r,l,t,y)*0.1)
 ;
 
 * #########################
@@ -97,6 +96,16 @@ CanFuelBeUsedOrDemanded(y,f,r)$
             TotalTechnologyAnnualActivityUpperLimit(r,t,y))
  > 0 or SpecifiedAnnualDemand(r,f,y) > 0) = 1;
 
+parameter CanFuelBeProduced(YEAR_FULL, FUEL, REGION_FULL);
+CanFuelBeProduced(y,f,r)$
+(sum((m,t), OutputActivityRatio(r,t,f,m,y)*
+            TotalAnnualMaxCapacity(r,t,y)*
+            sum(l,CapacityFactor(r,t,l,y))*
+            AvailabilityFactor(r,t,y)*
+            TotalTechnologyModelPeriodActivityUpperLimit(r,t)*
+            TotalTechnologyAnnualActivityUpperLimit(r,t,y))
+ > 0) = 1;
+
 parameter CanFuelBeProducedByModeByTech(YEAR_FULL, FUEL, REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION);
 CanFuelBeProducedByModeByTech(y,f,r,t,m)$
 (OutputActivityRatio(r,t,f,m,y)*
@@ -110,16 +119,6 @@ CanFuelBeProducedByModeByTech(y,f,r,t,m)$
 parameter CanFuelBeProducedByTech(YEAR_FULL, FUEL, REGION_FULL,TECHNOLOGY);
 CanFuelBeProducedByTech(y,f,r,t)$
 (sum((m), OutputActivityRatio(r,t,f,m,y)*
-            TotalAnnualMaxCapacity(r,t,y)*
-            sum(l,CapacityFactor(r,t,l,y))*
-            AvailabilityFactor(r,t,y)*
-            TotalTechnologyModelPeriodActivityUpperLimit(r,t)*
-            TotalTechnologyAnnualActivityUpperLimit(r,t,y))
- > 0) = 1;
-
-parameter CanFuelBeProduced(YEAR_FULL, FUEL, REGION_FULL);
-CanFuelBeProduced(y,f,r)$
-(sum((m,t), OutputActivityRatio(r,t,f,m,y)*
             TotalAnnualMaxCapacity(r,t,y)*
             sum(l,CapacityFactor(r,t,l,y))*
             AvailabilityFactor(r,t,y)*
@@ -225,7 +224,7 @@ equation CA3b_RateOfTotalActivity(REGION_FULL,TIMESLICE_FULL,TECHNOLOGY,YEAR_FUL
 CA3b_RateOfTotalActivity(r,l,t,y)$(CapacityFactor(r,t,l,y) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. sum(m, RateOfActivity(y,l,t,m,r)) =e= TotalCapacityAnnual(y,t,r) * CapacityFactor(r,t,l,y) * CapacityToActivityUnit(r,t) *AvailabilityFactor(r,t,y) - DispatchDummy(r,l,t,y)*TagDispatchableTechnology(t) - CurtailedCapacity(r,l,t,y);
 $endif
 
-equation CA3c_CurtailedCapacity(REGION_FULL,TIMESLICE_FULL,TECHNOLOGY,YEAR_FULL);
+equation CA3c_CurtailedCapacity(REGION_FULL,TIMESLICE_FULL,TECHNOLOGY,YEAR_FULL) Ensures that there cannot be more curtailment than actual installed capacity;
 CA3c_CurtailedCapacity(r,l,t,y)..  TotalCapacityAnnual(y,t,r) =g= CurtailedCapacity(r,l,t,y);
 
 equation CA5_CapacityAdequacy(YEAR_FULL,TECHNOLOGY,REGION_FULL) Constraint to limit timeslice generation to installed capacity and availability factor;
@@ -254,9 +253,8 @@ equation EB5_AnnualNetTradeBalance(YEAR_FULL,FUEL,REGION_FULL);
 EB5_AnnualNetTradeBalance(y,f,r)$(sum(rr,TradeRoute(y,f,r,rr)) > 0).. sum(l, (NetTrade(y,l,f,r))) =e= NetTradeAnnual(y,f,r);
 NetTradeAnnual.fx(y,f,r)$(sum(rr,TradeRoute(y,f,r,rr)) = 0) = 0;
 
-equation EB6_AnnualCurtailment(YEAR_FULL,FUEL,REGION_FULL);
-EB6_AnnualCurtailment(y,f,r).. CurtailmentAnnual(y,f,r) =e= sum((l,t,m),CurtailedCapacity(r,l,t,y)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y));
-*CurtailmentAnnual.fx(y,f,r)$(sum(l,Curtailment.up(y,l,f,r)) = 0) = 0;
+equation EB6_AnnualEnergyCurtailment(YEAR_FULL,FUEL,REGION_FULL);
+EB6_AnnualEnergyCurtailment(y,f,r).. CurtailedEnergyAnnual(y,f,r) =e= sum((l,t,m),CurtailedCapacity(r,l,t,y)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y)*CapacityToActivityUnit(r,t));
 
 equation EB7_AnnualSelfSufficiency(YEAR_FULL,FUEL,REGION_FULL);
 EB7_AnnualSelfSufficiency(y,f,r)$(SelfSufficiency(y,f,r) <> 0).. sum((l,t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y)) =g= (SpecifiedAnnualDemand(r,f,y)+sum((l,t,m)$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*InputActivityRatio(r,t,f,m,y)*YearSplit(l,y)))*SelfSufficiency(y,f,r);
@@ -706,7 +704,7 @@ $endif
 *
 
 equation CC1_AnnualCurtailmentCosts(YEAR_FULL,FUEL,REGION_FULL);
-CC1_AnnualCurtailmentCosts(y,f,r).. sum((l),Curtailment(y,l,f,r)*CurtailmentCostFactor(r,f,y)) =e= AnnualCurtailmentCost(y,f,r);
+CC1_AnnualCurtailmentCosts(y,f,r).. CurtailedEnergyAnnual(y,f,r)*CurtailmentCostFactor =e= AnnualCurtailmentCost(y,f,r);
 equation CC2_DiscountedAnnualCurtailmentCosts(YEAR_FULL,FUEL,REGION_FULL);
 CC2_DiscountedAnnualCurtailmentCosts(y,f,r).. AnnualCurtailmentCost(y,f,r)/((1+GeneralDiscountRate(r))**(YearVal(y)-smin(yy, YearVal(yy))+0.5)) =e= DiscountedAnnualCurtailmentCost(y,f,r);
 
