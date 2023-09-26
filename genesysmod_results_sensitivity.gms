@@ -5,11 +5,11 @@
 * Based on OSEMOSYS 2011.07.07 conversion to GAMS by Ken Noble, Noble-Soft Systems - August 2012
 *
 * Updated to newest OSeMOSYS-Version (2016.08) and further improved with additional equations 2016 - 2022
-* by Konstantin Löffler, Thorsten Burandt, Karlo Hainsch
+* by Konstantin Lï¿½ffler, Thorsten Burandt, Karlo Hainsch
 *
 * #############################################################
 *
-* Copyright 2020 Technische Universität Berlin and DIW Berlin
+* Copyright 2020 Technische Universitï¿½t Berlin and DIW Berlin
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ $loadm Region_Full Region Sector Technology Mode_of_Operation Year Fuel ModalTyp
 $include genesysmod_subsets.gms
 ** Parameters
 $loadm SpecifiedAnnualDemand EmissionIntensity EmissionsPenalty SpecifiedDemandProfile YearSplit TotalAnnualMaxCapacity CapacityFactor AvailabilityFactor TotalTechnologyModelPeriodActivityUpperLimit
-$loadm TotalTechnologyAnnualActivityUpperLimit OperationalLife ResidualCapacity Curtailment GrowthRateTradeCapacity StorageLevelStart StorageMaxChargeRate TechnologyToStorage
+$loadm TotalTechnologyAnnualActivityUpperLimit OperationalLife ResidualCapacity Curtailment GrowthRateTradeCapacity StorageLevelStart TechnologyToStorage
 $loadm InputActivityRatio z_ProductionByTechnologyByModeAnnual OutputActivityRatio YearVal TradeRoute TagFuelToSector TagElectricTechnology TagTechnologyToSector powerSubsectorShares
 ** Variables
 $load OperatingCost DiscountedOperatingCost
@@ -398,8 +398,8 @@ parameter output_flexibility;
 output_flexibility('Capacity [GW | Power]',r,StorageDummies,y) = TotalCapacityAnnual.l(y,StorageDummies,r);
 output_flexibility('Capacity [GW | Power]','Europe',StorageDummies,y) = sum(r,TotalCapacityAnnual.l(y,StorageDummies,r));
 output_flexibility('Capacity [GW | Power]','Europe_AT','D_PHS',y)$(output_flexibility('Capacity [GW | Power]','Europe_AT','D_PHS',y) = 0) = na;
-output_flexibility('Capacity [GWh | Energy]',r,StorageDummies,y) = TotalCapacityAnnual.l(y,StorageDummies,r)*sum(s,StorageMaxChargeRate(r,s)*TechnologyToStorage(y,'1',StorageDummies,s));
-output_flexibility('Capacity [GWh | Energy]','Europe',StorageDummies,y) = sum(r,TotalCapacityAnnual.l(y,StorageDummies,r)*sum(s,StorageMaxChargeRate(r,s)*TechnologyToStorage(y,'1',StorageDummies,s)));
+*output_flexibility('Capacity [GWh | Energy]',r,StorageDummies,y) = TotalCapacityAnnual.l(y,StorageDummies,r)*sum(s,StorageMaxChargeRate(r,s)*TechnologyToStorage(y,'1',StorageDummies,s));
+*output_flexibility('Capacity [GWh | Energy]','Europe',StorageDummies,y) = sum(r,TotalCapacityAnnual.l(y,StorageDummies,r)*sum(s,StorageMaxChargeRate(r,s)*TechnologyToStorage(y,'1',StorageDummies,s)));
 output_flexibility('Capacity [GWh | Energy]','Europe_AT','D_PHS',y)$(output_flexibility('Capacity [GWh | Energy]','Europe_AT','D_PHS',y) = 0) = na;
 
 
@@ -438,11 +438,11 @@ output_emissions2('Emissions per Sector [Mt]','Power',e,'Europe_AT',y)$(output_e
 * CO2 prices (if not modelled as an input)"
 
 parameter output_carbonprice;
-output_carbonprice('CO2 price [€/Mt]',r,y) = (-1)*E8_RegionalAnnualEmissionsLimit.m(y,'CO2',r)+(-1)*E9_AnnualEmissionsLimit.m(y,'CO2')+EmissionsPenalty(r,'CO2',y);
-output_carbonprice('CO2 price [€/Mt]',r,'2015') = 0;
-output_carbonprice('CO2 price [€/Mt]','Europe',y) = (-1)*E9_AnnualEmissionsLimit.m(y,'CO2')+(sum(r,EmissionsPenalty(r,'CO2',y)+(-1)*E8_RegionalAnnualEmissionsLimit.m(y,'CO2',r))/card(r));
-output_carbonprice('CO2 price [€/Mt]','Europe','2015') = 0;
-output_carbonprice('CO2 price [€/Mt]','Europe_AT',y)$(output_carbonprice('CO2 price [€/Mt]','Europe_AT',y) = 0) = na;
+output_carbonprice('CO2 price [ï¿½/Mt]',r,y) = (-1)*E8_RegionalAnnualEmissionsLimit.m(y,'CO2',r)+(-1)*E9_AnnualEmissionsLimit.m(y,'CO2')+EmissionsPenalty(r,'CO2',y);
+output_carbonprice('CO2 price [ï¿½/Mt]',r,'2015') = 0;
+output_carbonprice('CO2 price [ï¿½/Mt]','Europe',y) = (-1)*E9_AnnualEmissionsLimit.m(y,'CO2')+(sum(r,EmissionsPenalty(r,'CO2',y)+(-1)*E8_RegionalAnnualEmissionsLimit.m(y,'CO2',r))/card(r));
+output_carbonprice('CO2 price [ï¿½/Mt]','Europe','2015') = 0;
+output_carbonprice('CO2 price [ï¿½/Mt]','Europe_AT',y)$(output_carbonprice('CO2 price [ï¿½/Mt]','Europe_AT',y) = 0) = na;
 
 * -------
 * Levelized power prices compared to Reference case

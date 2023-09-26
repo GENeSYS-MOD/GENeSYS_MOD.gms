@@ -67,7 +67,7 @@ $if not set eployment_data_file          $setglobal employment_data_file Employm
 $if not set hourly_data_file             $setglobal hourly_data_file Hourly_Data_Europe_v12_kl_20_04_2022
 $if not set threads                      $setglobal threads 8
 $if not set timeseries                   $setglobal timeseries elmod
-$if not set elmod_nthhour                $setglobal elmod_nthhour 2000
+$if not set elmod_nthhour                $setglobal elmod_nthhour 1000
 $if not set elmod_starthour              $setglobal elmod_starthour 8
 $if not set elmod_dunkelflaute           $setglobal elmod_dunkelflaute 0
 $if not set hydrogen_growthcost_multiplier $setglobal hydrogen_growthcost_multiplier 1

@@ -100,8 +100,6 @@ se=0
         par=TechnologyToStorage   Rng=Par_TechnologyToStorage!A5                         rdim=3        cdim=1
         par=TechnologyFromStorage Rng=Par_TechnologyFromStorage!A5                       rdim=3        cdim=1
         par=StorageLevelStart     Rng=Par_StorageLevelStart!A5                           rdim=1        cdim=1
-        par=StorageMaxChargeRate  Rng=Par_StorageMaxChargeRate!A5                        rdim=1        cdim=1
-        par=StorageMaxDischargeRate Rng=Par_StorageMaxDischargeRate!A5                   rdim=1        cdim=1
         par=MinStorageCharge      Rng=Par_MinStorageCharge!A5                            rdim=2        cdim=1
         par=OperationalLifeStorage Rng=Par_OperationalLifeStorage!A5                     rdim=2        cdim=1
         par=CapitalCostStorage    Rng=Par_CapitalCostStorage!A5                          rdim=2        cdim=1
@@ -131,7 +129,7 @@ $loadm InputActivityRatio OutputActivityRatio FixedCost CapitalCost VariableCost
 $loadm AvailabilityFactor CapacityFactor EmissionActivityRatio OperationalLife TotalAnnualMaxCapacity TotalAnnualMinCapacity EmissionContentPerFuel
 $loadm TotalTechnologyAnnualActivityLowerLimit TotalTechnologyAnnualActivityUpperLimit
 $loadm Readin_TotalTechnologyModelPeriodActivityUpperLimit
-$loadm TechnologyToStorage TechnologyFromStorage StorageLevelStart StorageMaxChargeRate StorageMaxDischargeRate MinStorageCharge
+$loadm TechnologyToStorage TechnologyFromStorage StorageLevelStart MinStorageCharge
 $loadm CapitalCostStorage OperationalLifeStorage
 $loadm  ResidualStorageCapacity CapacityToActivityUnit
 $loadm  ModalSplitByFuelAndModalType TagTechnologyToModalType BaseYearProduction RegionalBaseYearProduction
@@ -154,9 +152,6 @@ OperationalLifeStorage(REGION_FULL,STORAGE,YEAR)$(OperationalLifeStorage(REGION_
 EmissionsPenaltyTagTechnology(REGION_FULL,t,e,y)$(EmissionsPenaltyTagTechnology(REGION_FULL,t,e,y) = 0) = EmissionsPenaltyTagTechnology('%data_base_region%',t,e,y);
 
 ReserveMarginTagTechnology(REGION_FULL,TECHNOLOGY,y)$(ReserveMarginTagTechnology(REGION_FULL,TECHNOLOGY,y) = 0) = ReserveMarginTagTechnology('%data_base_region%',TECHNOLOGY,y);
-
-StorageMaxChargeRate(REGION_FULL,s)$(StorageMaxChargeRate(REGION_FULL,s)=0) = StorageMaxChargeRate('%data_base_region%',s);
-StorageMaxDischargeRate(REGION_FULL,s)$(StorageMaxDischargeRate(REGION_FULL,s)=0) = StorageMaxDischargeRate('%data_base_region%',s);
 EmissionActivityRatio(REGION_FULL,TECHNOLOGY,EMISSION,MODE_OF_OPERATION,YEAR)$(EmissionActivityRatio(REGION_FULL,TECHNOLOGY,EMISSION,MODE_OF_OPERATION,YEAR)=0) =  EmissionActivityRatio('%data_base_region%',TECHNOLOGY,EMISSION,MODE_OF_OPERATION,YEAR);
 
 CapacityToActivityUnit(REGION_FULL,t)$(CapacityToActivityUnit(REGION_FULL,t) <> CapacityToActivityUnit('%data_base_region%',t)) = CapacityToActivityUnit('%data_base_region%',t);
@@ -178,9 +173,6 @@ OperationalLifeStorage(REGION_FULL,STORAGE,YEAR)$(OperationalLifeStorage(REGION_
 EmissionsPenaltyTagTechnology(REGION_FULL,t,e,y)$(EmissionsPenaltyTagTechnology(REGION_FULL,t,e,y) = 0) = EmissionsPenaltyTagTechnology('World',t,e,y);
 
 ReserveMarginTagTechnology(REGION_FULL,TECHNOLOGY,y)$(ReserveMarginTagTechnology(REGION_FULL,TECHNOLOGY,y) = 0) = ReserveMarginTagTechnology('World',TECHNOLOGY,y);
-
-StorageMaxChargeRate(REGION_FULL,s)$(StorageMaxChargeRate(REGION_FULL,s)=0) = StorageMaxChargeRate('World',s);
-StorageMaxDischargeRate(REGION_FULL,s)$(StorageMaxDischargeRate(REGION_FULL,s)=0) = StorageMaxDischargeRate('World',s);
 EmissionActivityRatio(REGION_FULL,TECHNOLOGY,EMISSION,MODE_OF_OPERATION,YEAR)$(EmissionActivityRatio(REGION_FULL,TECHNOLOGY,EMISSION,MODE_OF_OPERATION,YEAR)=0) =  EmissionActivityRatio('World',TECHNOLOGY,EMISSION,MODE_OF_OPERATION,YEAR);
 
 CapacityToActivityUnit(r_full,t)$(CapacityToActivityUnit(r_full,t) = 0) = CapacityToActivityUnit('World',t);

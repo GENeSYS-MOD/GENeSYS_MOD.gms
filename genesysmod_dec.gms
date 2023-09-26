@@ -115,8 +115,6 @@ parameter FixedCost(REGION_FULL,TECHNOLOGY,YEAR_FULL);
 * ######## Storage Parameters #############
 *
 parameter StorageLevelStart(REGION_FULL,STORAGE);
-parameter StorageMaxChargeRate(REGION_FULL,STORAGE);
-parameter StorageMaxDischargeRate(REGION_FULL,STORAGE);
 parameter MinStorageCharge(REGION_FULL,STORAGE,YEAR_FULL);
 parameter OperationalLifeStorage(REGION_FULL,STORAGE,YEAR_FULL);
 parameter CapitalCostStorage(REGION_FULL,STORAGE,YEAR_FULL);
