@@ -86,7 +86,7 @@ parameter Demand(y_full,TIMESLICE_FULL,FUEL,REGION_FULL) Fuel demand for each ti
 *
 * ######## Technology Performance #############
 *
-parameter CapacityToActivityUnit(REGION_FULL,TECHNOLOGY);
+parameter CapacityToActivityUnit(TECHNOLOGY);
 parameter CapacityFactor(REGION_FULL,TECHNOLOGY,TIMESLICE_FULL,y_full);
 parameter AvailabilityFactor(REGION_FULL,TECHNOLOGY,y_full);
 parameter OperationalLife(REGION_FULL,TECHNOLOGY);

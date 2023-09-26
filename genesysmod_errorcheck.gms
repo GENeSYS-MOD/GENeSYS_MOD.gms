@@ -53,7 +53,7 @@ if(sum((r,t,y),error_CapacityFactorDataMissing(r,t,y)),abort "CapacityFactor is 
 
 * Check for missing entries in CapacityToActivityUnit -> if yes, then exit
 parameter error_CapacityToActivityUnitDataMissing(r_full,t);
-error_CapacityToActivityUnitDataMissing(r,t)$(sum(y,AvailabilityFactor(r,t,y)) and not CapacityToActivityUnit(r,t)) = 1;
+error_CapacityToActivityUnitDataMissing(r,t)$(sum(y,AvailabilityFactor(r,t,y)) and not CapacityToActivityUnit(t)) = 1;
 if(sum((r,t),error_CapacityToActivityUnitDataMissing(r,t)),abort "CapacityToActivityUnit is missing from a Technology. Please check your CapacityToActivityUnit data in Excel to account for all technologies. Technologies where values are missing are listed in the parameter error_CapacityToActivityUnitDataMissing.");
 
 

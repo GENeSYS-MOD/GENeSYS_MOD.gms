@@ -217,18 +217,18 @@ equation CA3a_RateOfTotalActivity_Intertemporal(REGION_FULL,TIMESLICE_FULL,TECHN
 CA3a_RateOfTotalActivity_Intertemporal(r,l,t,y)$(CapacityFactor(r,t,l,y) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. RateOfTotalActivity(y,l,t,r) =e= TotalActivityPerYear(r,l,t,y)*AvailabilityFactor(r,t,y) - DispatchDummy(r,l,t,y)*TagDispatchableTechnology(t);
 
 equation CA4_TotalActivityPerYear_Intertemporal(REGION_FULL,TIMESLICE_FULL,TECHNOLOGY,YEAR_FULL);
-CA4_TotalActivityPerYear_Intertemporal(r,l,t,y)$((sum(yy$((YearVal(y)-YearVal(yy) < OperationalLife(r,t)) AND (YearVal(y)-YearVal(yy) >= 0)),CapacityFactor(r,t,l,yy)) > 0 or CapacityFactor(r,t,l,'%year%') > 0) and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0).. TotalActivityPerYear(r,l,t,y) =e= sum(yy$((YearVal(y)-YearVal(yy) < OperationalLife(r,t)) AND (YearVal(y)-YearVal(yy) >= 0)),(NewCapacity(yy,t,r) * CapacityFactor(r,t,l,yy) * CapacityToActivityUnit(r,t)))+(ResidualCapacity(r,t,y)*CapacityFactor(r,t,l,'%year%') * CapacityToActivityUnit(r,t));
+CA4_TotalActivityPerYear_Intertemporal(r,l,t,y)$((sum(yy$((YearVal(y)-YearVal(yy) < OperationalLife(r,t)) AND (YearVal(y)-YearVal(yy) >= 0)),CapacityFactor(r,t,l,yy)) > 0 or CapacityFactor(r,t,l,'%year%') > 0) and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0).. TotalActivityPerYear(r,l,t,y) =e= sum(yy$((YearVal(y)-YearVal(yy) < OperationalLife(r,t)) AND (YearVal(y)-YearVal(yy) >= 0)),(NewCapacity(yy,t,r) * CapacityFactor(r,t,l,yy) * CapacityToActivityUnit(t)))+(ResidualCapacity(r,t,y)*CapacityFactor(r,t,l,'%year%') * CapacityToActivityUnit(t));
 $else
 
 equation CA3b_RateOfTotalActivity(REGION_FULL,TIMESLICE_FULL,TECHNOLOGY,YEAR_FULL);
-CA3b_RateOfTotalActivity(r,l,t,y)$(CapacityFactor(r,t,l,y) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. sum(m, RateOfActivity(y,l,t,m,r)) =e= TotalCapacityAnnual(y,t,r) * CapacityFactor(r,t,l,y) * CapacityToActivityUnit(r,t) *AvailabilityFactor(r,t,y) - DispatchDummy(r,l,t,y)*TagDispatchableTechnology(t) - CurtailedCapacity(r,l,t,y);
+CA3b_RateOfTotalActivity(r,l,t,y)$(CapacityFactor(r,t,l,y) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. sum(m, RateOfActivity(y,l,t,m,r)) =e= TotalCapacityAnnual(y,t,r) * CapacityFactor(r,t,l,y) * CapacityToActivityUnit(t) *AvailabilityFactor(r,t,y) - DispatchDummy(r,l,t,y)*TagDispatchableTechnology(t) - CurtailedCapacity(r,l,t,y);
 $endif
 
 equation CA3c_CurtailedCapacity(REGION_FULL,TIMESLICE_FULL,TECHNOLOGY,YEAR_FULL) Ensures that there cannot be more curtailment than actual installed capacity;
 CA3c_CurtailedCapacity(r,l,t,y)..  TotalCapacityAnnual(y,t,r) =g= CurtailedCapacity(r,l,t,y);
 
 equation CA5_CapacityAdequacy(YEAR_FULL,TECHNOLOGY,REGION_FULL) Constraint to limit timeslice generation to installed capacity and availability factor;
-CA5_CapacityAdequacy(y,t,r)$(AvailabilityFactor(r,t,y)<1 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0 and TotalCapacityAnnual.up(y,t,r) > 0).. sum(l, sum(m, RateOfActivity(y,l,t,m,r))*YearSplit(l,y)) =l= sum(l,TotalCapacityAnnual(y,t,r)*CapacityFactor(r,t,l,y)*YearSplit(l,y)*AvailabilityFactor(r,t,y)*CapacityToActivityUnit(r,t));
+CA5_CapacityAdequacy(y,t,r)$(AvailabilityFactor(r,t,y)<1 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0 and TotalCapacityAnnual.up(y,t,r) > 0).. sum(l, sum(m, RateOfActivity(y,l,t,m,r))*YearSplit(l,y)) =l= sum(l,TotalCapacityAnnual(y,t,r)*CapacityFactor(r,t,l,y)*YearSplit(l,y)*AvailabilityFactor(r,t,y)*CapacityToActivityUnit(t));
 
 *
 * ##############* Energy Balances #############
@@ -254,7 +254,7 @@ EB5_AnnualNetTradeBalance(y,f,r)$(sum(rr,TradeRoute(y,f,r,rr)) > 0).. sum(l, (Ne
 NetTradeAnnual.fx(y,f,r)$(sum(rr,TradeRoute(y,f,r,rr)) = 0) = 0;
 
 equation EB6_AnnualEnergyCurtailment(YEAR_FULL,FUEL,REGION_FULL);
-EB6_AnnualEnergyCurtailment(y,f,r).. CurtailedEnergyAnnual(y,f,r) =e= sum((l,t,m),CurtailedCapacity(r,l,t,y)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y)*CapacityToActivityUnit(r,t));
+EB6_AnnualEnergyCurtailment(y,f,r).. CurtailedEnergyAnnual(y,f,r) =e= sum((l,t,m),CurtailedCapacity(r,l,t,y)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y)*CapacityToActivityUnit(t));
 
 equation EB7_AnnualSelfSufficiency(YEAR_FULL,FUEL,REGION_FULL);
 EB7_AnnualSelfSufficiency(y,f,r)$(SelfSufficiency(y,f,r) <> 0).. sum((l,t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y)) =g= (SpecifiedAnnualDemand(r,f,y)+sum((l,t,m)$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*InputActivityRatio(r,t,f,m,y)*YearSplit(l,y)))*SelfSufficiency(y,f,r);
@@ -675,9 +675,9 @@ $ifthen %switch_ramping% == 1
 equation R1_ProductionChange(YEAR_FULL,TIMESLICE_FULL,FUEL,TECHNOLOGY,REGION_FULL);
 R1_ProductionChange(y,l,f,t,r)$(ord(l) > 1 and TagDispatchableTechnology(t)=1 and (RampingUpFactor(t,y) <> 0 or RampingDownFactor(t,y) <> 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0)).. ((sum(m$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y))*YearSplit(l,y)) - ((sum(m$(OutputActivityRatio(r,t,f,m,y) <> 0),RateOfActivity(y,l-1,t,m,r)*OutputActivityRatio(r,t,f,m,y))*YearSplit(l-1,y)))) =e= ProductionUpChangeInTimeslice(y,l,f,t,r) - ProductionDownChangeInTimeslice(y,l,f,t,r);
 equation R2_RampingUpLimit(YEAR_FULL,TIMESLICE_FULL,FUEL,TECHNOLOGY,REGION_FULL);
-R2_RampingUpLimit(y,l,f,t,r)$(ord(l) > 1 and TagDispatchableTechnology(t)=1 and RampingUpFactor(t,y) <> 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. ProductionUpChangeInTimeslice(y,l,f,t,r) =l= TotalCapacityAnnual(y,t,r)*AvailabilityFactor(r,t,y)*CapacityToActivityUnit(r,t)*RampingUpFactor(t,y)*YearSplit(l,y);
+R2_RampingUpLimit(y,l,f,t,r)$(ord(l) > 1 and TagDispatchableTechnology(t)=1 and RampingUpFactor(t,y) <> 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. ProductionUpChangeInTimeslice(y,l,f,t,r) =l= TotalCapacityAnnual(y,t,r)*AvailabilityFactor(r,t,y)*CapacityToActivityUnit(t)*RampingUpFactor(t,y)*YearSplit(l,y);
 equation R3_RampingDownLimit(YEAR_FULL,TIMESLICE_FULL,FUEL,TECHNOLOGY,REGION_FULL);
-R3_RampingDownLimit(y,l,f,t,r)$(ord(l) > 1 and TagDispatchableTechnology(t)=1 and RampingDownFactor(t,y) <> 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. ProductionDownChangeInTimeslice(y,l,f,t,r) =l= TotalCapacityAnnual(y,t,r)*AvailabilityFactor(r,t,y)*CapacityToActivityUnit(r,t)*RampingDownFactor(t,y)*YearSplit(l,y);
+R3_RampingDownLimit(y,l,f,t,r)$(ord(l) > 1 and TagDispatchableTechnology(t)=1 and RampingDownFactor(t,y) <> 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. ProductionDownChangeInTimeslice(y,l,f,t,r) =l= TotalCapacityAnnual(y,t,r)*AvailabilityFactor(r,t,y)*CapacityToActivityUnit(t)*RampingDownFactor(t,y)*YearSplit(l,y);
 
 *
 * ##############* Ramping Costs #############
@@ -694,7 +694,7 @@ AnnualProductionChangeCost.fx(y,t,r)$(TagDispatchableTechnology(t) = 0 or sum((m
 * ##############* Min Runing Constraint #############
 *
 equation MRC1_MinRunningConstraint(YEAR_FULL,TIMESLICE_FULL,FUEL,TECHNOLOGY,REGION_FULL);
-MRC1_MinRunningConstraint(y,l,f,t,r)$(MinActiveProductionPerTimeslice(y,l,f,t,r) > 0).. sum(m$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y)) =g= TotalCapacityAnnual(y,t,r)*AvailabilityFactor(r,t,y)*CapacityToActivityUnit(r,t)*MinActiveProductionPerTimeslice(y,l,f,t,r);
+MRC1_MinRunningConstraint(y,l,f,t,r)$(MinActiveProductionPerTimeslice(y,l,f,t,r) > 0).. sum(m$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y)) =g= TotalCapacityAnnual(y,t,r)*AvailabilityFactor(r,t,y)*CapacityToActivityUnit(t)*MinActiveProductionPerTimeslice(y,l,f,t,r);
 
 $endif
 
@@ -773,7 +773,7 @@ $endif.equ_peaking_minThermal
 $ifthen.equ_peaking_minrun %switch_peaking_minrun% == 1
 equation PC4_MinRunConstraint(YEAR_FULL,TECHNOLOGY,REGION_FULL);
 PC4_MinRunConstraint(y,t,r)$(TagTechnologyToSector(t,'Power')=1 and AvailabilityFactor(r,t,y)<=1 and TagDispatchableTechnology(t)=1 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0 and TotalCapacityAnnual.up(y,t,r) > 0 and YearVal(y) > %set_peaking_startyear%)..
-sum(l, sum(m, RateOfActivity(y,l,t,m,r))*YearSplit(l,y)) =g= sum(l,TotalCapacityAnnual(y,t,r)*CapacityFactor(r,t,l,y)*YearSplit(l,y)*AvailabilityFactor(r,t,y)*CapacityToActivityUnit(r,t))*MinRunShare;
+sum(l, sum(m, RateOfActivity(y,l,t,m,r))*YearSplit(l,y)) =g= sum(l,TotalCapacityAnnual(y,t,r)*CapacityFactor(r,t,l,y)*YearSplit(l,y)*AvailabilityFactor(r,t,y)*CapacityToActivityUnit(t))*MinRunShare;
 $endif.equ_peaking_minrun
 
 $endif.equ_peaking_capacity

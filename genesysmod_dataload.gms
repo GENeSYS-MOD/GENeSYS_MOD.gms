@@ -73,7 +73,7 @@ se=0
 
         par=GrowthRateTradeCapacity         Rng=Par_GrowthRateTradeCapacity!A5  rdim=3 cdim=1
         par=TradeCapacityGrowthCosts        Rng=Par_TradeCapacityGrowthCosts!A5  rdim=2 cdim=1
-        par=CapacityToActivityUnit   Rng=Par_CapacityToActivityUnit!A5   rdim=1        cdim=1
+        par=CapacityToActivityUnit   Rng=Par_CapacityToActivityUnit!A5   rdim=1        cdim=0
 
         par=InputActivityRatio       Rng=Par_InputActivityRatio!A5                       rdim=4        cdim=1
         par=OutputActivityRatio      Rng=Par_OutputActivityRatio!A5                      rdim=4        cdim=1
@@ -154,7 +154,6 @@ EmissionsPenaltyTagTechnology(REGION_FULL,t,e,y)$(EmissionsPenaltyTagTechnology(
 ReserveMarginTagTechnology(REGION_FULL,TECHNOLOGY,y)$(ReserveMarginTagTechnology(REGION_FULL,TECHNOLOGY,y) = 0) = ReserveMarginTagTechnology('%data_base_region%',TECHNOLOGY,y);
 EmissionActivityRatio(REGION_FULL,TECHNOLOGY,EMISSION,MODE_OF_OPERATION,YEAR)$(EmissionActivityRatio(REGION_FULL,TECHNOLOGY,EMISSION,MODE_OF_OPERATION,YEAR)=0) =  EmissionActivityRatio('%data_base_region%',TECHNOLOGY,EMISSION,MODE_OF_OPERATION,YEAR);
 
-CapacityToActivityUnit(REGION_FULL,t)$(CapacityToActivityUnit(REGION_FULL,t) <> CapacityToActivityUnit('%data_base_region%',t)) = CapacityToActivityUnit('%data_base_region%',t);
 EmissionsPenalty(REGION_FULL,e,y)$(EmissionsPenalty(REGION_FULL,e,y) <> EmissionsPenalty('%data_base_region%',e,y)) = EmissionsPenalty('%data_base_region%',e,y);
 
 
@@ -175,7 +174,6 @@ EmissionsPenaltyTagTechnology(REGION_FULL,t,e,y)$(EmissionsPenaltyTagTechnology(
 ReserveMarginTagTechnology(REGION_FULL,TECHNOLOGY,y)$(ReserveMarginTagTechnology(REGION_FULL,TECHNOLOGY,y) = 0) = ReserveMarginTagTechnology('World',TECHNOLOGY,y);
 EmissionActivityRatio(REGION_FULL,TECHNOLOGY,EMISSION,MODE_OF_OPERATION,YEAR)$(EmissionActivityRatio(REGION_FULL,TECHNOLOGY,EMISSION,MODE_OF_OPERATION,YEAR)=0) =  EmissionActivityRatio('World',TECHNOLOGY,EMISSION,MODE_OF_OPERATION,YEAR);
 
-CapacityToActivityUnit(r_full,t)$(CapacityToActivityUnit(r_full,t) = 0) = CapacityToActivityUnit('World',t);
 ReserveMarginTagFuel(r_full,f,y)$(ReserveMarginTagFuel(r_full,f,y)=0) =  ReserveMarginTagFuel('World',f,y);
 ReserveMargin(r_full,y)$(ReserveMargin(r_full,y)=0) = ReserveMargin('World',y);
 ReserveMarginTagTechnology(r_full,t,y)$(ReserveMarginTagTechnology(r_full,t,y)=0) = ReserveMarginTagTechnology('World',t,y);

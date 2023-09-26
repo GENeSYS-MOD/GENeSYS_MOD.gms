@@ -62,4 +62,4 @@ ModelPeriodCostByRegion(r) = sum((y), TotalDiscountedCost.l(y,r));
 
 
 parameter CurtailedEnergy(y_full,TIMESLICE_FULL,f,r_full);
-CurtailedEnergy(y,l,f,r) = sum((t,m),CurtailedCapacity.l(r,l,t,y)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y)*CapacityToActivityUnit(r,t));
+CurtailedEnergy(y,l,f,r) = sum((t,m),CurtailedCapacity.l(r,l,t,y)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y)*CapacityToActivityUnit(t));

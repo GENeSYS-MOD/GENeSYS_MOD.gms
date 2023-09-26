@@ -142,7 +142,7 @@ RegionalEmissionContentPerFuel(y,r,'Power',e)  =   EmissionIntensity(y,r,'Power'
 **** Tier 0: Preliminary Calculations (Generation Factors, O&M Costs, Capital Costs, Resource Commodity Prices)
 ****
 
-maxgeneration(r,t,y,m,f) =  sum(l,CapacityFactor(r,t,l,y)*YearSplit(l,y))*smax(yy,AvailabilityFactor(r,t,yy))*CapacityToActivityUnit(r,t)*OutputActivityRatio(r,t,f,m,y);
+maxgeneration(r,t,y,m,f) =  sum(l,CapacityFactor(r,t,l,y)*YearSplit(l,y))*smax(yy,AvailabilityFactor(r,t,yy))*CapacityToActivityUnit(t)*OutputActivityRatio(r,t,f,m,y);
 resourcecosts(r,Resources,y)$(AnnualProduction(y,Resources,r) > 0)= sum(ResourceTechnologies,(VariableCost(r,ResourceTechnologies,'1',y) * AnnualTechnologyProduction(y,ResourceTechnologies,Resources,r)/AnnualProduction(y,Resources,r)));
 resourcecosts(r,Resources,y)$(not resourcecosts(r,Resources,y)) = z_fuelcosts(Resources,y,r);
 

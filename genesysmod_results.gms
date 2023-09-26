@@ -61,7 +61,7 @@ output_energy_balance_annual(r,'Trade','Trade',f,'Import','PJ','%emissionPathway
 output_energy_balance_annual(r,'Trade','Trade',f,'Export','PJ','%emissionPathway%_%emissionScenario%',y) = sum(l, output_energy_balance(r,'Trade','Trade','1',f,l,'Export','PJ','%emissionPathway%_%emissionScenario%',y)) ;
 
 parameter CapacityUsedByTechnologyEachTS, PeakCapacityByTechnology;
-CapacityUsedByTechnologyEachTS(y,l,t,r)$(AvailabilityFactor(r,t,y) <> 0 and CapacityToActivityUnit(r,t) <> 0 and CapacityFactor(r,t,l,y) <> 0) = RateOfProductionByTechnology(y,l,t,'Power',r)*YearSplit(l,y)/(AvailabilityFactor(r,t,y)*CapacityToActivityUnit(r,t)*CapacityFactor(r,t,l,y));
+CapacityUsedByTechnologyEachTS(y,l,t,r)$(AvailabilityFactor(r,t,y) <> 0 and CapacityToActivityUnit(t) <> 0 and CapacityFactor(r,t,l,y) <> 0) = RateOfProductionByTechnology(y,l,t,'Power',r)*YearSplit(l,y)/(AvailabilityFactor(r,t,y)*CapacityToActivityUnit(t)*CapacityFactor(r,t,l,y));
 PeakCapacityByTechnology(r,t,y)$(sum(l,CapacityUsedByTechnologyEachTS(y,l,t,r)) <> 0) = smax(l, CapacityUsedByTechnologyEachTS(y,l,t,r));
 
 parameter output_capacity(*,*,*,*,*,*);
@@ -81,7 +81,7 @@ output_model('Heapsize After Solve','%emissionPathway%_%emissionScenario%','%emi
 output_model('Elapsed Time','%emissionPathway%_%emissionScenario%','%emissionPathway%','%emissionScenario%') = elapsed;
 
 parameter z_maxgenerationperyear(r_full,t,y_full);
-z_maxgenerationperyear(r,t,y) = CapacityToActivityUnit(r,t)*smax(yy,AvailabilityFactor(r,t,yy))*sum(l,CapacityFactor(r,t,l,y)/card(l));
+z_maxgenerationperyear(r,t,y) = CapacityToActivityUnit(t)*smax(yy,AvailabilityFactor(r,t,yy))*sum(l,CapacityFactor(r,t,l,y)/card(l));
 
 parameter output_technology_costs_detailed;
 output_technology_costs_detailed(r,t,f,'Capital Costs','MEUR/GW',y)$(TagTechnologyToSector(t,'Power') and sum(m,InputActivityRatio(r,t,f,m,y))) = CapitalCost(r,t,y);
