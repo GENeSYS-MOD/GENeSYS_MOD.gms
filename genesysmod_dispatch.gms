@@ -264,7 +264,7 @@ co2_activity_ratio('CHP_Coal_Lignite_CCS') = EmissionContentPerFuel('lignite','C
 co2_activity_ratio('CHP_Gas_CCGT_Natural') = EmissionContentPerFuel('Gas_Natural','CO2')*InputActivityRatio('%dispatch_base_region%','CHP_Gas_CCGT_Natural','Gas_Natural','1','%dispatch_year%');
 co2_activity_ratio('CHP_Gas_CCGT_Natural_CCS') = EmissionContentPerFuel('Gas_Natural','CO2')*InputActivityRatio('%dispatch_base_region%','CHP_Gas_CCGT_Natural_CCS','Gas_Natural','1','%dispatch_year%');
 co2_activity_ratio('CHP_Oil') = EmissionContentPerFuel('oil','CO2')*InputActivityRatio('%dispatch_base_region%','CHP_Oil','oil','1','%dispatch_year%');
-co2_activity_ratio(d) = co2_activity_ratio(d)*sum(t$(sameas(d,t)),EmissionActivityRatio('%dispatch_base_region%',t,'CO2','1','%dispatch_year%'));
+co2_activity_ratio(d) = co2_activity_ratio(d)*sum(t$(sameas(d,t)),EmissionActivityRatio('%dispatch_base_region%',t,'1','CO2','%dispatch_year%'));
 
 capacity_factor(r,'RES_Hydro_Small',h) = CountryData(r, h, 'hydro_ror');
 capacity_factor(r,'RES_PV_Rooftop_Commercial',h) = CountryData(r, h, 'pv_avg');
@@ -314,7 +314,7 @@ sector_load_curve(r,h,se)$(sector_load_curve_sum(r,se)) = sector_demand(r,se)*se
 
 $ifthen %switch_priceQuantityCurves% == "h2"
 region('world') = no;
-*** Version, dass die Mengen länderübergreifend gemeinsam gesetzt werden
+*** Version, dass die Mengen lï¿½nderï¿½bergreifend gemeinsam gesetzt werden
 demand(r,h) = sum(se$(not sameas(se,'Transformation')),sector_load_curve(r,h,se))+%priceQuantity_quantity%;
 *** Version, dass die Mengen je Land iteriert werden
 *demand(r,h) = sum(se,sector_load_curve(r,h,se));
@@ -343,7 +343,7 @@ storage_capacity_e(r,'S_CAES') = storage_capacity_p(r,'S_CAES')*10*8760;
 
 storage_capacity_e(r,sto)$(storage_startlevel(r,sto)>storage_capacity_e(r,sto)) = storage_startlevel(r,sto);
 
-*storage_capacity_e(r,sto) = sum(yy$(yearval('%dispatch_year%')-yearval(yy) < OperationalLifeStorage(r,sto,yy) and yearval('%dispatch_year%')-yearval(yy) >= 0), NewStorageCapacity.l(sto,'%dispatch_year%',r))/31.536;
+*storage_capacity_e(r,sto) = sum(yy$(yearval('%dispatch_year%')-yearval(yy) < OperationalLifeStorage(sto) and yearval('%dispatch_year%')-yearval(yy) >= 0), NewStorageCapacity.l(sto,'%dispatch_year%',r))/31.536;
 
 
 positive variables

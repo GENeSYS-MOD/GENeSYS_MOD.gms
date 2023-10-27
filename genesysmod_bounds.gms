@@ -87,7 +87,7 @@ TotalAnnualMaxCapacity(r,'P_Biomass',y) = 999999;
 
 AvailabilityFactor(r,t,y)$(TagTechnologyToSubsets(t,'ImportTechnology')) = 1;
 CapacityFactor(r,t,l,y)$(TagTechnologyToSubsets(t,'ImportTechnology')) = 1 ;
-OperationalLife(r,t)$(TagTechnologyToSubsets(t,'ImportTechnology')) = 1 ;
+OperationalLife(t)$(TagTechnologyToSubsets(t,'ImportTechnology')) = 1 ;
 TotalTechnologyModelPeriodActivityUpperLimit(r,t)$(TagTechnologyToSubsets(t,'ImportTechnology')) = 999999;
 
 TotalAnnualMaxCapacity(r,t,y)$(ResidualCapacity(r,t,y) > TotalAnnualMaxCapacity(r,t,y)) = ResidualCapacity(r,t,y);
@@ -123,7 +123,6 @@ CapacityFactor(r,'HLI_Solar_Thermal',l,y) = CapacityFactor(r,'RES_PV_Utility_Avg
 NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'Transformation')) = 0;
 NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'PowerSupply')) = 0;
 NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'SectorCoupling')) = 0;
-NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'Transformation')) = 0;
 NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'StorageDummies')) = 0;
 
 NewCapacity.up('%year%',t,r)$(TagTechnologyToSubsets(t,'Biomass')) = +INF;
@@ -184,8 +183,8 @@ CapitalCost(r,DummyTechnology,y) = 999;
 VariableCost(r,DummyTechnology,m,y) = 999;
 AvailabilityFactor(r,DummyTechnology,y) = 1;
 CapacityFactor(r,DummyTechnology,l,y) = 1 ;
-OperationalLife(r,DummyTechnology) = 1 ;
-EmissionActivityRatio(r,DummyTechnology,e,m,y) = 0;
+OperationalLife(DummyTechnology) = 1 ;
+EmissionActivityRatio(r,DummyTechnology,m,e,y) = 0;
 $endif
 
 
@@ -208,8 +207,8 @@ ProductionByTechnologyAnnual.fx(y,t,f,r)$(AvailabilityFactor(r,t,y) = 0 and TagT
 TotalAnnualMaxCapacity(r,'A_Air',y) = 99999;
 TotalTechnologyAnnualActivityUpperLimit(r,'A_Air',y) = 99999;
 
-EmissionActivityRatio(r,'X_DAC_HT',e,m,y) = -1;
-EmissionActivityRatio(r,'X_DAC_LT',e,m,y) = -1;
+EmissionActivityRatio(r,'X_DAC_HT',m,e,y) = -1;
+EmissionActivityRatio(r,'X_DAC_LT',m,e,y) = -1;
 
 $else
 

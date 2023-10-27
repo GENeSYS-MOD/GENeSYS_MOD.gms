@@ -62,12 +62,12 @@ $if not set solver                       $setglobal solver gurobi
 $if not set model_region                 $setglobal model_region europe
 $if not set data_base_region             $setglobal data_base_region DE
 $if not set global_data_file             $setglobal global_data_file Global_Data_v14_oE_phe_10_11_2022
-$if not set data_file                    $setglobal data_file Data_Europe_oE_tF_combined_v03_nim_26_09_2023_new
+$if not set data_file                    $setglobal data_file output_wide
 $if not set eployment_data_file          $setglobal employment_data_file Employment_v01_06_11_2019
-$if not set hourly_data_file             $setglobal hourly_data_file Hourly_Data_Europe_v12_kl_20_04_2022
+$if not set hourly_data_file             $setglobal hourly_data_file output_TS
 $if not set threads                      $setglobal threads 8
 $if not set timeseries                   $setglobal timeseries elmod
-$if not set elmod_nthhour                $setglobal elmod_nthhour 1000
+$if not set elmod_nthhour                $setglobal elmod_nthhour 968
 $if not set elmod_starthour              $setglobal elmod_starthour 8
 $if not set elmod_dunkelflaute           $setglobal elmod_dunkelflaute 0
 $if not set hydrogen_growthcost_multiplier $setglobal hydrogen_growthcost_multiplier 1
@@ -138,6 +138,9 @@ $ifthen %switch_only_write_results% == 0
 *
 * ####### Including Equations #############
 *
+
+
+
 $offlisting
 $include genesysmod_equ.gms
 
@@ -156,6 +159,8 @@ sysout = off
 profile=2
 ;
 
+
+
 $onecho > cplex.opt
 threads %threads%
 parallelmode -1
@@ -165,7 +170,6 @@ lpmethod 4
 quality yes
 barobjrng 1e+075
 tilim 1000000
-
 $offecho
 
 $onecho > gurobi.opt
@@ -226,6 +230,7 @@ genesys.optfile = 1;
 
 scalar heapSizeBeforSolve;
 heapSizeBeforSolve = heapSize;
+
 
 solve genesys minimizing z using lp;
 

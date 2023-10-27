@@ -89,7 +89,7 @@ parameter Demand(y_full,TIMESLICE_FULL,FUEL,REGION_FULL) Fuel demand for each ti
 parameter CapacityToActivityUnit(TECHNOLOGY);
 parameter CapacityFactor(REGION_FULL,TECHNOLOGY,TIMESLICE_FULL,y_full);
 parameter AvailabilityFactor(REGION_FULL,TECHNOLOGY,y_full);
-parameter OperationalLife(REGION_FULL,TECHNOLOGY);
+parameter OperationalLife(TECHNOLOGY);
 parameter ResidualCapacity(REGION_FULL,TECHNOLOGY,y_full);
 parameter InputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y_full);
 parameter OutputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y_full);
@@ -116,11 +116,11 @@ parameter FixedCost(REGION_FULL,TECHNOLOGY,YEAR_FULL);
 *
 parameter StorageLevelStart(REGION_FULL,STORAGE);
 parameter MinStorageCharge(REGION_FULL,STORAGE,YEAR_FULL);
-parameter OperationalLifeStorage(REGION_FULL,STORAGE,YEAR_FULL);
+parameter OperationalLifeStorage(STORAGE);
 parameter CapitalCostStorage(REGION_FULL,STORAGE,YEAR_FULL);
 parameter ResidualStorageCapacity(REGION_FULL,STORAGE,YEAR_FULL);
-parameter TechnologyToStorage(YEAR_FULL,MODE_OF_OPERATION,TECHNOLOGY,STORAGE);
-parameter TechnologyFromStorage(YEAR_FULL,MODE_OF_OPERATION,TECHNOLOGY,STORAGE);
+parameter TechnologyToStorage(TECHNOLOGY,STORAGE,MODE_OF_OPERATION,YEAR_FULL);
+parameter TechnologyFromStorage(TECHNOLOGY,STORAGE,MODE_OF_OPERATION,YEAR_FULL);
 
 parameter StorageMaxCapacity(REGION_FULL,STORAGE,YEAR_FULL);
 
@@ -168,7 +168,7 @@ parameter REMinProductionTarget(REGION_FULL,FUEL,YEAR_FULL);
 *
 * ######### Emissions & Penalties #############
 *
-parameter EmissionActivityRatio(REGION_FULL,TECHNOLOGY,EMISSION,MODE_OF_OPERATION,YEAR_FULL);
+parameter EmissionActivityRatio(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,EMISSION,YEAR_FULL);
 parameter EmissionContentPerFuel(FUEL,EMISSION);
 parameter EmissionsPenalty(REGION_FULL,EMISSION,YEAR_FULL);
 parameter EmissionsPenaltyTagTechnology(REGION_FULL,TECHNOLOGY,EMISSION,YEAR_FULL);
@@ -183,24 +183,24 @@ parameter CurtailmentCostFactor;
 *
 * ######### Trade #############
 *
-parameter TradeRoute(y_full,FUEL,REGION_FULL,rr_full);
+parameter TradeRoute(REGION_FULL,FUEL,y_full,rr_full);
 parameter TradeCosts(FUEL,REGION_FULL,rr_full);
-parameter TradeLossFactor(YEAR_FULL,FUEL);
+parameter TradeLossFactor(FUEL, YEAR_FULL);
 parameter TradeRouteInstalledCapacity(y_full,f,r_full,rr_full);
-parameter TradeLossBetweenRegions(y_full,FUEL,REGION_FULL,RR_FULL);
+parameter TradeLossBetweenRegions(REGION_FULL,FUEL,y_full,RR_FULL);
 
 
 parameter CommissionedTradeCapacity(y_full,f,r_full,rr_full);
-parameter TradeCapacity(y_full,f,r_full,rr_full);
-parameter TradeCapacityGrowthCosts(f, r_full, rr_full);
-parameter GrowthRateTradeCapacity(y_full, f, r_full, rr_full);
+parameter TradeCapacity(r_full, f, y_full, rr_full);
+parameter TradeCapacityGrowthCosts(r_full, f, rr_full);
+parameter GrowthRateTradeCapacity(r_full, f, y_full, rr_full);
 
 parameter SelfSufficiency(y_full, fuel, r_full);
 
 *
 * ######### Transportation #############
 *
-parameter ModalSplitByFuelAndModalType(REGION_FULL,FUEL,YEAR_FULL,MODALTYPE);
+parameter ModalSplitByFuelAndModalType(REGION_FULL,FUEL,MODALTYPE,YEAR_FULL);
 parameter TagTechnologyToModalType(TECHNOLOGY,MODE_OF_OPERATION,MODALTYPE);
 
 parameter ProductionGrowthLimit(YEAR_FULL,FUEL);

@@ -62,23 +62,23 @@ parameter AverageCapacityFactor(REGION_FULL,COUNTRY_DATA_ENTRIES);
 
 $onecho >%tempdir%temp_%hourly_data_file%_elmod.tmp
 se=0
-         par=CountryData_PV_inf            Rng=PV_INF!A1              rdim=1    cdim=1
-         par=CountryData_PV_avg            Rng=PV_AVG!A1              rdim=1    cdim=1
-         par=CountryData_PV_opt            Rng=PV_OPT!A1              rdim=1    cdim=1
-         par=CountryData_PV_tracking       Rng=PV_TRA!A1              rdim=1    cdim=1
-         par=CountryData_Wind_Onshore_inf  Rng=WIND_ONSHORE_INF!A1    rdim=1    cdim=1
-         par=CountryData_Wind_Onshore_avg  Rng=WIND_ONSHORE_AVG!A1    rdim=1    cdim=1
-         par=CountryData_Wind_Onshore_opt  Rng=WIND_ONSHORE_OPT!A1    rdim=1    cdim=1
-         par=CountryData_Wind_Offshore Rng=WIND_OFFSHORE!A1   rdim=1    cdim=1
-         par=CountryData_Wind_Offshore_Shallow Rng=WIND_OFFSHORE_SHALLOW!A1   rdim=1    cdim=1
-         par=CountryData_Wind_Offshore_Deep Rng=WIND_OFFSHORE_DEEP!A1   rdim=1    cdim=1
-         par=CountryData_Heat_High     Rng=HEAT_HIGH!A1       rdim=1    cdim=1
-         par=CountryData_Heat_Low      Rng=HEAT_LOW!A1        rdim=1    cdim=1
-         par=CountryData_Mobility_Psng Rng=MOBILITY_PSNG!A1   rdim=1    cdim=1
-         par=CountryData_Load          Rng=LOAD!A1            rdim=1    cdim=1
-         par=CountryData_HeatPump_GroundSource Rng=HP_GROUNDSOURCE!A1      rdim=1    cdim=1
-         par=CountryData_HeatPump_AirSource    Rng=HP_AIRSOURCE!A1   rdim=1    cdim=1
-         par=CountryData_Hydro_RoR                       Rng=HYDRO_ROR!A1            rdim=1    cdim=1
+         par=CountryData_PV_inf            Rng=TS_PV_INF!A1              rdim=1    cdim=1
+         par=CountryData_PV_avg            Rng=TS_PV_AVG!A1              rdim=1    cdim=1
+         par=CountryData_PV_opt            Rng=TS_PV_OPT!A1              rdim=1    cdim=1
+         par=CountryData_PV_tracking       Rng=TS_PV_TRA!A1              rdim=1    cdim=1
+         par=CountryData_Wind_Onshore_inf  Rng=TS_WIND_ONSHORE_INF!A1    rdim=1    cdim=1
+         par=CountryData_Wind_Onshore_avg  Rng=TS_WIND_ONSHORE_AVG!A1    rdim=1    cdim=1
+         par=CountryData_Wind_Onshore_opt  Rng=TS_WIND_ONSHORE_OPT!A1    rdim=1    cdim=1
+         par=CountryData_Wind_Offshore Rng=TS_WIND_OFFSHORE!A1   rdim=1    cdim=1
+         par=CountryData_Wind_Offshore_Shallow Rng=TS_WIND_OFFSHORE_SHALLOW!A1   rdim=1    cdim=1
+         par=CountryData_Wind_Offshore_Deep Rng=TS_WIND_OFFSHORE_DEEP!A1   rdim=1    cdim=1
+         par=CountryData_Heat_High     Rng=TS_HEAT_HIGH!A1       rdim=1    cdim=1
+         par=CountryData_Heat_Low      Rng=TS_HEAT_LOW!A1        rdim=1    cdim=1
+         par=CountryData_Mobility_Psng Rng=TS_MOBILITY_PSNG!A1   rdim=1    cdim=1
+         par=CountryData_Load          Rng=TS_LOAD!A1            rdim=1    cdim=1
+         par=CountryData_HeatPump_GroundSource Rng=TS_HP_GROUNDSOURCE!A1      rdim=1    cdim=1
+         par=CountryData_HeatPump_AirSource    Rng=TS_HP_AIRSOURCE!A1   rdim=1    cdim=1
+         par=CountryData_Hydro_RoR                       Rng=TS_HYDRO_ROR!A1            rdim=1    cdim=1
 $offecho
 $ifi %switch_only_load_gdx%==0 $call "gdxxrw %inputdir%%hourly_data_file%.xlsx @%tempdir%temp_%hourly_data_file%_elmod.tmp o=%gdxdir%%hourly_data_file%_elmod.gdx MaxDupeErrors=99 CheckDate";
 $GDXin %gdxdir%%hourly_data_file%_elmod.gdx

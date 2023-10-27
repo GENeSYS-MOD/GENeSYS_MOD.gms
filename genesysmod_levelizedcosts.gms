@@ -129,6 +129,8 @@ CarbonPrice(r,e,y)$(CarbonPrice(r,e,y) = 0) = 15;
 SectorEmissions(y,r,'Power',e) =  sum((m,t),TechnologyEmissionsByMode(y,t,e,m,r)*OutputActivityRatio(r,t,'Power',m,y));
 SectorEmissions(y,r,TierFive,e) = sum((m,t),TechnologyEmissionsByMode(y,t,e,m,r)*OutputActivityRatio(r,t,TierFive,m,y));
 
+Parameter test(YEAR_FULL,FUEL,REGION_FULL);
+test(y,f,r) = sum(t,ProductionByTechnologyAnnual.l(y,t,'Power',r)$(not TagTechnologyToSector(t,'Storages')));
 
 EmissionIntensity(y,r,'Power',e) = SectorEmissions(y,r,'Power',e)/sum(t,ProductionByTechnologyAnnual.l(y,t,'Power',r)$(not TagTechnologyToSector(t,'Storages')));
 EmissionIntensity(y,r,TierFive,e) = SectorEmissions(y,r,TierFive,e)/AnnualProduction(y,TierFive,r);
@@ -147,16 +149,16 @@ resourcecosts(r,Resources,y)$(AnnualProduction(y,Resources,r) > 0)= sum(Resource
 resourcecosts(r,Resources,y)$(not resourcecosts(r,Resources,y)) = z_fuelcosts(Resources,y,r);
 
 fuelcosts(r,t,f,m,y)$(OutputActivityRatio(r,t,f,m,y) > 0) = sum(fff,InputActivityRatio(r,t,fff,m,y)*resourcecosts(r,fff,y))/OutputActivityRatio(r,t,f,m,y);
-emissioncosts(r,t,f,m,y)$(OutputActivityRatio(r,t,f,m,y) > 0) = sum(fff,InputActivityRatio(r,t,fff,m,y)*sum(e,EmissionActivityRatio(r,t,e,m,y)*RegionalEmissionContentPerFuel(y,r,fff,e)*CarbonPrice(r,e,y)))/OutputActivityRatio(r,t,f,m,y);
-capitalcosts(r,t,f,m,y)$(OutputActivityRatio(r,t,f,m,y) > 0 and maxgeneration(r,t,y,m,f) > 0)  = (CapitalCost(r,t,y)) / sum(o$(o.val <= OperationalLife(r,t)),(maxgeneration(r,t,y,m,f)/((1+GeneralDiscountRate(r))**o.val)));
-omcosts(r,t,f,m,y)$(OutputActivityRatio(r,t,f,m,y) > 0 and maxgeneration(r,t,y,m,f) > 0) = (sum(o$(o.val <= OperationalLife(r,t)),((FixedCost(r,t,y)+(VariableCost(r,t,m,y))*maxgeneration(r,t,y,m,f))/((1+GeneralDiscountRate(r))**o.val)))) / sum(o$(o.val <= OperationalLife(r,t)),(maxgeneration(r,t,y,m,f)/((1+GeneralDiscountRate(r))**o.val)));
+emissioncosts(r,t,f,m,y)$(OutputActivityRatio(r,t,f,m,y) > 0) = sum(fff,InputActivityRatio(r,t,fff,m,y)*sum(e,EmissionActivityRatio(r,t,m,e,y)*RegionalEmissionContentPerFuel(y,r,fff,e)*CarbonPrice(r,e,y)))/OutputActivityRatio(r,t,f,m,y);
+capitalcosts(r,t,f,m,y)$(OutputActivityRatio(r,t,f,m,y) > 0 and maxgeneration(r,t,y,m,f) > 0)  = (CapitalCost(r,t,y)) / sum(o$(o.val <= OperationalLife(t)),(maxgeneration(r,t,y,m,f)/((1+GeneralDiscountRate(r))**o.val)));
+omcosts(r,t,f,m,y)$(OutputActivityRatio(r,t,f,m,y) > 0 and maxgeneration(r,t,y,m,f) > 0) = (sum(o$(o.val <= OperationalLife(t)),((FixedCost(r,t,y)+(VariableCost(r,t,m,y))*maxgeneration(r,t,y,m,f))/((1+GeneralDiscountRate(r))**o.val)))) / sum(o$(o.val <= OperationalLife(t)),(maxgeneration(r,t,y,m,f)/((1+GeneralDiscountRate(r))**o.val)));
 
 ****
 **** Tier 1: Power Prices WITHOUT Re-Electrification
 ****
 
-discountedfuelcosts(r,t,'Power',m,y)$(OutputActivityRatio(r,t,'Power',m,y) > 0 and maxgeneration(r,t,y,m,'Power') > 0) = (sum(o$(o.val <= OperationalLife(r,t)),(((fuelcosts(r,t,'Power',m,y))*maxgeneration(r,t,y,m,'Power'))/((1+GeneralDiscountRate(r))**o.val)))) / sum(o$(o.val <= OperationalLife(r,t)),(maxgeneration(r,t,y,m,'Power')/((1+GeneralDiscountRate(r))**o.val)));
-testlevelizedcostsPJ(r,t,'Power',m,y)$(OutputActivityRatio(r,t,'Power',m,y) > 0 and maxgeneration(r,t,y,m,'Power') > 0) = (CapitalCost(r,t,y)+sum(o$(o.val <= OperationalLife(r,t)),((FixedCost(r,t,y)+(VariableCost(r,t,m,y)+fuelcosts(r,t,'Power',m,y))*maxgeneration(r,t,y,m,'Power'))/((1+GeneralDiscountRate(r))**o.val)))) / sum(o$(o.val <= OperationalLife(r,t)),(maxgeneration(r,t,y,m,'Power')/((1+GeneralDiscountRate(r))**o.val)));
+discountedfuelcosts(r,t,'Power',m,y)$(OutputActivityRatio(r,t,'Power',m,y) > 0 and maxgeneration(r,t,y,m,'Power') > 0) = (sum(o$(o.val <= OperationalLife(t)),(((fuelcosts(r,t,'Power',m,y))*maxgeneration(r,t,y,m,'Power'))/((1+GeneralDiscountRate(r))**o.val)))) / sum(o$(o.val <= OperationalLife(t)),(maxgeneration(r,t,y,m,'Power')/((1+GeneralDiscountRate(r))**o.val)));
+testlevelizedcostsPJ(r,t,'Power',m,y)$(OutputActivityRatio(r,t,'Power',m,y) > 0 and maxgeneration(r,t,y,m,'Power') > 0) = (CapitalCost(r,t,y)+sum(o$(o.val <= OperationalLife(t)),((FixedCost(r,t,y)+(VariableCost(r,t,m,y)+fuelcosts(r,t,'Power',m,y))*maxgeneration(r,t,y,m,'Power'))/((1+GeneralDiscountRate(r))**o.val)))) / sum(o$(o.val <= OperationalLife(t)),(maxgeneration(r,t,y,m,'Power')/((1+GeneralDiscountRate(r))**o.val)));
 levelizedcostsPJ(r,t,'Power',m,y)$(OutputActivityRatio(r,t,'Power',m,y) > 0 and maxgeneration(r,t,y,m,'Power') > 0) = capitalcosts(r,t,'Power',m,y)+omcosts(r,t,'Power',m,y)+discountedfuelcosts(r,t,'Power',m,y)+emissioncosts(r,t,'Power',m,y);
 
 
@@ -169,7 +171,7 @@ testcosts(r,'Power',y) = resourcecosts(r,'Power',y)*3.6;
 ****
 
 fuelcosts(r,t,f,m,y)$(OutputActivityRatio(r,t,f,m,y) > 0) = sum(fff,InputActivityRatio(r,t,fff,m,y)*resourcecosts(r,fff,y))/OutputActivityRatio(r,t,f,m,y);
-discountedfuelcosts(r,t,'H2',m,y)$(OutputActivityRatio(r,t,'H2',m,y) > 0 and maxgeneration(r,t,y,m,'H2') > 0) = (sum(o$(o.val <= OperationalLife(r,t)),(((fuelcosts(r,t,'H2',m,y))*maxgeneration(r,t,y,m,'H2'))/((1+GeneralDiscountRate(r))**o.val)))) / sum(o$(o.val <= OperationalLife(r,t)),(maxgeneration(r,t,y,m,'H2')/((1+GeneralDiscountRate(r))**o.val)));
+discountedfuelcosts(r,t,'H2',m,y)$(OutputActivityRatio(r,t,'H2',m,y) > 0 and maxgeneration(r,t,y,m,'H2') > 0) = (sum(o$(o.val <= OperationalLife(t)),(((fuelcosts(r,t,'H2',m,y))*maxgeneration(r,t,y,m,'H2'))/((1+GeneralDiscountRate(r))**o.val)))) / sum(o$(o.val <= OperationalLife(t)),(maxgeneration(r,t,y,m,'H2')/((1+GeneralDiscountRate(r))**o.val)));
 levelizedcostsPJ(r,t,'H2',m,y)$(OutputActivityRatio(r,t,'H2',m,y) > 0 and maxgeneration(r,t,y,m,'H2') > 0) = capitalcosts(r,t,'H2',m,y)+omcosts(r,t,'H2',m,y)+discountedfuelcosts(r,t,'H2',m,y)+emissioncosts(r,t,'H2',m,y)$(emissioncosts(r,t,'H2',m,y)>0);
 
 resourcecosts(r,'H2',y)$(sum(tt,AnnualTechnologyProductionByMode(r,tt,'1','H2',y) > 0)) = sum((t),(levelizedcostsPJ(r,t,'H2','1',y) * AnnualTechnologyProductionByMode(r,t,'1','H2',y)/sum(tt,AnnualTechnologyProductionByMode(r,tt,'1','H2',y))));
@@ -180,7 +182,7 @@ testcosts(r,'H2',y) = resourcecosts(r,'H2',y)*3.6;
 ****
 
 fuelcosts(r,t,f,m,y)$(OutputActivityRatio(r,t,f,m,y) > 0) = sum(fff,InputActivityRatio(r,t,fff,m,y)*resourcecosts(r,fff,y))/OutputActivityRatio(r,t,f,m,y);
-discountedfuelcosts(r,t,TierThree,m,y)$(OutputActivityRatio(r,t,TierThree,m,y) > 0 and maxgeneration(r,t,y,m,TierThree) > 0) = (sum(o$(o.val <= OperationalLife(r,t)),(((fuelcosts(r,t,TierThree,m,y))*maxgeneration(r,t,y,m,TierThree))/((1+GeneralDiscountRate(r))**o.val)))) /sum(o$(o.val <= OperationalLife(r,t)),(maxgeneration(r,t,y,m,TierThree)/((1+GeneralDiscountRate(r))**o.val)));
+discountedfuelcosts(r,t,TierThree,m,y)$(OutputActivityRatio(r,t,TierThree,m,y) > 0 and maxgeneration(r,t,y,m,TierThree) > 0) = (sum(o$(o.val <= OperationalLife(t)),(((fuelcosts(r,t,TierThree,m,y))*maxgeneration(r,t,y,m,TierThree))/((1+GeneralDiscountRate(r))**o.val)))) /sum(o$(o.val <= OperationalLife(t)),(maxgeneration(r,t,y,m,TierThree)/((1+GeneralDiscountRate(r))**o.val)));
 levelizedcostsPJ(r,t,TierThree,m,y)$(OutputActivityRatio(r,t,TierThree,m,y) > 0 and maxgeneration(r,t,y,m,TierThree) > 0) = capitalcosts(r,t,TierThree,m,y)+omcosts(r,t,TierThree,m,y)+discountedfuelcosts(r,t,TierThree,m,y)+emissioncosts(r,t,TierThree,m,y)$(emissioncosts(r,t,TierThree,m,y)>0);
 
 resourcecosts(r,TierThree,y)$(sum(tt,AnnualTechnologyProductionByMode(r,tt,'1',TierThree,y) > 0))= sum((t),(levelizedcostsPJ(r,t,TierThree,'1',y) * AnnualTechnologyProductionByMode(r,t,'1',TierThree,y)/sum(tt,AnnualTechnologyProductionByMode(r,tt,'1',TierThree,y))));
@@ -192,8 +194,8 @@ resourcecosts(r,'Gas_Bio',y)$(not resourcecosts(r,'Gas_Bio',y)) = resourcecosts(
 ****
 
 fuelcosts(r,t,f,m,y)$(OutputActivityRatio(r,t,f,m,y) > 0) = sum(fff,InputActivityRatio(r,t,fff,m,y)*resourcecosts(r,fff,y))/OutputActivityRatio(r,t,f,m,y);
-fuelcosts(r,t,f,'1',y)$(OutputActivityRatio(r,t,f,'2',y) > 0 and TagTechnologyToSubsets(t,'StorageDummies')) = sum(fff,InputActivityRatio(r,t,fff,'1',y)*resourcecosts(r,fff,y))/(OutputActivityRatio(r,t,f,'2',y)*sum(s,TechnologyToStorage(y,'1',t,s)**2));
-discountedfuelcosts(r,t,'Power',m,y)$(OutputActivityRatio(r,t,'Power',m,y) > 0 and maxgeneration(r,t,y,m,'Power') > 0) = (sum(o$(o.val <= OperationalLife(r,t)),(((fuelcosts(r,t,'Power',m,y))*maxgeneration(r,t,y,m,'Power'))/((1+GeneralDiscountRate(r))**o.val)))) / sum(o$(o.val <= OperationalLife(r,t)),(maxgeneration(r,t,y,m,'Power')/((1+GeneralDiscountRate(r))**o.val)));
+fuelcosts(r,t,f,'1',y)$(OutputActivityRatio(r,t,f,'2',y) > 0 and TagTechnologyToSubsets(t,'StorageDummies')) = sum(fff,InputActivityRatio(r,t,fff,'1',y)*resourcecosts(r,fff,y))/(OutputActivityRatio(r,t,f,'2',y)*sum(s,TechnologyToStorage(t,s,'1',y)**2));
+discountedfuelcosts(r,t,'Power',m,y)$(OutputActivityRatio(r,t,'Power',m,y) > 0 and maxgeneration(r,t,y,m,'Power') > 0) = (sum(o$(o.val <= OperationalLife(t)),(((fuelcosts(r,t,'Power',m,y))*maxgeneration(r,t,y,m,'Power'))/((1+GeneralDiscountRate(r))**o.val)))) / sum(o$(o.val <= OperationalLife(t)),(maxgeneration(r,t,y,m,'Power')/((1+GeneralDiscountRate(r))**o.val)));
 levelizedcostsPJ(r,t,'Power',m,y)$(OutputActivityRatio(r,t,'Power',m,y) > 0 and maxgeneration(r,t,y,m,'Power') > 0) = capitalcosts(r,t,'Power',m,y)+omcosts(r,t,'Power',m,y)+discountedfuelcosts(r,t,'Power',m,y)+emissioncosts(r,t,'Power',m,y)$(emissioncosts(r,t,'Power',m,y)>0);
 
 resourcecosts(r,'Power',y)$(AnnualProduction(y,'Power',r) > 0)= sum((t,m),(levelizedcostsPJ(r,t,'Power',m,y) * AnnualTechnologyProductionByMode(r,t,m,'Power',y)/sum((tt,mm),AnnualTechnologyProductionByMode(r,tt,mm,'Power',y))));
@@ -213,7 +215,7 @@ resourcecosts(r,'Gas_Synth',y) = levelizedcostsPJ(r,'X_Methanation','Gas_Synth',
 ****
 
 fuelcosts(r,t,f,m,y)$(OutputActivityRatio(r,t,f,m,y) > 0) = sum(fff,InputActivityRatio(r,t,fff,m,y)*resourcecosts(r,fff,y))/OutputActivityRatio(r,t,f,m,y);
-discountedfuelcosts(r,t,'H2',m,y)$(OutputActivityRatio(r,t,'H2',m,y) > 0 and maxgeneration(r,t,y,m,'H2') > 0) = (sum(o$(o.val <= OperationalLife(r,t)),(((fuelcosts(r,t,'H2',m,y))*maxgeneration(r,t,y,m,'H2'))/((1+GeneralDiscountRate(r))**o.val)))) / sum(o$(o.val <= OperationalLife(r,t)),(maxgeneration(r,t,y,m,'H2')/((1+GeneralDiscountRate(r))**o.val)));
+discountedfuelcosts(r,t,'H2',m,y)$(OutputActivityRatio(r,t,'H2',m,y) > 0 and maxgeneration(r,t,y,m,'H2') > 0) = (sum(o$(o.val <= OperationalLife(t)),(((fuelcosts(r,t,'H2',m,y))*maxgeneration(r,t,y,m,'H2'))/((1+GeneralDiscountRate(r))**o.val)))) / sum(o$(o.val <= OperationalLife(t)),(maxgeneration(r,t,y,m,'H2')/((1+GeneralDiscountRate(r))**o.val)));
 levelizedcostsPJ(r,t,'H2',m,y)$(OutputActivityRatio(r,t,'H2',m,y) > 0 and maxgeneration(r,t,y,m,'H2') > 0) = capitalcosts(r,t,'H2',m,y)+omcosts(r,t,'H2',m,y)+discountedfuelcosts(r,t,'H2',m,y)+emissioncosts(r,t,'H2',m,y)$(emissioncosts(r,t,'H2',m,y)>0);
 
 resourcecosts(r,'H2',y)$(sum(tt,AnnualTechnologyProductionByMode(r,tt,'1','H2',y)))= sum((t),(levelizedcostsPJ(r,t,'H2','1',y) * AnnualTechnologyProductionByMode(r,t,'1','H2',y)/sum(tt,AnnualTechnologyProductionByMode(r,tt,'1','H2',y))));
@@ -224,7 +226,7 @@ testcosts(r,'H22',y) = resourcecosts(r,'H2',y)*3.6;
 ****
 
 fuelcosts(r,t,f,m,y)$(OutputActivityRatio(r,t,f,m,y) > 0) = sum(fff,InputActivityRatio(r,t,fff,m,y)*resourcecosts(r,fff,y))/OutputActivityRatio(r,t,f,m,y);
-discountedfuelcosts(r,t,TierThree,m,y)$(OutputActivityRatio(r,t,TierThree,m,y) > 0 and maxgeneration(r,t,y,m,TierThree) > 0) = (sum(o$(o.val <= OperationalLife(r,t)),(((fuelcosts(r,t,TierThree,m,y))*maxgeneration(r,t,y,m,TierThree))/((1+GeneralDiscountRate(r))**o.val)))) / sum(o$(o.val <= OperationalLife(r,t)),(maxgeneration(r,t,y,m,TierThree)/((1+GeneralDiscountRate(r))**o.val)));
+discountedfuelcosts(r,t,TierThree,m,y)$(OutputActivityRatio(r,t,TierThree,m,y) > 0 and maxgeneration(r,t,y,m,TierThree) > 0) = (sum(o$(o.val <= OperationalLife(t)),(((fuelcosts(r,t,TierThree,m,y))*maxgeneration(r,t,y,m,TierThree))/((1+GeneralDiscountRate(r))**o.val)))) / sum(o$(o.val <= OperationalLife(t)),(maxgeneration(r,t,y,m,TierThree)/((1+GeneralDiscountRate(r))**o.val)));
 levelizedcostsPJ(r,t,TierThree,m,y)$(OutputActivityRatio(r,t,TierThree,m,y) > 0 and maxgeneration(r,t,y,m,TierThree) > 0) = capitalcosts(r,t,TierThree,m,y)+omcosts(r,t,TierThree,m,y)+discountedfuelcosts(r,t,TierThree,m,y)+emissioncosts(r,t,TierThree,m,y)$(emissioncosts(r,t,TierThree,m,y)>0);
 
 resourcecosts(r,TierThree,y)$(sum((m,tt),AnnualTechnologyProductionByMode(r,tt,m,TierThree,y)>0))= sum((m,t),(levelizedcostsPJ(r,t,TierThree,m,y) * AnnualTechnologyProductionByMode(r,t,m,TierThree,y)/sum((mm,tt),AnnualTechnologyProductionByMode(r,tt,mm,TierThree,y))));
@@ -238,8 +240,8 @@ testcosts(r,'Biofuel2',y) = resourcecosts(r,'Biofuel',y)*3.6;
 ****
 
 fuelcosts(r,t,f,m,y)$(OutputActivityRatio(r,t,f,m,y) > 0) = sum(fff,InputActivityRatio(r,t,fff,m,y)*resourcecosts(r,fff,y))/OutputActivityRatio(r,t,f,m,y);
-fuelcosts(r,t,f,'1',y)$(OutputActivityRatio(r,t,f,'2',y) > 0 and TagTechnologyToSubsets(t,'StorageDummies')) = sum(fff,InputActivityRatio(r,t,fff,'1',y)*resourcecosts(r,fff,y))/(OutputActivityRatio(r,t,f,'2',y)*sum(s,TechnologyToStorage(y,'1',t,s)**2));
-discountedfuelcosts(r,t,'Power',m,y)$(OutputActivityRatio(r,t,'Power',m,y) > 0 and maxgeneration(r,t,y,m,'Power') > 0) = (sum(o$(o.val <= OperationalLife(r,t)),(((fuelcosts(r,t,'Power',m,y))*maxgeneration(r,t,y,m,'Power'))/((1+GeneralDiscountRate(r))**o.val)))) / sum(o$(o.val <= OperationalLife(r,t)),(maxgeneration(r,t,y,m,'Power')/((1+GeneralDiscountRate(r))**o.val)));
+fuelcosts(r,t,f,'1',y)$(OutputActivityRatio(r,t,f,'2',y) > 0 and TagTechnologyToSubsets(t,'StorageDummies')) = sum(fff,InputActivityRatio(r,t,fff,'1',y)*resourcecosts(r,fff,y))/(OutputActivityRatio(r,t,f,'2',y)*sum(s,TechnologyToStorage(t,s,'1',y)**2));
+discountedfuelcosts(r,t,'Power',m,y)$(OutputActivityRatio(r,t,'Power',m,y) > 0 and maxgeneration(r,t,y,m,'Power') > 0) = (sum(o$(o.val <= OperationalLife(t)),(((fuelcosts(r,t,'Power',m,y))*maxgeneration(r,t,y,m,'Power'))/((1+GeneralDiscountRate(r))**o.val)))) / sum(o$(o.val <= OperationalLife(t)),(maxgeneration(r,t,y,m,'Power')/((1+GeneralDiscountRate(r))**o.val)));
 levelizedcostsPJ(r,t,'Power',m,y)$(OutputActivityRatio(r,t,'Power',m,y) > 0 and maxgeneration(r,t,y,m,'Power') > 0) = capitalcosts(r,t,'Power',m,y)+omcosts(r,t,'Power',m,y)+discountedfuelcosts(r,t,'Power',m,y)+emissioncosts(r,t,'Power',m,y)$(emissioncosts(r,t,'Power',m,y)>0);
 
 resourcecosts(r,'Power',y)$(AnnualProduction(y,'Power',r) > 0)= sum((t,m),(levelizedcostsPJ(r,t,'Power',m,y) * AnnualTechnologyProductionByMode(r,t,m,'Power',y)/sum((tt,mm),AnnualTechnologyProductionByMode(r,tt,mm,'Power',y))));
@@ -251,7 +253,7 @@ testcosts(r,'Power3',y) = resourcecosts(r,'Power',y)*3.6;
 ****
 
 fuelcosts(r,t,f,m,y)$(OutputActivityRatio(r,t,f,m,y) > 0) = sum(fff,InputActivityRatio(r,t,fff,m,y)*resourcecosts(r,fff,y))/OutputActivityRatio(r,t,f,m,y);
-discountedfuelcosts(r,t,TierFive,m,y)$(OutputActivityRatio(r,t,TierFive,m,y) > 0 and maxgeneration(r,t,y,m,TierFive) > 0) = (sum(o$(o.val <= OperationalLife(r,t)),(((fuelcosts(r,t,TierFive,m,y))*maxgeneration(r,t,y,m,TierFive))/((1+GeneralDiscountRate(r))**o.val)))) / sum(o$(o.val <= OperationalLife(r,t)),(maxgeneration(r,t,y,m,TierFive)/((1+GeneralDiscountRate(r))**o.val)));
+discountedfuelcosts(r,t,TierFive,m,y)$(OutputActivityRatio(r,t,TierFive,m,y) > 0 and maxgeneration(r,t,y,m,TierFive) > 0) = (sum(o$(o.val <= OperationalLife(t)),(((fuelcosts(r,t,TierFive,m,y))*maxgeneration(r,t,y,m,TierFive))/((1+GeneralDiscountRate(r))**o.val)))) / sum(o$(o.val <= OperationalLife(t)),(maxgeneration(r,t,y,m,TierFive)/((1+GeneralDiscountRate(r))**o.val)));
 levelizedcostsPJ(r,t,TierFive,m,y)$(OutputActivityRatio(r,t,TierFive,m,y) > 0 and maxgeneration(r,t,y,m,TierFive) > 0) = capitalcosts(r,t,TierFive,m,y)+omcosts(r,t,TierFive,m,y)+discountedfuelcosts(r,t,TierFive,m,y)+emissioncosts(r,t,TierFive,m,y)$(emissioncosts(r,t,TierFive,m,y)>0);
 
 resourcecosts(r,TierFive,y)$(AnnualProduction(y,TierFive,r) > 0)= sum((t,m),(levelizedcostsPJ(r,t,TierFive,m,y) * AnnualTechnologyProductionByMode(r,t,m,TierFive,y)/sum((tt,mm),AnnualTechnologyProductionByMode(r,tt,mm,TierFive,y))));

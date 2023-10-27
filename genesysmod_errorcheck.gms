@@ -26,9 +26,9 @@ error_TechMissingFromSectorList(t)$(not sum(se,TagTechnologyToSector(t,se))) = 1
 if(sum(t,error_TechMissingFromSectorList(t)),abort "Technology missing from Sector list. Please check TagTechnologyToSector to include all Technologies. Missing Technologies are listed in the parameter error_TechMissingFromSectorList.");
 
 * Check if TradeCosts are missing from a defined TradeRoute -> if yes, then exit
-parameter error_TradeCostsMissingFromTradeRoute(f,r_full,rr_full);
-error_TradeCostsMissingFromTradeRoute(f,r,rr)$(sum(y,TradeRoute(y,f,r,rr)) and not TradeCosts(f,r,rr)) = 1;
-if(sum((f,r,rr),error_TradeCostsMissingFromTradeRoute(f,r,rr)),abort "TradeCosts are missing from a defined TradeRoute. Please check your TradeCosts to include all defined TradeRoutes. Missing TradeCosts are listed in the parameter error_TradeCostsMissingFromTradeRoute.");
+parameter error_TradeCostsMissingFromTradeRoute(r_full,f,rr_full);
+error_TradeCostsMissingFromTradeRoute(r,f,rr)$(sum(y,TradeRoute(r,f,y,rr)) and not TradeCosts(f,r,rr)) = 1;
+if(sum((f,r,rr),error_TradeCostsMissingFromTradeRoute(r,f,rr)),abort "TradeCosts are missing from a defined TradeRoute. Please check your TradeCosts to include all defined TradeRoutes. Missing TradeCosts are listed in the parameter error_TradeCostsMissingFromTradeRoute.");
 
 ** Check for errors in ModalSplit definitions -> if yes, then exit
 *parameter error_ModalSplitByModalTypeDefinition(f,*,r_full,y_full);
@@ -38,13 +38,13 @@ if(sum((f,r,rr),error_TradeCostsMissingFromTradeRoute(f,r,rr)),abort "TradeCosts
 *if(sum((f,r,y),error_ModalSplitByModalTypeDefinition(f,'Error in SubGroup',r,y)),abort "ModalSplit is wrongly defined for a subgroup in the ModalSplit (e.g., MT_FRT_Road_RE). The sum of ModalTypes cannot exceed 1. Please check your data. Problematic regions and years are listed in the parameter error_ModalSplitByModalTypeDefinition.");
 
 * Check for errors in OperationalLife data -> if yes, then exit
-parameter error_OperationalLifeMissing(r_full,t);
+parameter error_OperationalLifeMissing(t);
 $ifthen %switch_infeasibility_tech% == 0
-error_OperationalLifeMissing(r,t)$(not OperationalLife(r,t) and not TagTechnologyToSector(t,'Infeasibility')) = 1;
+error_OperationalLifeMissing(t)$(not OperationalLife(t) and not TagTechnologyToSector(t,'Infeasibility')) = 1;
 $else
-error_OperationalLifeMissing(r,t)$(not OperationalLife(r,t)) = 1;
+error_OperationalLifeMissing(t)$(not OperationalLife(t)) = 1;
 $endif
-if(sum((r,t),error_OperationalLifeMissing(r,t)),abort "OperationalLife is missing from a Technology. Please check your OperationalLife data to account for all technologies. Missing values are listed in the parameter error_OperationalLifeMissing.");
+if(sum((t),error_OperationalLifeMissing(t)),abort "OperationalLife is missing from a Technology. Please check your OperationalLife data to account for all technologies. Missing values are listed in the parameter error_OperationalLifeMissing.");
 
 * Check for errors in CapacityFactor data -> if yes, then exit
 parameter error_CapacityFactorDataMissing(r_full,t,y_full);
@@ -66,7 +66,7 @@ parameter warning_TechnologyEfficiencies(r_full,t,m,y_full);
 warning_TechnologyEfficiencies(r,t,m,y)$(not sum(se,TagTechnologyToSector(t,'Resources')) and not sum(se,TagTechnologyToSector(t,'Transportation')) and sum(f,OutputActivityRatio(r,t,f,m,y)) and ((sum(f,InputActivityRatio(r,t,f,m,y))/sum(f,OutputActivityRatio(r,t,f,m,y)))<1)$(sum(f,OutputActivityRatio(r,t,f,m,y)) and sum(f,InputActivityRatio(r,t,f,m,y)))) = 1;
 
 parameter error_tradelines(r_full,rr_full,f);
-error_tradelines(r,rr,f)$(TradeRoute('2018',f,r,rr)-TradeRoute('2018',f,rr,r))=1
+error_tradelines(r,rr,f)$(TradeRoute(r,f,'2018',rr)-TradeRoute(r,f,'2018',rr))=1
 
 * If residual capacity is greater than max allowed annual capacity, set max capacity to residual capacity
 parameter ToSmallResidualCapacity;

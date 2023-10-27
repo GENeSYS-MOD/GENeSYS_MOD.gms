@@ -29,7 +29,7 @@ RegionalAnnualEmissionLimit(r,e,y)$(RegionalAnnualEmissionLimit(r,e,y) = 0 and R
 AnnualEmissionLimit(e,y)$(AnnualEmissionLimit(e,y) = 0 and AnnualEmissionLimit(e,y+1) > 0) = (AnnualEmissionLimit(e,y-1)+AnnualEmissionLimit(e,y+1))/2;
 AnnualSectoralEmissionLimit(e,se,y)$(AnnualSectoralEmissionLimit(e,se,y)=0 and AnnualSectoralEmissionLimit(e,se,y+1) > 0) =  (AnnualSectoralEmissionLimit(e,se,y-1)+AnnualSectoralEmissionLimit(e,se,y+1))/2;
 
-ModalSplitByFuelandModalType(r,f,y,mt)$(ModalSplitByFuelandModalType(r,f,y,mt) = 0 and ModalSplitByFuelandModalType(r,f,y+1,mt) > 0) =  (ModalSplitByFuelandModalType(r,f,y-1,mt)+ModalSplitByFuelandModalType(r,f,y+1,mt))/2 ;
+ModalSplitByFuelandModalType(r,f,mt,y)$(ModalSplitByFuelandModalType(r,f,mt,y) = 0 and ModalSplitByFuelandModalType(r,f,mt,y+1) > 0) =  (ModalSplitByFuelandModalType(r,f,mt,y-1)+ModalSplitByFuelandModalType(r,f,mt,y+1))/2 ;
 
 
 InputActivityRatio(r,t,f,m,y)$(InputActivityRatio(r,t,f,m,y) = 0) = InputActivityRatio(r,t,f,m,y-1);
@@ -38,7 +38,7 @@ FixedCost(r,t,y)$(FixedCost(r,t,y) = 0) = FixedCost(r,t,y-1);
 CapitalCost(r,t,y)$(CapitalCost(r,t,y) = 0) = (CapitalCost(r,t,y-1)+CapitalCost(r,t,y+1))/2;
 VariableCost(r,t,m,y)$(VariableCost(r,t,m,y) = 0) = (VariableCost(r,t,m,y-1)+VariableCost(r,t,m,y+1))/2;
 AvailabilityFactor(r,t,y)$(AvailabilityFactor(r,t,y) = 0) = AvailabilityFactor(r,t,y-1);
-EmissionActivityRatio(r,t,e,m,y)$(EmissionActivityRatio(r,t,e,m,y) = 0) = EmissionActivityRatio(r,t,e,m,y-1);
+EmissionActivityRatio(r,t,m,e,y)$(EmissionActivityRatio(r,t,m,e,y) = 0) = EmissionActivityRatio(r,t,m,e,y-1);
 
 PhaseIn(y)$(PhaseIn(y) = 0 and PhaseIn(y+1)>0) = PhaseIn(y+1);
 PhaseOut(y)$(PhaseOut(y) = 0 and PhaseOut(y+1) > 0) = PhaseOut(y+1);
@@ -47,10 +47,9 @@ SpecifiedAnnualDemand(r,f,y)$(SpecifiedAnnualDemand(r,f,y) = 0) = (SpecifiedAnnu
 SpecifiedDemandProfile(r,f,l,y)$(SpecifiedDemandProfile(r,f,l,y) = 0) = SpecifiedDemandProfile(r,f,l,y-1);
 
 
-TechnologyToStorage(y,m,t,s)$(TechnologyToStorage(y,m,t,s) = 0) = TechnologyToStorage(y-1,m,t,s);
-TechnologyFromStorage(y,m,t,s)$(TechnologyFromStorage(y,m,t,s) = 0) = TechnologyFromStorage(y-1,m,t,s);
+TechnologyToStorage(t,s,m,y)$(TechnologyToStorage(t,s,m,y) = 0) = TechnologyToStorage(t,s,m,y-1);
+TechnologyFromStorage(t,s,m,y)$(TechnologyFromStorage(t,s,m,y) = 0) = TechnologyFromStorage(t,s,m,y-1);
 MinStorageCharge(r,s,y)$(MinStorageCharge(r,s,y) = 0) = MinStorageCharge(r,s,y-1);
-OperationalLifeStorage(r,s,y)$(OperationalLifeStorage(r,s,y) = 0) = OperationalLifeStorage(r,s,y-1);
 CapitalCostStorage(r,s,y)$(CapitalCostStorage(r,s,y) = 0) = CapitalCostStorage(r,s,y-1);
 
 TotalAnnualMaxCapacity(r,t,y)$(TotalAnnualMaxCapacity(r,t,y) = 0) = TotalAnnualMaxCapacity(r,t,y-1);
@@ -58,7 +57,7 @@ TotalAnnualMaxCapacity(r,t,y)$(TotalAnnualMaxCapacity(r,t,y) = 0) = TotalAnnualM
 ResidualCapacity(r,t,y)$(ResidualCapacity(r,t,y) = 0 and ResidualCapacity(r,t,y+1)>0) = (ResidualCapacity(r,t,y-1)+ResidualCapacity(r,t,y+1))/2;
 TotalTechnologyAnnualActivityUpperLimit(r,t,y)$(TotalTechnologyAnnualActivityUpperLimit(r,t,y) = 0 and TotalTechnologyAnnualActivityUpperLimit(r,t,y+1)>0) = (TotalTechnologyAnnualActivityUpperLimit(r,t,y-1)+TotalTechnologyAnnualActivityUpperLimit(r,t,y+1))/2;
 
-GrowthRateTradeCapacity(y,'Power',r,rr)$(GrowthRateTradeCapacity(y,'Power',r,rr) = 0) = GrowthRateTradeCapacity(y-1,'Power',r,rr);
+GrowthRateTradeCapacity(r,'Power',y,rr)$(GrowthRateTradeCapacity(r,'Power',y,rr) = 0) = GrowthRateTradeCapacity(r,'Power',y-1,rr);
 
 $ifthen %switch_employment_calculation% == 1
 EFactorConstruction(t,y)$(EFactorConstruction(t,y) = 0) = (EFactorConstruction(t,y-1)+EFactorConstruction(t,y+1))/2;

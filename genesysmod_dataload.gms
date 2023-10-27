@@ -22,8 +22,8 @@ $offorder
 
 Parameter
 Readin_TradeCosts
-Readin_TradeRoute2015(f,r_full,rr_full)
-Readin_PowerTradeCapacity(f,r_full,rr_full,y_full)
+Readin_TradeRoute2015(r_full,f,rr_full)
+Readin_PowerTradeCapacity(r_full,f,y_full,rr_full)
 Readin_TotalTechnologyModelPeriodActivityUpperLimit(REGION_FULL,TECHNOLOGY)
 ;
 
@@ -31,90 +31,93 @@ Readin_TotalTechnologyModelPeriodActivityUpperLimit(REGION_FULL,TECHNOLOGY)
 
 $onecho >%tempdir%temp_%data_file%_sets.tmp
 se=0
-        set=Emission                 Rng=Sets!A2                         rdim=1        cdim=0
-        dset=Technology              Rng=Sets!B2                         rdim=1        cdim=0
-        dset=Fuel                    Rng=Sets!C2                         rdim=1        cdim=0
-        set=Year                     Rng=Sets!D2                         rdim=1        cdim=0
-        set=Timeslice                Rng=Sets!E2                         rdim=1        cdim=0
-        set=Mode_of_operation        Rng=Sets!F2                         rdim=1        cdim=0
-        set=Region_full              Rng=Sets!G2                         rdim=1        cdim=0
-        set=Storage                  Rng=Sets!K2                         rdim=1        cdim=0
-        set=ModalType                Rng=Sets!L2                         rdim=1        cdim=0
-        set=Sector                   Rng=Sets!N2                         rdim=1        cdim=0
+        set=Region_full            Rng=Sets!A2                         rdim=1        cdim=0
+        set=Technology            Rng=Sets!B2                         rdim=1        cdim=0
+        set=Storage               Rng=Sets!C2                         rdim=1        cdim=0
+        set=Fuel                   Rng=Sets!D2                         rdim=1        cdim=0
+        set=Mode_of_operation      Rng=Sets!E2                         rdim=1        cdim=0
+        set=Emission               Rng=Sets!F2                         rdim=1        cdim=0
+        set=ModalType              Rng=Sets!G2                         rdim=1        cdim=0
+        set=Sector                 Rng=Sets!H2                         rdim=1        cdim=0
+        set=Year                   Rng=Sets!I2                         rdim=1        cdim=0
+
 $offecho
 
 $ifi %switch_only_load_gdx%==0 $call "gdxxrw %inputdir%%data_file%.xlsx @%tempdir%temp_%data_file%_sets.tmp o=%gdxdir%%data_file%_sets.gdx MaxDupeErrors=99 CheckDate ";
 $GDXin %gdxdir%%data_file%_sets.gdx
 $onUNDF
-$loadm Year
-$loadm Sector
-$loadm Emission Technology Fuel Timeslice Mode_of_operation Region_full Storage ModalType
+$loadm Region_full Technology Storage Fuel
+$loadm Mode_of_operation Emission ModalType
+$loadm Sector Year
 $offUNDF
-
 
 * Step 2: Read parameters from regional file  -> now includes World values
 
 
 $onecho >%tempdir%temp_%data_file%_par.tmp
-se=0
-         par=SpecifiedAnnualDemand    Rng=Par_SpecifiedAnnualDemand!A5                   rdim=2  cdim=1
-*        par=SpecifiedDemandProfile   Rng=Par_SpecifiedDemandProfile!A5                  rdim=3  cdim=1
-        par=ReserveMarginTagFuel     Rng=Par_ReserveMarginTagFuel!A5                    rdim=2  cdim=1
+se=0     
 
-        par=EmissionsPenalty         Rng=Par_EmissionsPenalty!A5                         rdim=2  cdim=1
-        par=EmissionsPenaltyTagTechnology         Rng=Par_EmissionPenaltyTagTech!A5                         rdim=3  cdim=1
-        par=ReserveMargin            Rng=Par_ReserveMargin!A5                            rdim=1  cdim=1
-        par=AnnualExogenousEmission  Rng=Par_AnnualExogenousEmission!A5                  rdim=2  cdim=1
-        par=RegionalAnnualEmissionLimit      Rng=Par_RegionalAnnualEmissionLimit!A5                      rdim=2  cdim=1
-        par=AnnualEmissionLimit      Rng=Par_AnnualEmissionLimit!A5                      rdim=1  cdim=1
-        par=Readin_TradeRoute2015    Rng=Par_TradeRoute!A5                          rdim=2  cdim=1
-        par=Readin_TradeCosts               Rng=Par_TradeCosts!A5                           rdim=2  cdim=1
-        par=Readin_PowerTradeCapacity  Rng=Par_TradeCapacity!A5            rdim=2  cdim=2
+        par=SpecifiedAnnualDemand    Rng=Par_SpecifiedAnnualDemand!A1                   rdim=2  cdim=1
+*        par=SpecifiedDemandProfile   Rng=Par_SpecifiedDemandProfile!A1                  rdim=3  cdim=1
+        par=ReserveMarginTagFuel     Rng=Par_ReserveMarginTagFuel!A1                    rdim=2  cdim=1
 
-        par=GrowthRateTradeCapacity         Rng=Par_GrowthRateTradeCapacity!A5  rdim=3 cdim=1
-        par=TradeCapacityGrowthCosts        Rng=Par_TradeCapacityGrowthCosts!A5  rdim=2 cdim=1
-        par=CapacityToActivityUnit   Rng=Par_CapacityToActivityUnit!A5   rdim=1        cdim=0
+        par=EmissionsPenalty         Rng=Par_EmissionsPenalty!A1                         rdim=2  cdim=1
+        par=EmissionsPenaltyTagTechnology         Rng=Par_EmissionPenaltyTagTech!A1                         rdim=3  cdim=1
+        par=ReserveMargin            Rng=Par_ReserveMargin!A1                            rdim=1  cdim=1
+        par=AnnualExogenousEmission  Rng=Par_AnnualExogenousEmission!A1                  rdim=2  cdim=1
+        par=RegionalAnnualEmissionLimit      Rng=Par_RegionalAnnualEmissionLimit!A1                      rdim=2  cdim=1
+        par=AnnualEmissionLimit      Rng=Par_AnnualEmissionLimit!A1                      rdim=1  cdim=1
+        par=Readin_TradeRoute2015    Rng=Par_TradeRoute!A1                          rdim=2  cdim=1
+        par=Readin_TradeCosts               Rng=Par_TradeCosts!A1                           rdim=2  cdim=1
+        par=Readin_PowerTradeCapacity  Rng=Par_TradeCapacity!A1            rdim=3  cdim=1
 
-        par=InputActivityRatio       Rng=Par_InputActivityRatio!A5                       rdim=4        cdim=1
-        par=OutputActivityRatio      Rng=Par_OutputActivityRatio!A5                      rdim=4        cdim=1
-        par=FixedCost                Rng=Par_FixedCost!A5                                rdim=2        cdim=1
-        par=CapitalCost              Rng=Par_CapitalCost!A5                              rdim=2        cdim=1
-        par=VariableCost             Rng=Par_VariableCost!A5                             rdim=3        cdim=1
-        par=ResidualCapacity         Rng=Par_ResidualCapacity!A5                         rdim=2        cdim=1
-        par=AvailabilityFactor       Rng=Par_AvailabilityFactor!A5                       rdim=2        cdim=1
-        par=CapacityFactor           Rng=Par_CapacityFactor!A5                           rdim=3        cdim=1
-        par=EmissionActivityRatio    Rng=Par_EmissionActivityRatio!A5                    rdim=4        cdim=1
-        par=EmissionContentPerFuel   Rng=Par_EmissionContentPerFuel!A5                   rdim=2        cdim=0
-        par=OperationalLife          Rng=Par_OperationalLife!A5                          rdim=2        cdim=0
-        par=TotalAnnualMaxCapacity   Rng=Par_TotalAnnualMaxCapacity!A5                   rdim=2        cdim=1
-        par=TotalAnnualMinCapacity   Rng=Par_TotalAnnualMinCapacity!A5                   rdim=2        cdim=1
-        par=Readin_TotalTechnologyModelPeriodActivityUpperLimit   Rng=Par_ModelPeriodActivityMaxLimit!A5         rdim=2        cdim=0
+        par=GrowthRateTradeCapacity         Rng=Par_GrowthRateTradeCapacity!A1  rdim=3 cdim=1
+        par=TradeCapacityGrowthCosts        Rng=Par_TradeCapacityGrowthCosts!A1  rdim=2 cdim=1
+        par=CapacityToActivityUnit   Rng=Par_CapacityToActivityUnit!A1   rdim=1        cdim=0
 
-        par=TotalTechnologyAnnualActivityUpperLimit   Rng=Par_TotalAnnualMaxActivity!A5                   rdim=2        cdim=1
-        par=TotalTechnologyAnnualActivityLowerLimit   Rng=Par_TotalAnnualMinActivity!A5                   rdim=2        cdim=1
+        par=InputActivityRatio       Rng=Par_InputActivityRatio!A1                       rdim=4        cdim=1
+        par=OutputActivityRatio      Rng=Par_OutputActivityRatio!A1                      rdim=4        cdim=1
+        par=FixedCost                Rng=Par_FixedCost!A1                                rdim=2        cdim=1
+        par=CapitalCost              Rng=Par_CapitalCost!A1                              rdim=2        cdim=1
+        par=VariableCost             Rng=Par_VariableCost!A1                             rdim=3        cdim=1
+        par=ResidualCapacity         Rng=Par_ResidualCapacity!A1                         rdim=2        cdim=1
+        par=AvailabilityFactor       Rng=Par_AvailabilityFactor!A1                       rdim=2        cdim=1
+        par=CapacityFactor           Rng=Par_CapacityFactor!A1                           rdim=3        cdim=1
+        par=EmissionActivityRatio    Rng=Par_EmissionActivityRatio!A1                    rdim=4        cdim=1
+        par=EmissionContentPerFuel   Rng=Par_EmissionContentPerFuel!A2                   rdim=2        cdim=0
+        par=OperationalLife          Rng=Par_OperationalLife!A2                          rdim=1        cdim=0
+        par=TotalAnnualMaxCapacity   Rng=Par_TotalAnnualMaxCapacity!A1                   rdim=2        cdim=1
+        par=TotalAnnualMinCapacity   Rng=Par_TotalAnnualMinCapacity!A1                   rdim=2        cdim=1
+        par=Readin_TotalTechnologyModelPeriodActivityUpperLimit   Rng=Par_ModelPeriodActivityMaxLimit!A2         rdim=2        cdim=0
 
-        par=ReserveMarginTagTechnology  Rng=Par_ReserveMarginTagTechnology!A5            rdim=2        cdim=1
+        par=TotalTechnologyAnnualActivityUpperLimit   Rng=Par_TotalAnnualMaxActivity!A1                   rdim=2        cdim=1
+        par=TotalTechnologyAnnualActivityLowerLimit   Rng=Par_TotalAnnualMinActivity!A1                   rdim=2        cdim=1
 
-        par=RegionalCCSLimit             Rng=Par_RegionalCCSLimit!A5               rdim=1        cdim=0
+        par=ReserveMarginTagTechnology  Rng=Par_ReserveMarginTagTechnology!A1            rdim=2        cdim=1
 
-        par=TechnologyToStorage   Rng=Par_TechnologyToStorage!A5                         rdim=3        cdim=1
-        par=TechnologyFromStorage Rng=Par_TechnologyFromStorage!A5                       rdim=3        cdim=1
-        par=StorageLevelStart     Rng=Par_StorageLevelStart!A5                           rdim=1        cdim=1
-        par=MinStorageCharge      Rng=Par_MinStorageCharge!A5                            rdim=2        cdim=1
-        par=OperationalLifeStorage Rng=Par_OperationalLifeStorage!A5                     rdim=2        cdim=1
-        par=CapitalCostStorage    Rng=Par_CapitalCostStorage!A5                          rdim=2        cdim=1
-        par=ResidualStorageCapacity Rng=Par_ResidualStorageCapacity!A5                   rdim=2        cdim=1
+        par=RegionalCCSLimit             Rng=Par_RegionalCCSLimit!A2               rdim=1        cdim=0
 
-        par=ModalSplitByFuelAndModalType   Rng=Par_ModalSplitByFuel!A5                    rdim=3        cdim=1
-        par=TagTechnologyToModalType       Rng=Par_TagTechnologyToModalType!A5                       rdim=2        cdim=1
+        par=TechnologyToStorage   Rng=Par_TechnologyToStorage!A1                         rdim=3        cdim=1
+        par=TechnologyFromStorage Rng=Par_TechnologyFromStorage!A1                       rdim=3        cdim=1
+        par=StorageLevelStart     Rng=Par_StorageLevelStart!A1                           rdim=1        cdim=1
+        par=MinStorageCharge      Rng=Par_MinStorageCharge!A1                            rdim=2        cdim=1
+        par=OperationalLifeStorage Rng=Par_OperationalLifeStorage!A2                     rdim=1        cdim=0
+        par=CapitalCostStorage    Rng=Par_CapitalCostStorage!A1                          rdim=2        cdim=1
+        par=ResidualStorageCapacity Rng=Par_ResidualStorageCapacity!A1                   rdim=2        cdim=1
 
-        par=BaseYearProduction   Rng=Par_BaseYearProduction!A5                   rdim=2        cdim=1
-        par=RegionalBaseYearProduction   Rng=Par_RegionalBaseYearProduction!A5                    rdim=3        cdim=1
+        par=ModalSplitByFuelAndModalType   Rng=Par_ModalSplitByFuel!A1                    rdim=3        cdim=1
+        par=TagTechnologyToModalType       Rng=Par_TagTechnologyToModalType!A2                       rdim=3        cdim=0
 
-        par=TagTechnologyToSector       Rng=Par_TagTechnologyToSector!A5                       rdim=1        cdim=1
-        par=AnnualSectoralEmissionLimit      Rng=Par_AnnualSectoralEmissionLimit!A5                      rdim=2  cdim=1
-        par=TagDemandFuelToSector       Rng=Par_TagDemandFuelToSector!A5                       rdim=1        cdim=1
-        par=TagElectricTechnology       Rng=Par_TagElectricTechnology!A4                       rdim=1        cdim=0
+        par=BaseYearProduction   Rng=Par_BaseYearProduction!A1                   rdim=2        cdim=1
+        par=RegionalBaseYearProduction   Rng=Par_RegionalBaseYearProduction!A1                    rdim=3        cdim=1
+
+        par=TagTechnologyToSector       Rng=Par_TagTechnologyToSector!A2                       rdim=2        cdim=0
+        par=AnnualSectoralEmissionLimit      Rng=Par_AnnualSectoralEmissionLimit!A1                      rdim=2  cdim=1
+        par=TagDemandFuelToSector       Rng=Par_TagDemandFuelToSector!A2                       rdim=2        cdim=0
+        par=TagElectricTechnology       Rng=Par_TagElectricTechnology!A2                       rdim=1        cdim=0
+        
+        par=TagTechnologyToSubsets                Rng=Par_TagTechnologyToSubsets!A2                rdim=2        cdim=0
+        par=TagFuelToSubsets                      Rng=Par_TagFuelToSubsets!A2                      rdim=2        cdim=0
 
 $offecho
 
@@ -131,11 +134,13 @@ $loadm TotalTechnologyAnnualActivityLowerLimit TotalTechnologyAnnualActivityUppe
 $loadm Readin_TotalTechnologyModelPeriodActivityUpperLimit
 $loadm TechnologyToStorage TechnologyFromStorage StorageLevelStart MinStorageCharge
 $loadm CapitalCostStorage OperationalLifeStorage
-$loadm  ResidualStorageCapacity CapacityToActivityUnit
-$loadm  ModalSplitByFuelAndModalType TagTechnologyToModalType BaseYearProduction RegionalBaseYearProduction
+$loadm ResidualStorageCapacity CapacityToActivityUnit
+$loadm ModalSplitByFuelAndModalType TagTechnologyToModalType BaseYearProduction RegionalBaseYearProduction
 $loadm TagTechnologyToSector AnnualSectoralEmissionLimit
 $loadm RegionalCCSLimit TagDemandFuelToSector TagElectricTechnology
+$loadm TagTechnologyToSubsets TagFuelToSubsets
 $offUNDF
+
 
 *
 * ####### Step 3: Set regional values, if only value given for base-region #############
@@ -147,12 +152,10 @@ FixedCost(REGION_FULL,TECHNOLOGY,y)$(FixedCost(REGION_FULL,TECHNOLOGY,y) = 0) = 
 AvailabilityFactor(REGION_FULL,TECHNOLOGY,y)$(AvailabilityFactor(REGION_FULL,TECHNOLOGY,y) = 0) = AvailabilityFactor('%data_base_region%',TECHNOLOGY,y);
 InputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y)$(InputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y) = 0) = InputActivityRatio('%data_base_region%',TECHNOLOGY,FUEL,MODE_OF_OPERATION,y);
 OutputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y)$(OutputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y) = 0) = OutputActivityRatio('%data_base_region%',TECHNOLOGY,FUEL,MODE_OF_OPERATION,y);
-OperationalLife(REGION_FULL,TECHNOLOGY)$(OperationalLife(REGION_FULL,TECHNOLOGY) = 0) = OperationalLife('%data_base_region%',TECHNOLOGY);
-OperationalLifeStorage(REGION_FULL,STORAGE,YEAR)$(OperationalLifeStorage(REGION_FULL,STORAGE,YEAR) = 0) = OperationalLifeStorage('%data_base_region%',STORAGE,YEAR);
 EmissionsPenaltyTagTechnology(REGION_FULL,t,e,y)$(EmissionsPenaltyTagTechnology(REGION_FULL,t,e,y) = 0) = EmissionsPenaltyTagTechnology('%data_base_region%',t,e,y);
 
 ReserveMarginTagTechnology(REGION_FULL,TECHNOLOGY,y)$(ReserveMarginTagTechnology(REGION_FULL,TECHNOLOGY,y) = 0) = ReserveMarginTagTechnology('%data_base_region%',TECHNOLOGY,y);
-EmissionActivityRatio(REGION_FULL,TECHNOLOGY,EMISSION,MODE_OF_OPERATION,YEAR)$(EmissionActivityRatio(REGION_FULL,TECHNOLOGY,EMISSION,MODE_OF_OPERATION,YEAR)=0) =  EmissionActivityRatio('%data_base_region%',TECHNOLOGY,EMISSION,MODE_OF_OPERATION,YEAR);
+EmissionActivityRatio(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,EMISSION,YEAR)$(EmissionActivityRatio(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,EMISSION,YEAR)=0) =  EmissionActivityRatio('%data_base_region%',TECHNOLOGY,MODE_OF_OPERATION,EMISSION,YEAR);
 
 EmissionsPenalty(REGION_FULL,e,y)$(EmissionsPenalty(REGION_FULL,e,y) <> EmissionsPenalty('%data_base_region%',e,y)) = EmissionsPenalty('%data_base_region%',e,y);
 
@@ -167,12 +170,10 @@ FixedCost(REGION_FULL,TECHNOLOGY,y)$(FixedCost(REGION_FULL,TECHNOLOGY,y) = 0) = 
 AvailabilityFactor(REGION_FULL,TECHNOLOGY,y)$(AvailabilityFactor(REGION_FULL,TECHNOLOGY,y) = 0) = AvailabilityFactor('World',TECHNOLOGY,y);
 InputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y)$(InputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y) = 0) = InputActivityRatio('World',TECHNOLOGY,FUEL,MODE_OF_OPERATION,y);
 OutputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y)$(OutputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y) = 0) = OutputActivityRatio('World',TECHNOLOGY,FUEL,MODE_OF_OPERATION,y);
-OperationalLife(REGION_FULL,TECHNOLOGY)$(OperationalLife(REGION_FULL,TECHNOLOGY) = 0) = OperationalLife('World',TECHNOLOGY);
-OperationalLifeStorage(REGION_FULL,STORAGE,YEAR)$(OperationalLifeStorage(REGION_FULL,STORAGE,YEAR) = 0) = OperationalLifeStorage('World',STORAGE,YEAR);
 EmissionsPenaltyTagTechnology(REGION_FULL,t,e,y)$(EmissionsPenaltyTagTechnology(REGION_FULL,t,e,y) = 0) = EmissionsPenaltyTagTechnology('World',t,e,y);
 
 ReserveMarginTagTechnology(REGION_FULL,TECHNOLOGY,y)$(ReserveMarginTagTechnology(REGION_FULL,TECHNOLOGY,y) = 0) = ReserveMarginTagTechnology('World',TECHNOLOGY,y);
-EmissionActivityRatio(REGION_FULL,TECHNOLOGY,EMISSION,MODE_OF_OPERATION,YEAR)$(EmissionActivityRatio(REGION_FULL,TECHNOLOGY,EMISSION,MODE_OF_OPERATION,YEAR)=0) =  EmissionActivityRatio('World',TECHNOLOGY,EMISSION,MODE_OF_OPERATION,YEAR);
+EmissionActivityRatio(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,EMISSION,YEAR)$(EmissionActivityRatio(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,EMISSION,YEAR)=0) =  EmissionActivityRatio('World',TECHNOLOGY,MODE_OF_OPERATION,EMISSION,YEAR);
 
 ReserveMarginTagFuel(r_full,f,y)$(ReserveMarginTagFuel(r_full,f,y)=0) =  ReserveMarginTagFuel('World',f,y);
 ReserveMargin(r_full,y)$(ReserveMargin(r_full,y)=0) = ReserveMargin('World',y);
@@ -227,14 +228,14 @@ $endif
 *
 * ####### Assigning TradeRoutes depending on initialized Regions and Year #############
 *
-TradeRoute(y,f,r,rr) = Readin_TradeRoute2015(f,r,rr);
-TradeCapacity(y,'Power',r,rr) = Readin_PowerTradeCapacity('power',r,rr,y);
+TradeRoute(r,f,y,rr) = Readin_TradeRoute2015(r,f,rr);
+TradeCapacity(r,f,y,rr) = Readin_PowerTradeCapacity(r,f,y,rr);
 
 TradeCosts(f,r,rr) = Readin_TradeCosts(f,r,rr);
-GrowthRateTradeCapacity(y,'Power',r,rr) = GrowthRateTradeCapacity('%year%','Power',r,rr);
+GrowthRateTradeCapacity(r,'Power',y,rr) = GrowthRateTradeCapacity(r,'Power','%year%',rr);
 
-TradeLossFactor(y,'Power') = 0.00003;
-TradeLossBetweenRegions(y,f,r,rr) = TradeLossFactor(y,f)*TradeRoute(y,f,r,rr);
+TradeLossFactor('Power',y) = 0.00003;
+TradeLossBetweenRegions(r,f,y,rr) = TradeLossFactor(f,y)*TradeRoute(r,f,y,rr);
 
 *
 * ######### Missing in Excel, Overwriten later in scenario data #############
