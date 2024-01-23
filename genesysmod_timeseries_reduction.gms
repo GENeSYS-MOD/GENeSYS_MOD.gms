@@ -164,72 +164,6 @@ parameter CountryDataMax(r_full,cde);
 parameter SmoothedCountryDataMin(r_full,cde);
 parameter SmoothedCountryDataMax(r_full,cde);
 
-variables
-scaling_objective
-scaling_exponent(r_full,cde)
-scaling_multiplicator(r_full,cde)
-scaling_addition(r_full,cde)
-;
-
-equations
-def_scaling_objective
-def_scaling_dummy
-def_scaling_flh(r_full,cde)
-def_scaling_min(r_full,cde)
-def_scaling_max(r_full,cde)
-;
-
-def_scaling_dummy.. scaling_objective =g= 0
-;
-
-def_scaling_objective.. scaling_objective =e=
-sum((r,cde)${AverageCapacityFactor(r,cde) and (SmoothedCountryDataMax(r,cde) - SmoothedCountryDataMin(r,cde)) NE 0},
-    Sqr(
-      AverageCapacityFactor(r,cde)*card(l) -
-     sum(l,
-        max(0,
-            (
-             (
-              (
-               (
-                (SmoothedCountryData(r,l,cde) - SmoothedCountryDataMin(r,cde)) / (SmoothedCountryDataMax(r,cde) - SmoothedCountryDataMin(r,cde))
-               )**scaling_exponent(r,cde)
-              ) + CountryDataMin(r,cde)
-             ) * scaling_multiplicator(r,cde)
-            ) + scaling_addition(r,cde)
-           )
-         )
-     )
-   )
-;
-
-
-def_scaling_max(r,cde)${AverageCapacityFactor(r,cde) and (SmoothedCountryDataMax(r,cde)-SmoothedCountryDataMin(r,cde)) NE 0}..
-         CountryDataMax(r,cde) =e= sum(l${set_SmoothedCountryDataMax(r,cde,l)}, max(0,(((((SmoothedCountryData(r,l,cde)-SmoothedCountryDataMin(r,cde))/(SmoothedCountryDataMax(r,cde)-SmoothedCountryDataMin(r,cde)))**scaling_exponent(r,cde) )+CountryDataMin(r,cde))*scaling_multiplicator(r,cde))+scaling_addition(r,cde)))
-;
-
-
-def_scaling_min(r,cde)${AverageCapacityFactor(r,cde) and (SmoothedCountryDataMax(r,cde)-SmoothedCountryDataMin(r,cde)) NE 0}..
-         CountryDataMin(r,cde) =e= sum(l${set_SmoothedCountryDataMin(r,cde,l)}, max(0,(((((SmoothedCountryData(r,l,cde)-SmoothedCountryDataMin(r,cde))/(SmoothedCountryDataMax(r,cde)-SmoothedCountryDataMin(r,cde)))**scaling_exponent(r,cde) )+CountryDataMin(r,cde))*scaling_multiplicator(r,cde))+scaling_addition(r,cde)))
-;
-
-
-
-
-model scaling1 /
-def_scaling_dummy
-def_scaling_min
-def_scaling_max
-/
-;
-
-model scaling2 /
-def_scaling_objective
-/
-;
-
-scaling1.holdfixed=1;
-scaling2.holdfixed=1;
 
 AverageCapacityFactor(r,'load')${sum(l, CountryData(r,l,'load'))} = sum(l_full,CountryData(r,l_full,'load'))/8760;
 CountryData(r,l_full,'load') = CountryData(r,l_full,'load')/AverageCapacityFactor(r,'load');
@@ -359,23 +293,66 @@ set_SmoothedCountryDataMax(r,cde,l)${sum((ll)$set_SmoothedCountryDataMax(r,cde,l
 
 *$ontext
 
+variables
+scaling_objective
+scaling_exponent(r_full,cde)
+scaling_multiplicator(r_full,cde)
+scaling_addition(r_full,cde)
+;
+
+equations
+def_scaling_objective
+def_scaling_flh(r_full,cde)
+def_scaling_min(r_full,cde)
+def_scaling_max(r_full,cde)
+;
+
+
+def_scaling_objective.. scaling_objective =e=
+sum((r,cde)${AverageCapacityFactor(r,cde) and (SmoothedCountryDataMax(r,cde) - SmoothedCountryDataMin(r,cde)) NE 0},
+    Sqr(AverageCapacityFactor(r,cde)*card(l) -
+        sum(l${SmoothedCountryData(r,l,cde) - SmoothedCountryDataMin(r,cde) NE 0},
+            max(0,
+                (
+                 (
+                  (
+                   (SmoothedCountryData(r,l,cde) - SmoothedCountryDataMin(r,cde)) / (SmoothedCountryDataMax(r,cde) - SmoothedCountryDataMin(r,cde))
+                  )**scaling_exponent(r,cde)
+                 ) * (CountryDataMax(r,cde) - CountryDataMin(r,cde))
+                ) + CountryDataMin(r,cde)
+               )
+            ) - sum(l$(SmoothedCountryData(r,l,cde) - SmoothedCountryDataMin(r,cde) = 0),
+                    max(0, CountryDataMin(r,cde))
+                   )
+       )
+    )
+;
+
+
+def_scaling_max(r,cde)${AverageCapacityFactor(r,cde) and (SmoothedCountryDataMax(r,cde)-SmoothedCountryDataMin(r,cde)) NE 0}..
+         CountryDataMax(r,cde) - CountryDataMin(r,cde)  =e= scaling_multiplicator(r,cde);
+
+
+def_scaling_min(r,cde)${AverageCapacityFactor(r,cde) and (SmoothedCountryDataMax(r,cde)-SmoothedCountryDataMin(r,cde)) NE 0}..
+         CountryDataMin(r,cde) =e= scaling_addition(r,cde);
+
+
+
+
+model scaling1 /
+def_scaling_min
+def_scaling_max
+def_scaling_objective
+/
+;
+
+
+
+scaling1.holdfixed=1;
 
 scaling_exponent.lo(r,cde)${AverageCapacityFactor(r,cde)}      = 0;
-scaling_multiplicator.lo(r,cde)${AverageCapacityFactor(r,cde)} = 0;
-scaling_addition.lo(r,cde)${AverageCapacityFactor(r,cde)}      = -100;
-
-scaling_exponent.up(r,cde)${AverageCapacityFactor(r,cde)}      = 100;
-scaling_multiplicator.up(r,cde)${AverageCapacityFactor(r,cde)} = 100;
-scaling_addition.up(r,cde)${AverageCapacityFactor(r,cde)}      = 100;
-
-* Determine Variables
+scaling_exponent.up(r,cde)${AverageCapacityFactor(r,cde)}      = 10;
 scaling_exponent.l(r,cde)${AverageCapacityFactor(r,cde)}      = 1;
-scaling_multiplicator.l(r,cde)${AverageCapacityFactor(r,cde)} = 1;
-scaling_addition.l(r,cde)${AverageCapacityFactor(r,cde)}      = 0;
-
-scaling_exponent.fx(r,cde)${AverageCapacityFactor(r,cde)}      = 1;
-scaling_multiplicator.l(r,cde)${AverageCapacityFactor(r,cde)} = 1;
-scaling_addition.l(r,cde)${AverageCapacityFactor(r,cde)}       = 0;
 
 
 solve scaling1 min scaling_objective using DNLP;
@@ -383,30 +360,18 @@ solve scaling1 min scaling_objective using DNLP;
 abort$(scaling1.solvestat <> %solvestat.NormalCompletion%)  'Solvestat is wrong';
 abort$(scaling1.modelstat <> 1 and scaling1.modelstat <> 2 and scaling1.modelstat <> 8)  'Modelstat is wrong';
 
-scaling_exponent.lo(r,cde)${AverageCapacityFactor(r,cde)}      = 0;
-scaling_exponent.up(r,cde)${AverageCapacityFactor(r,cde)}      = 10;
 
-scaling_multiplicator.fx(r,cde)${AverageCapacityFactor(r,cde)} = scaling_multiplicator.l(r,cde);
-scaling_addition.fx(r,cde)${AverageCapacityFactor(r,cde)}      = scaling_addition.l(r,cde);
-
-solve scaling2 min scaling_objective using DNLP;
-
-abort$(scaling2.solvestat <> %solvestat.NormalCompletion%)  'Solvestat is wrong';
-abort$(scaling2.modelstat <> 1 and scaling2.modelstat <> 2 and scaling2.modelstat <> 8)  'Modelstat is wrong';
-
-ScaledCountryData(r,l,cde)${ (SmoothedCountryDataMax(r,cde) - SmoothedCountryDataMin(r,cde)) NE 0} =
+ScaledCountryData(r,l,cde)${(SmoothedCountryDataMax(r,cde) - SmoothedCountryDataMin(r,cde)) NE 0} =
         max(0,
             (
              (
               (
-               (
-                (SmoothedCountryData(r,l,cde) - SmoothedCountryDataMin(r,cde)) / (SmoothedCountryDataMax(r,cde) - SmoothedCountryDataMin(r,cde))
-               )**scaling_exponent.l(r,cde)
-              ) + CountryDataMin(r,cde)
+               (SmoothedCountryData(r,l,cde) - SmoothedCountryDataMin(r,cde)) / (SmoothedCountryDataMax(r,cde) - SmoothedCountryDataMin(r,cde))
+              )**max(0,scaling_exponent.l(r,cde))
              ) * scaling_multiplicator.l(r,cde)
             ) + scaling_addition.l(r,cde)
-           )
-;
+           );
+
 
 YearSplit(l,y) = 1/card(l);
 

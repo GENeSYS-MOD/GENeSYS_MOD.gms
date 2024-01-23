@@ -67,7 +67,6 @@ hour_steps = mod(%elmod_nthhour%,24);
 scalar start_hour /%elmod_starthour%/;
 
 *marginal costs for better numerical stability
-CapitalCostStorage(r,s,y) = 0.01;
 CapitalCost(r,t,y)$(CapitalCost(r,t,y) = 0) = 0.01;
 
 
@@ -132,7 +131,7 @@ NewCapacity.up('%year%','HHI_BF_BOF',r) = +INF;
 NewCapacity.up('%year%','HHI_Bio_BF_BOF',r) = +INF;
 NewCapacity.up('%year%','HHI_Scrap_EAF',r) = +INF;
 NewCapacity.up('%year%','HHI_DRI_EAF',r) = +INF;
-NewCapacity.up('%year%',t,r)$(TagTechnologyToSector(t,'CHP')) = +INF;
+NewCapacity.up('%year%',t,r)$(TagTechnologyToSubsets(t,'CHP')) = +INF;
 NewCapacity.up('%year%','D_Gas_Methane',r) = +INF;
 
 
