@@ -370,8 +370,8 @@ CC2_DiscountedCapitalInvestments(y,t,r).. CapitalInvestment(y,t,r)/((1+Technolog
 
 $ifthen %switch_investLimit% == 1
 
-equation SC1_SpeadCapitalInvestmentsAcrossTime(YEAR_FULL);
-SC1_SpeadCapitalInvestmentsAcrossTime(y)$(YearVal(y) > %year%).. sum((t,r),CapitalInvestment(y,t,r)) =l= 1/(smax(yy,Yearval(yy))-smin(yy,YearVal(yy)))*YearlyDifferenceMultiplier(y-1)*InvestmentLimit*sum(yy,sum((t,r),CapitalInvestment(yy,t,r)));
+equation SC1_SpreadCapitalInvestmentsAcrossTime(YEAR_FULL);
+SC1_SpreadCapitalInvestmentsAcrossTime(y)$(YearVal(y) > %year%).. sum((t,r),CapitalInvestment(y,t,r)) =l= 1/(smax(yy,Yearval(yy))-smin(yy,YearVal(yy)))*YearlyDifferenceMultiplier(y-1)*InvestmentLimit*sum(yy,sum((t,r),CapitalInvestment(yy,t,r)));
 
 equation SC2_LimitAnnualCapacityAdditions(YEAR_FULL,REGION_FULL,TECHNOLOGY);
 SC2_LimitAnnualCapacityAdditions(y,r,t)$(TagTechnologyToSubsets(t,'Renewables') and ord(y)>1).. NewCapacity(y,t,r) =l= YearlyDifferenceMultiplier(y-1)*NewRESCapacity*TotalAnnualMaxCapacity(r,t,y);
