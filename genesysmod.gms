@@ -22,7 +22,7 @@ $onuelxref
 scalar starttime;
 starttime = jnow;
 
-$if not set data_file                    $setglobal data_file output_wide_few_zones
+$if not set data_file                    $setglobal data_file RegularParameters_wide_few_zones
 $if not set hourly_data_file             $setglobal hourly_data_file output_timeseries
 $if not set elmod_nthhour                $setglobal elmod_nthhour 964
 $if not set elmod_starthour              $setglobal elmod_starthour 8
@@ -50,6 +50,8 @@ $if not set switch_intertemporal         $setglobal switch_intertemporal 0
 $if not set switch_weighted_emissions    $setglobal switch_weighted_emissions 1
 $if not set switch_employment_calculation $setglobal switch_employment_calculation 0
 $if not set switch_only_write_results    $setglobal switch_only_write_results 0
+$if not set switch_read_data_long        $setglobal switch_read_data_long 0
+
 
 $if not set set_symmetric_transmission   $setglobal set_symmetric_transmission 0
 $if not set switch_hydrogen_blending_share      $setglobal switch_hydrogen_blending_share 1
@@ -101,8 +103,13 @@ $include genesysmod_dec.gms
 *
 * ####### Load data from provided excel files #############
 *
+
 $offlisting
+$ifthen %switch_read_data_long% == 1
+$include genesysmod_dataload_long.gms
+$else
 $include genesysmod_dataload.gms
+$endif
 
 *
 * ####### Settings for model run (Years, Regions, etc) #############
