@@ -24,7 +24,7 @@
 
 free variable z;
 positive variable RegionalBaseYearProduction_neg(y_full,r_full,t,f);
-RegionalBaseYearProduction_neg.fx(y,r,t,f) = 0;
+*RegionalBaseYearProduction_neg.fx(y,r,t,f) = 0;
 
 equation cost;
 cost.. z =e= sum((y,r), TotalDiscountedCost(y,r))
@@ -708,7 +708,7 @@ equation BYB1_RegionalBaseYearProductionLowerBound(YEAR_FULL,REGION_FULL,t,f);
 BYB1_RegionalBaseYearProductionLowerBound(y,r,t,f)$(RegionalBaseYearProduction(r,t,f,y) <> 0).. ProductionByTechnologyAnnual(y,t,f,r) =g= RegionalBaseYearProduction(r,t,f,y)*(1-BaseYearSlack(f)) - RegionalBaseYearProduction_neg(y,r,t,f);
 
 equation BYB2_RegionalBaseYearProductionUpperBound(YEAR_FULL,REGION_FULL,t,f);
-BYB2_RegionalBaseYearProductionUpperBound(y,r,t,'Power')$(RegionalBaseYearProduction(r,t,'Power',y) <> 0).. ProductionByTechnologyAnnual(y,t,'Power',r) =l= RegionalBaseYearProduction(r,t,'Power',y)+BaseYearOvershoot(r,t,'Power',y);
+BYB2_RegionalBaseYearProductionUpperBound(y,r,t,f)$(RegionalBaseYearProduction(r,t,f,y) <> 0).. ProductionByTechnologyAnnual(y,t,f,r) =l= RegionalBaseYearProduction(r,t,f,y)+BaseYearOvershoot(r,t,f,y);
 
 $endif
 

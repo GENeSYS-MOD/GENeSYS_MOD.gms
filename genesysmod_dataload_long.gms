@@ -28,6 +28,7 @@ Readin_GrowthRateTradeCapacity(r_full,rr_full,f,y_full)
 Readin_TradeCapacityGrowthCosts(r_full,rr_full,f)
 Readin_ModalSplitByFuelAndModalType(r_full,f,y_full,mt)
 Readin_TotalTechnologyModelPeriodActivityUpperLimit(REGION_FULL,TECHNOLOGY)
+test(REGION_FULL,FUEL,YEAR_FULL)
 ;
 
 * Step 1: REDONE - Now reads from combined data file
@@ -121,7 +122,7 @@ se=0
         
         par=TagTechnologyToSubsets                Rng=Par_TagTechnologyToSubsets!A2                rdim=2        cdim=0
         par=TagFuelToSubsets                      Rng=Par_TagFuelToSubsets!A2                      rdim=2        cdim=0
-
+        par=test    Rng=test!A1 rdim=2  cdim=1
 $offecho
 
 $ifi %switch_only_load_gdx%==0 $call "gdxxrw %inputdir%%data_file%.xlsx @%tempdir%temp_%data_file%_par.tmp o=%gdxdir%%data_file%_par.gdx MaxDupeErrors=99 CheckDate ";
@@ -141,7 +142,7 @@ $loadm ResidualStorageCapacity CapacityToActivityUnit
 $loadm Readin_ModalSplitByFuelAndModalType TagTechnologyToModalType BaseYearProduction RegionalBaseYearProduction
 $loadm TagTechnologyToSector AnnualSectoralEmissionLimit
 $loadm RegionalCCSLimit TagDemandFuelToSector TagElectricTechnology
-$loadm TagTechnologyToSubsets TagFuelToSubsets 
+$loadm TagTechnologyToSubsets TagFuelToSubsets test
 $offUNDF
 
 

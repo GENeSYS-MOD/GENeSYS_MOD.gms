@@ -134,6 +134,9 @@ NewCapacity.up('%year%','HHI_DRI_EAF',r) = +INF;
 NewCapacity.up('%year%',t,r)$(TagTechnologyToSubsets(t,'CHP')) = +INF;
 NewCapacity.up('%year%','D_Gas_Methane',r) = +INF;
 
+ReserveMargin('DE_HB','2018') = 0;
+
+
 
 *
 * ####### Dispatch and Curtailment #############
