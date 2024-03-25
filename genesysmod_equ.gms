@@ -374,19 +374,20 @@ equation SC1_SpreadCapitalInvestmentsAcrossTime(YEAR_FULL);
 SC1_SpreadCapitalInvestmentsAcrossTime(y)$(YearVal(y) > %year%).. sum((t,r),CapitalInvestment(y,t,r)) =l= 1/(smax(yy,Yearval(yy))-smin(yy,YearVal(yy)))*YearlyDifferenceMultiplier(y-1)*InvestmentLimit*sum(yy,sum((t,r),CapitalInvestment(yy,t,r)));
 
 equation SC2_LimitAnnualCapacityAdditions(YEAR_FULL,REGION_FULL,TECHNOLOGY);
-SC2_LimitAnnualCapacityAdditions(y,r,t)$(TagTechnologyToSubsets(t,'Renewables') and ord(y)>1).. NewCapacity(y,t,r) =l= YearlyDifferenceMultiplier(y-1)*NewRESCapacity*TotalAnnualMaxCapacity(r,t,y);
+SC2_LimitAnnualCapacityAdditions(y,r,t)$(TagTechnologyToSubsets(t,'Renewables') and ord(y)>1 and sum(tt,ResidualCapacity(r,tt,y))).. NewCapacity(y,t,r) =l= YearlyDifferenceMultiplier(y-1)*NewRESCapacity*TotalAnnualMaxCapacity(r,t,y);
 
 equation SC3_SmoothingRenewableIntegration(YEAR_FULL,REGION_FULL,TECHNOLOGY,FUEL);
-SC3_SmoothingRenewableIntegration(y,r,t,f)$(Yearval(y) > %year% and TagTechnologyToSubsets(t,'PhaseInSet')).. ProductionByTechnologyAnnual(y,t,f,r) =g= ProductionByTechnologyAnnual(y-1,t,f,r)*PhaseIn(y)*((SpecifiedAnnualDemand(r,f,y)/SpecifiedAnnualDemand(r,f,y-1))$(SpecifiedAnnualDemand(r,f,y))+1$(not SpecifiedAnnualDemand(r,f,y)));
+SC3_SmoothingRenewableIntegration(y,r,t,f)$(Yearval(y) > %year% and TagTechnologyToSubsets(t,'PhaseInSet') and sum(tt,ResidualCapacity(r,tt,y))).. ProductionByTechnologyAnnual(y,t,f,r) =g= ProductionByTechnologyAnnual(y-1,t,f,r)*PhaseIn(y)*((SpecifiedAnnualDemand(r,f,y)/SpecifiedAnnualDemand(r,f,y-1))$(SpecifiedAnnualDemand(r,f,y))+1$(not SpecifiedAnnualDemand(r,f,y)));
 
 equation SC3_SmoothingFossilPhaseOuts(YEAR_FULL,REGION_FULL,TECHNOLOGY,FUEL);
-SC3_SmoothingFossilPhaseOuts(y,r,t,f)$(Yearval(y) > %year% and TagTechnologyToSubsets(t,'PhaseOutSet')).. ProductionByTechnologyAnnual(y,t,f,r) =l= ProductionByTechnologyAnnual(y-1,t,f,r)*PhaseOut(y)*((SpecifiedAnnualDemand(r,f,y)/SpecifiedAnnualDemand(r,f,y-1))$(SpecifiedAnnualDemand(r,f,y))+1$(not SpecifiedAnnualDemand(r,f,y)));
+SC3_SmoothingFossilPhaseOuts(y,r,t,f)$(Yearval(y) > %year% and TagTechnologyToSubsets(t,'PhaseOutSet') and sum(tt,ResidualCapacity(r,tt,y))).. ProductionByTechnologyAnnual(y,t,f,r) =l= ProductionByTechnologyAnnual(y-1,t,f,r)*PhaseOut(y)*((SpecifiedAnnualDemand(r,f,y)/SpecifiedAnnualDemand(r,f,y-1))$(SpecifiedAnnualDemand(r,f,y))+1$(not SpecifiedAnnualDemand(r,f,y)));
 
 equation SC4_RelativeTechnologyPhaseInLimit(YEAR_FULL,FUEL);
-SC4_RelativeTechnologyPhaseInLimit(y,f)$(Yearval(y) > %year% and ProductionGrowthLimit(y,f)>0).. sum((t,r)$(RETagTechnology(t,y)=1),ProductionByTechnologyAnnual(y,t,f,r)-ProductionByTechnologyAnnual(y-1,t,f,r)) =l= YearlyDifferenceMultiplier(y-1)*ProductionGrowthLimit(y,f)*sum((t,r),ProductionByTechnologyAnnual(y-1,t,f,r))-sum((t,r)$(TagTechnologyToSubsets(t,'StorageDummies')),ProductionByTechnologyAnnual(y-1,t,f,r));
+SC4_RelativeTechnologyPhaseInLimit(y,f)$(Yearval(y) > %year% and ProductionGrowthLimit(y,f)>0 and sum((r,t),ResidualCapacity(r,t,y))).. sum((t,r)$(RETagTechnology(t,y)=1),ProductionByTechnologyAnnual(y,t,f,r)-ProductionByTechnologyAnnual(y-1,t,f,r)) =l= YearlyDifferenceMultiplier(y-1)*ProductionGrowthLimit(y,f)*sum((t,r),ProductionByTechnologyAnnual(y-1,t,f,r))-sum((t,r)$(TagTechnologyToSubsets(t,'StorageDummies')),ProductionByTechnologyAnnual(y-1,t,f,r));
 
 equation SC5_AnnualStorageChangeLimit(YEAR_FULL,REGION_FULL,FUEL);
-SC5_AnnualStorageChangeLimit(y,r,f)$(Yearval(y) > %year% and ProductionGrowthLimit(y,f)>0).. sum(t$(TagTechnologyToSubsets(t,'StorageDummies')),ProductionByTechnologyAnnual(y,t,f,r)-ProductionByTechnologyAnnual(y-1,t,f,r)) =l= YearlyDifferenceMultiplier(y-1)*(ProductionGrowthLimit(y,f)+StorageLimitOffset)*sum((t),ProductionByTechnologyAnnual(y-1,t,f,r))
+SC5_AnnualStorageChangeLimit(y,r,f)$(Yearval(y) > %year% and ProductionGrowthLimit(y,f)>0 and sum(t,ResidualCapacity(r,t,y))).. sum(t$(TagTechnologyToSubsets(t,'StorageDummies')),ProductionByTechnologyAnnual(y,t,f,r)-ProductionByTechnologyAnnual(y-1,t,f,r)) =l= YearlyDifferenceMultiplier(y-1)*(ProductionGrowthLimit(y,f)+StorageLimitOffset)*sum((t),ProductionByTechnologyAnnual(y-1,t,f,r))
+
 
 $endif
 

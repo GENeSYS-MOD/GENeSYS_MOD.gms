@@ -43,7 +43,7 @@ set TECHNOLOGY List of all available technologies
                 Infeasibility_HRI,
                 Infeasibility_Mob_Passenger,
                 Infeasibility_Mob_Freight /;
-alias (t,TECHNOLOGY);
+alias (t,TECHNOLOGY,tt);
 
 set DummyTechnology(TECHNOLOGY) Subset of technologies that serve as infeasibility helpers;
 

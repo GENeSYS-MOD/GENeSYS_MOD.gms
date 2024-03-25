@@ -122,7 +122,6 @@ se=0
         
         par=TagTechnologyToSubsets                Rng=Par_TagTechnologyToSubsets!A2                rdim=2        cdim=0
         par=TagFuelToSubsets                      Rng=Par_TagFuelToSubsets!A2                      rdim=2        cdim=0
-        par=test    Rng=test!A1 rdim=2  cdim=1
 $offecho
 
 $ifi %switch_only_load_gdx%==0 $call "gdxxrw %inputdir%%data_file%.xlsx @%tempdir%temp_%data_file%_par.tmp o=%gdxdir%%data_file%_par.gdx MaxDupeErrors=99 CheckDate ";
@@ -142,7 +141,7 @@ $loadm ResidualStorageCapacity CapacityToActivityUnit
 $loadm Readin_ModalSplitByFuelAndModalType TagTechnologyToModalType BaseYearProduction RegionalBaseYearProduction
 $loadm TagTechnologyToSector AnnualSectoralEmissionLimit
 $loadm RegionalCCSLimit TagDemandFuelToSector TagElectricTechnology
-$loadm TagTechnologyToSubsets TagFuelToSubsets test
+$loadm TagTechnologyToSubsets TagFuelToSubsets
 $offUNDF
 
 
