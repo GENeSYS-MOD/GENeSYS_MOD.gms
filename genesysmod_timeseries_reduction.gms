@@ -30,7 +30,8 @@ wind_onshore_avg, wind_onshore_inf, wind_onshore_opt,
 wind_offshore,wind_offshore_shallow,wind_offshore_deep,
 mobility_psng,
 heat_low, heat_high,
-heat_pump_air, heat_pump_ground,hydro_ror,pv_tracking/;
+heat_pump_air, heat_pump_ground,hydro_ror,pv_tracking,
+heat_pump_geo_surface,heat_pump_geo_deep/;
 alias (cde,COUNTRY_DATA_ENTRIES);
 
 parameter CountryData(REGION_FULL,TIMESLICE_FULL,COUNTRY_DATA_ENTRIES);
@@ -52,6 +53,8 @@ parameter CountryData_Heat_High(TIMESLICE_FULL,REGION_FULL);
 parameter CountryData_HeatPump_AirSource(TIMESLICE_FULL,REGION_FULL);
 parameter CountryData_HeatPump_GroundSource(TIMESLICE_FULL,REGION_FULL);
 parameter CountryData_Hydro_RoR(TIMESLICE_FULL,REGION_FULL);
+parameter CountryData_HeatPump_Geo_Surface(TIMESLICE_FULL,REGION_FULL);
+parameter CountryData_HeatPump_Geo_Deep(TIMESLICE_FULL,REGION_FULL);
 
 parameter Dunkelflaute(REGION_FULL,TIMESLICE_FULL,COUNTRY_DATA_ENTRIES);
 
@@ -79,11 +82,13 @@ se=0
          par=CountryData_HeatPump_GroundSource Rng=TS_HP_GROUNDSOURCE!A1      rdim=1    cdim=1
          par=CountryData_HeatPump_AirSource    Rng=TS_HP_AIRSOURCE!A1   rdim=1    cdim=1
          par=CountryData_Hydro_RoR                       Rng=TS_HYDRO_ROR!A1            rdim=1    cdim=1
+         par=CountryData_HeatPump_Geo_Surface    Rng=TS_HP_GEO_SURFACE!A1   rdim=1    cdim=1
+         par=CountryData_HeatPump_Geo_Deep    Rng=TS_HP_GEO_DEEP!A1   rdim=1    cdim=1         
 $offecho
 $ifi %switch_only_load_gdx%==0 $call "gdxxrw %inputdir%%hourly_data_file%.xlsx @%tempdir%temp_%hourly_data_file%_elmod.tmp o=%gdxdir%%hourly_data_file%_elmod.gdx MaxDupeErrors=99 CheckDate";
 $GDXin %gdxdir%%hourly_data_file%_elmod.gdx
 $onUNDF
-$load CountryData_PV_inf, CountryData_PV_avg, CountryData_PV_opt, CountryData_PV_tracking, CountryData_Wind_Onshore_inf, CountryData_Wind_Onshore_avg, CountryData_Wind_Onshore_opt, CountryData_HeatPump_GroundSource, CountryData_HeatPump_AirSource, CountryData_Load, CountryData_Wind_Offshore, CountryData_Heat_High, CountryData_Heat_Low, CountryData_Mobility_Psng, CountryData_Hydro_RoR, CountryData_Wind_Offshore_Deep, CountryData_Wind_Offshore_Shallow
+$load CountryData_PV_inf, CountryData_PV_avg, CountryData_PV_opt, CountryData_PV_tracking, CountryData_Wind_Onshore_inf, CountryData_Wind_Onshore_avg, CountryData_Wind_Onshore_opt, CountryData_HeatPump_GroundSource, CountryData_HeatPump_AirSource, CountryData_Load, CountryData_Wind_Offshore, CountryData_Heat_High, CountryData_Heat_Low, CountryData_Mobility_Psng, CountryData_Hydro_RoR, CountryData_Wind_Offshore_Deep, CountryData_Wind_Offshore_Shallow, CountryData_HeatPump_Geo_Surface, CountryData_HeatPump_Geo_Deep
 $offUNDF
 
 CountryData(r_full, l_full, 'load') = CountryData_Load(l_full, r_full);
@@ -103,6 +108,8 @@ CountryData(r_full, l_full, 'heat_pump_air') = CountryData_HeatPump_AirSource(l_
 CountryData(r_full, l_full, 'heat_pump_ground') = CountryData_HeatPump_GroundSource(l_full, r_full);
 CountryData(r_full, l_full, 'mobility_psng') = CountryData_Mobility_Psng(l_full, r_full);
 CountryData(r_full, l_full, 'hydro_ror') = CountryData_Hydro_RoR(l_full, r_full);
+CountryData(r_full, l_full, 'heat_pump_geo_surface') = CountryData_HeatPump_Geo_Surface(l_full, r_full);
+CountryData(r_full, l_full, 'heat_pump_geo_deep') = CountryData_HeatPump_Geo_Deep(l_full, r_full);
 
 parameter x_averageTimeSeriesValue(r_full, cde);
 x_averageTimeSeriesValue(r,cde)${sum(l_full, CountryData(r,l_full,cde))} = (sum(l_full,CountryData(r,l_full,cde))/8760);
@@ -192,6 +199,8 @@ smoothing_range('heat_low') = 3;
 smoothing_range('heat_high') = 3;
 smoothing_range('heat_pump_air') = 3;
 smoothing_range('heat_pump_ground') = 3;
+smoothing_range('heat_pump_geo_surface') = 3;
+smoothing_range('heat_pump_geo_deep') = 3;
 smoothing_range('hydro_ror') = 3;
 
 smoothing_range(cde)=1;
@@ -215,6 +224,8 @@ smoothing_range('heat_low') = 0;
 smoothing_range('heat_high') = 0;
 smoothing_range('heat_pump_air') = 0;
 smoothing_range('heat_pump_ground') = 0;
+smoothing_range('heat_pump_geo_surface') = 0;
+smoothing_range('heat_pump_geo_deep') = 0;
 smoothing_range('hydro_ror') = 0;
 );
 
@@ -236,6 +247,8 @@ smoothing_range('heat_low') = 3;
 smoothing_range('heat_high') = 3;
 smoothing_range('heat_pump_air') = 3;
 smoothing_range('heat_pump_ground') = 3;
+smoothing_range('heat_pump_geo_surface') = 3;
+smoothing_range('heat_pump_geo_deep') = 3;
 smoothing_range('hydro_ror') = 3;
 );
 
@@ -257,6 +270,8 @@ smoothing_range('heat_low') = 3;
 smoothing_range('heat_high') = 3;
 smoothing_range('heat_pump_air') = 3;
 smoothing_range('heat_pump_ground') = 3;
+smoothing_range('heat_pump_geo_surface') = 3;
+smoothing_range('heat_pump_geo_deep') = 3;
 smoothing_range('hydro_ror') = 3;
 );
 
@@ -389,6 +404,8 @@ CapacityFactor(r,t,l,y)$(TagTechnologyToSubsets(t,'Wind')) = 0;
 
 CapacityFactor(r,'HLR_Heatpump_Aerial',l,y) = ScaledCountryData(r,l,'heat_pump_air');
 CapacityFactor(r,'HLR_Heatpump_Ground',l,y) = ScaledCountryData(r,l,'heat_pump_ground');
+CapacityFactor(r,'HLR_Heatpump_Geo_Surface',l,y) = ScaledCountryData(r,l,'heat_pump_geo_surface');
+CapacityFactor(r,'HLR_Heatpump_Geo_Deep',l,y) = ScaledCountryData(r,l,'heat_pump_geo_deep');
 
 CapacityFactor(r,'Res_pv_utility_opt',l,y) = ScaledCountryData(r,l,'pv_opt');
 CapacityFactor(r,'Res_Wind_Onshore_opt',l,y) = ScaledCountryData(r,l,'wind_onshore_opt');
@@ -410,6 +427,8 @@ CapacityFactor(r,'Res_Hydro_Small',l,y) = ScaledCountryData(r,l,'hydro_ror');
 if(card(l) = 8760,
 CapacityFactor(r,'HLR_Heatpump_Aerial',l,y) = CountryData(r,l,'heat_pump_air');
 CapacityFactor(r,'HLR_Heatpump_Ground',l,y) = CountryData(r,l,'heat_pump_ground');
+CapacityFactor(r,'HLR_Heatpump_Geo_Surface',l,y) = CountryData(r,l,'heat_pump_geo_surface');
+CapacityFactor(r,'HLR_Heatpump_Geo_Deep',l,y) = CountryData(r,l,'heat_pump_geo_deep');
 
 CapacityFactor(r,'Res_pv_utility_opt',l,y) = CountryData(r,l,'pv_opt');
 CapacityFactor(r,'Res_Wind_Onshore_opt',l,y) = CountryData(r,l,'wind_onshore_opt');
