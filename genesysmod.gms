@@ -31,6 +31,9 @@ $if not set data_base_region             $setglobal data_base_region DE_BY
 $if not set timeseries                   $setglobal timeseries elmod
 $if not set solver                       $setglobal solver gurobi
 
+$if not set switch_FEP                   $setglobal switch_FEP 1
+$if not set switch_Policy_Scenario       $setglobal switch_Policy_Scenario 1
+
 $if not set switch_test_data_load        $setglobal switch_test_data_load 0
 $if not set switch_investLimit           $setglobal switch_investLimit 1
 $if not set switch_infeasibility_tech    $setglobal switch_infeasibility_tech 0
