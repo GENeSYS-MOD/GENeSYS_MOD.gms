@@ -401,4 +401,7 @@ parameter CoalJobs;
 parameter output_energyjobs;
 $endif
 
-
+$ifthen %switch_acceptance_factor% == 1
+Parameter AcceptanceFactor;
+Parameter AcceptanceFactorPowerLines;
+$endif

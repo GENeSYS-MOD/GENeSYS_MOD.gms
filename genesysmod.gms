@@ -39,6 +39,9 @@ $if not set switch_investLimit           $setglobal switch_investLimit 1
 $if not set switch_infeasibility_tech    $setglobal switch_infeasibility_tech 0
 $if not set switch_base_year_bounds      $setglobal switch_base_year_bounds 1
 
+$if not set switch_acceptance_factor        $setglobal switch_acceptance_factor 1
+$if not set switch_acceptance_constraint    $setglobal switch_acceptance_constraint 0
+$if not set acceptance_factor_data_file     $setglobal acceptance_factor_data_file Justice_Factor_v02_joh_02_11_2023
 
 $if not set switch_unixPath              $setglobal switch_unixPath 0
 $if not set switch_ccs                   $setglobal switch_ccs 0
@@ -155,7 +158,6 @@ $offlisting
 $include genesysmod_equ.gms
 
 
-
 *
 * ####### CPLEX Options #############
 *
@@ -257,9 +259,12 @@ $endif
 *
 * ####### Creating Result Files #############
 *
+
 $include genesysmod_results.gms
 
-
+$ifthen %switch_acceptance_factor% == 1
+$include genesysmod_acceptance_results.gms
+$endif
 
 $ifthen not %switch_write_output% == xls
 $ifthen not %switch_write_output% == csv

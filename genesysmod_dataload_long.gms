@@ -293,7 +293,36 @@ MinActiveProductionPerTimeslice(y,l,'Power','RES_Hydro_Large',R_FULL) = 0.1;
 MinActiveProductionPerTimeslice(y,l,'Power','RES_Hydro_Small',R_FULL) = 0.05;
 $endif
 
+*
+* ########## Dataload of Acceptance Excel ##########
+*
 
+$ifthen %switch_acceptance_factor% == 1
+* ########## Dataload of Justice Excel ##########
+
+$onecho >%tempdir%temp_%acceptance_factor_data_file%.tmp
+se=0
+        dset=Technology              Rng=Sets!A2                         rdim=1        cdim=0
+        set=Year                     Rng=Sets!B2                         rdim=1        cdim=0
+        set=Region                   Rng=Sets!C2                         rdim=1        cdim=0
+
+
+        par=AcceptanceFactor    Rng=Par_AcceptanceFactor!A5                rdim=2        cdim=1
+        par=AcceptanceFactorPowerLines  Rng=Par_Acceptance_Powerlines!A5                rdim=2        cdim=1
+
+
+
+$offecho
+
+$ifi %switch_only_load_gdx%==0 $call "gdxxrw %inputdir%%acceptance_factor_data_file%.xlsx @%tempdir%temp_%acceptance_factor_data_file%.tmp o=%gdxdir%%acceptance_factor_data_file%.gdx MaxDupeErrors=999 ";
+$GDXin %gdxdir%%acceptance_factor_data_file%.gdx
+$onUNDF
+*$loadm Region
+$loadm AcceptanceFactor
+$loadm AcceptanceFactorPowerLines
+
+$offUNDF
+$endif
 
 *
 * ########## Dataload of Employment Excel ##########
