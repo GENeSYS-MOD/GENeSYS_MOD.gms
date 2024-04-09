@@ -144,6 +144,13 @@ display "HINT: No scenario data for region %model_region% found!";
 $endif
 
 $offlisting
+
+
+$ifthen %switch_acceptance_factor% == 1
+$include genesysmod_acceptance_factor.gms
+$endif
+
+
 $include genesysmod_errorcheck.gms
 
 $ifthen %switch_test_data_load% == 0

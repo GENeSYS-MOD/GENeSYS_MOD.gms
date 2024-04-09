@@ -82,7 +82,7 @@ Acceptance5_TotalNCapacity(y)..
 *                 =e= TotalAcceptanceBase(r);
 
 
-*$ifthen %switch_justice_constraint% == 1
+$ifthen %switch_acceptance_constraint% == 1
 
 **If Justice should not be reduced, can also be turned upside down
 *$ifthen %Info% == SA2dgJOBS
@@ -134,7 +134,7 @@ Acceptance4_TotalAverageAcceptance(r,y)$(YearVal(y) > 2025).. TotalAcceptance(y)
 *equation NoJusticeLost(r_full,y_full);
 *NoJusticeLost(r,y)$(YearVal(y) > 2015).. TotalJustice(r,y) =g=  TotalJustice(r,'2018');
 
-*$endif
+$endif
 
 ****GINI COEFFICIENT 
 
