@@ -23,16 +23,15 @@
 * ######################
 
 free variable z;
-positive variable RegionalBaseYearProduction_neg(y_full,r_full,t,f);
-RegionalBaseYearProduction_neg.fx(y,r,t,f) = 0;
+
 
 equation cost;
 cost.. z =e= sum((y,r), TotalDiscountedCost(y,r))
 + sum((y,r), DiscountedAnnualTotalTradeCosts(y,r))
 + sum((y,f,r,rr), DiscountedNewTradeCapacityCosts(y,f,r,rr))
 + sum((y,f,r), DiscountedAnnualCurtailmentCost(y,f,r))
-+ sum((y,r,f,t),RegionalBaseYearProduction_neg(y,r,t,f)*9999)
-+ sum((y,r,f,t),BaseYearOvershoot(r,t,f,y)*999)
++ sum((y,r,f,t),BaseYearBounds_TooHigh(y,r,t,f)*9999)
++ sum((y,r,f,t),BaseYearBounds_TooLow(r,t,f,y)*9999)
 - sum((y,r),DiscountedSalvageValueTransmission(y,r))
 ;
 
@@ -214,10 +213,11 @@ or (sum(f,OutputActivityRatio(r,t,f,m,y)) = 0 and sum(f,InputActivityRatio(r,t,f
 
 $ifthen  %switch_intertemporal% == 1
 equation CA3a_RateOfTotalActivity_Intertemporal(REGION_FULL,TIMESLICE_FULL,TECHNOLOGY,YEAR_FULL);
-CA3a_RateOfTotalActivity_Intertemporal(r,l,t,y)$(CapacityFactor(r,t,l,y) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. sum(m, RateOfActivity(y,l,t,m,r)) =e= TotalActivityPerYear(r,l,t,y)*AvailabilityFactor(r,t,y) - DispatchDummy(r,l,t,y)*TagDispatchableTechnology(t);
+CA3a_RateOfTotalActivity_Intertemporal(r,l,t,y)$(CapacityFactor(r,t,l,y) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. RateOfTotalActivity(y,l,t,r) =e= TotalActivityPerYear(r,l,t,y)*AvailabilityFactor(r,t,y) - DispatchDummy(r,l,t,y)*TagDispatchableTechnology(t) - CurtailedCapacity(r,l,t,y)*CapacityToActivityUnit(t);
 
 equation CA4_TotalActivityPerYear_Intertemporal(REGION_FULL,TIMESLICE_FULL,TECHNOLOGY,YEAR_FULL);
-CA4_TotalActivityPerYear_Intertemporal(r,l,t,y)$((sum(yy$((YearVal(y)-YearVal(yy) < OperationalLife(t)) AND (YearVal(y)-YearVal(yy) >= 0)),CapacityFactor(r,t,l,yy)) > 0 or CapacityFactor(r,t,l,'%year%') > 0) and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0).. TotalActivityPerYear(r,l,t,y) =e= sum(yy$((YearVal(y)-YearVal(yy) < OperationalLife(t)) AND (YearVal(y)-YearVal(yy) >= 0)),(NewCapacity(yy,t,r) * CapacityFactor(r,t,l,yy) * CapacityToActivityUnit(t)))+(ResidualCapacity(r,t,y)*CapacityFactor(r,t,l,'%year%') * CapacityToActivityUnit(t));
+CA4_TotalActivityPerYear_Intertemporal(r,l,t,y)$((sum(yy$((YearVal(y)-YearVal(yy) < OperationalLife(t)) AND (YearVal(y)-YearVal(yy) >= 0)),CapacityFactor(r,t,l,yy)) > 0 or CapacityFactor(r,t,l,'%year%') > 0) and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0).. TotalActivityPerYear(r,l,t,y) =e= sum(yy$((YearVal(y)-YearVal(yy) < OperationalLife(t)) AND (YearVal(y)-YearVal(yy) >= 0)),
+(NewCapacity(yy,t,r) * CapacityFactor(r,t,l,yy) * CapacityToActivityUnit(t)))+(ResidualCapacity(r,t,y)*CapacityFactor(r,t,l,'%year%') * CapacityToActivityUnit(t));
 $else
 
 equation CA3b_RateOfTotalActivity(REGION_FULL,TIMESLICE_FULL,TECHNOLOGY,YEAR_FULL);
@@ -706,10 +706,10 @@ $ifthen %switch_base_year_bounds% == 1
 *
 
 equation BYB1_RegionalBaseYearProductionLowerBound(YEAR_FULL,REGION_FULL,t,f);
-BYB1_RegionalBaseYearProductionLowerBound(y,r,t,f)$(RegionalBaseYearProduction(r,t,f,y) <> 0).. ProductionByTechnologyAnnual(y,t,f,r) =g= RegionalBaseYearProduction(r,t,f,y)*(1-BaseYearSlack(f)) - RegionalBaseYearProduction_neg(y,r,t,f);
+BYB1_RegionalBaseYearProductionLowerBound(y,r,t,f)$(RegionalBaseYearProduction(r,t,f,y) <> 0).. ProductionByTechnologyAnnual(y,t,f,r) =g= RegionalBaseYearProduction(r,t,f,y)*(1-BaseYearSlack(f))  - BaseYearBounds_TooHigh(y,r,t,f);
 
 equation BYB2_RegionalBaseYearProductionUpperBound(YEAR_FULL,REGION_FULL,t,f);
-BYB2_RegionalBaseYearProductionUpperBound(y,r,t,'Power')$(RegionalBaseYearProduction(r,t,'Power',y) <> 0).. ProductionByTechnologyAnnual(y,t,'Power',r) =l= RegionalBaseYearProduction(r,t,'Power',y)+BaseYearOvershoot(r,t,'Power',y);
+BYB2_RegionalBaseYearProductionUpperBound(y,r,t,'Power')$(RegionalBaseYearProduction(r,t,'Power',y) <> 0).. ProductionByTechnologyAnnual(y,t,'Power',r) =l= RegionalBaseYearProduction(r,t,'Power',y) + BaseYearBounds_TooLow(r,t,'Power',y);
 
 $endif
 

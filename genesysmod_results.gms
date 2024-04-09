@@ -144,10 +144,10 @@ Set EU27(r_full);
 EU27(r) = yes;
 EU27('World') = no;
 EU27('CH') = no;
-EU27('NO') = no;
-EU27('NONEU_Balkan') = no;
-EU27('TR') = no;
-EU27('UK') = no;
+*EU27('NO') = no;
+*EU27('NONEU_Balkan') = no;
+*EU27('TR') = no;
+*EU27('UK') = no;
 
 parameter TagFinalDemandSector(se);
 TagFinalDemandSector('Power')=1;
