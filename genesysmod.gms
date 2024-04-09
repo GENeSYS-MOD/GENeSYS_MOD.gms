@@ -40,7 +40,7 @@ $if not set switch_infeasibility_tech    $setglobal switch_infeasibility_tech 0
 $if not set switch_base_year_bounds      $setglobal switch_base_year_bounds 1
 
 $if not set switch_acceptance_factor        $setglobal switch_acceptance_factor 1
-$if not set switch_acceptance_constraint    $setglobal switch_acceptance_constraint 0
+$if not set switch_acceptance_constraint    $setglobal switch_acceptance_constraint 1
 $if not set acceptance_factor_data_file     $setglobal acceptance_factor_data_file Justice_Factor_v02_joh_02_11_2023
 
 $if not set switch_unixPath              $setglobal switch_unixPath 0
@@ -250,9 +250,62 @@ genesys.optfile = 1;
 scalar heapSizeBeforSolve;
 heapSizeBeforSolve = heapSize;
 
+scalar a /0/;
+scalar b /0/;
+$setglobal iterator first
+Parameter AverageYearlyAcceptancePerRegion(r_full,y_full);
+Parameter ShareofTotalAcceptanceperRegion(r_full,y_Full);
+Parameter AverageYearlyAcceptance(y_full);
+Parameter ShareofNCapacity(r_full,y_Full);
+
 solve genesys minimizing z using lp;
 
 $include genesysmod_variable_parameter.gms
+parameter check_tradecapacityusage;
+parameter check_tradecapacityfull;
+parameter output_pipeline_data;
+parameter output_pipeline_data;
+parameter output_pipeline_data;
+parameter output_pipeline_data;
+parameter z_fuelcosts;
+parameter output_energy_balance(*,*,*,*,*,*,*,*,*,*);
+parameter output_energy_balance_annual(*,*,*,*,*,*,*,*);
+parameter CapacityUsedByTechnologyEachTS, PeakCapacityByTechnology;
+parameter output_capacity(*,*,*,*,*,*);
+parameter output_emissions(*,*,*,*,*,*,*);
+parameter output_model(*,*,*,*);
+parameter z_maxgenerationperyear(r_full,t,y_full);
+parameter output_technology_costs_detailed;
+parameter output_exogenous_costs;
+parameter output_trade_capacity;
+parameters SelfSufficiencyRate,ElectrificationRate,output_other;
+Set FinalEnergy(f);
+Set EU27(r_full);
+parameter TagFinalDemandSector(se);
+parameter output_energydemandstatistics;
+
+$include genesysmod_results.gms
+
+$include genesysmod_acceptance_results.gms
+display AverageYearlyAcceptance
+display z.l
+
+
+for (b=1 to 1 by 1,
+
+
+StartingAcceptance(y) = AverageYearlyAcceptance('2025');
+solve genesys minimizing z using lp;
+$include genesysmod_acceptance_results.gms
+display AverageYearlyAcceptance
+display z.l
+display b
+
+);
+
+$setglobal iterator last
+$include genesysmod_results.gms
+
 
 scalar heapSizeAfterSolve;
 heapSizeAfterSolve = heapSize;
@@ -261,13 +314,19 @@ scalar elapsed;
 elapsed = (jnow - starttime)*24*3600;
 
 display elapsed,  heapSizeBeforSolve, heapSizeAfterSolve;
+
+
+output_model('Objective Value','%emissionPathway%_%emissionScenario%','%emissionPathway%','%emissionScenario%') = z.l;
+output_model('Heapsize Before Solve','%emissionPathway%_%emissionScenario%','%emissionPathway%','%emissionScenario%') = heapSizeBeforSolve;
+output_model('Heapsize After Solve','%emissionPathway%_%emissionScenario%','%emissionPathway%','%emissionScenario%') = heapSizeAfterSolve;
+output_model('Elapsed Time','%emissionPathway%_%emissionScenario%','%emissionPathway%','%emissionScenario%') = elapsed;
 $endif
 
 *
 * ####### Creating Result Files #############
 *
 
-$include genesysmod_results.gms
+
 
 $ifthen %switch_acceptance_factor% == 1
 $include genesysmod_acceptance_results.gms

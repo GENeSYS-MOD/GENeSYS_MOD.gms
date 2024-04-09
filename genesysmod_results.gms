@@ -16,22 +16,22 @@
 *
 * #############################################################
 
-parameter check_tradecapacityusage;
+
 check_tradecapacityusage(y,l,f,r,rr)$(Import.l(y,l,f,rr,r) and TagFuelToSubsets(f,'GasFuels')) = (TotalTradeCapacity.l(y,f,r,rr)*YearSplit(l,y))-Import.l(y,l,f,rr,r);
-parameter check_tradecapacityfull;
+
 check_tradecapacityfull(y,l,r,rr)$(sum(f$(TagFuelToSubsets(f,'GasFuels')),Import.l(y,l,f,rr,r))=(TotalTradeCapacity.l(y,'Gas_Natural',r,rr)*YearSplit(l,y)) and TotalTradeCapacity.l(y,'Gas_Natural',r,rr)) = 1;
-parameter output_pipeline_data;
+
 output_pipeline_data('Percentage used of Pipeline network',f,l,r,rr,y)$(TotalTradeCapacity.l(y,'Gas_Natural',r,rr) and TagFuelToSubsets(f,'GasFuels')) = 1-(Import.l(y,l,f,rr,r)/(TotalTradeCapacity.l(y,'Gas_Natural',r,rr)*YearSplit(l,y)));
-parameter output_pipeline_data;
+
 output_pipeline_data('Percentage used of Pipeline network','Unused',l,r,rr,y)$(TotalTradeCapacity.l(y,'Gas_Natural',r,rr)) = 1-sum(f$(TagFuelToSubsets(f,'GasFuels')),(Import.l(y,l,f,rr,r)/(TotalTradeCapacity.l(y,'Gas_Natural',r,rr)*YearSplit(l,y))));
-parameter output_pipeline_data;
+
 output_pipeline_data('Percentage used of Pipeline network',f,'Yearly Average',r,rr,y)$(TotalTradeCapacity.l(y,'Gas_Natural',r,rr) and TagFuelToSubsets(f,'GasFuels')) = sum(l,Import.l(y,l,f,rr,r))/sum(l,(TotalTradeCapacity.l(y,'Gas_Natural',r,rr)*YearSplit(l,y)));
-parameter output_pipeline_data;
+
 output_pipeline_data('Percentage used of Pipeline network','Unused','Yearly Average',r,rr,y)$(TotalTradeCapacity.l(y,'Gas_Natural',r,rr)) = 1-(sum((l,f)$(TagFuelToSubsets(f,'GasFuels')),Import.l(y,l,f,rr,r))/sum(l,(TotalTradeCapacity.l(y,'Gas_Natural',r,rr)*YearSplit(l,y))));
 
 
 $ifthen %switch_only_write_results% == 0
-parameter z_fuelcosts;
+
 z_fuelcosts('Hardcoal',y,r) = VariableCost(r,'Z_Import_Hardcoal','1',y);
 z_fuelcosts('Lignite',y,r) = VariableCost(r,'R_Coal_Lignite','1',y);
 z_fuelcosts('Nuclear',y,r) = VariableCost(r,'R_Nuclear','1',y);
@@ -41,7 +41,7 @@ z_fuelcosts('Oil',y,r) = VariableCost(r,'Z_Import_Oil','1',y);
 z_fuelcosts('H2',y,r) = VariableCost(r,'Z_Import_H2','1',y);
 *$include genesysmod_levelizedcosts.gms
 
-parameter output_energy_balance(*,*,*,*,*,*,*,*,*,*);
+
 output_energy_balance(r,se,t,m,f,l,'Production','PJ','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se) and not TagTechnologyToSector(t,'Transportation'))= RateOfProductionByTechnologyByMode(y,l,t,m,f,r) * YearSplit(l,y);
 output_energy_balance(r,'Transportation',t,m,f,l,'Production','billion km','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,'Transportation'))= RateOfProductionByTechnologyByMode(y,l,t,m,f,r) * YearSplit(l,y);
 output_energy_balance(r,se,t,m,f,l,'Use','PJ','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se)) = - RateOfUseByTechnologyByMode(y,l,t,m,f,r) * YearSplit(l,y);
@@ -51,7 +51,7 @@ output_energy_balance(r,'Trade','Trade','1',f,l,'Import','PJ','%emissionPathway%
 output_energy_balance(r,'Trade','Trade','1',f,l,'Export','PJ','%emissionPathway%_%emissionScenario%',y) = - sum(rr, Export.l(y,l,f,r,rr)) ;
 *$include genesysmod_baseyear_2020.gms
 
-parameter output_energy_balance_annual(*,*,*,*,*,*,*,*);
+
 output_energy_balance_annual(r,se,t,f,'Production','PJ','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se)  and not TagTechnologyToSector(t,'Transportation')) = sum((l,m),output_energy_balance(r,se,t,m,f,l,'Production','PJ','%emissionPathway%_%emissionScenario%',y));
 output_energy_balance_annual(r,se,t,f,'Production','billion km','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se) and TagTechnologyToSector(t,'Transportation')) = sum((l,m),output_energy_balance(r,se,t,m,f,l,'Production','billion km','%emissionPathway%_%emissionScenario%',y));
 output_energy_balance_annual(r,se,t,f,'Use','PJ','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se)) = sum((l,m),output_energy_balance(r,se,t,m,f,l,'Use','PJ','%emissionPathway%_%emissionScenario%',y));
@@ -60,30 +60,28 @@ output_energy_balance_annual(r,'Demand','Demand',f,'Use','billion km','%emission
 output_energy_balance_annual(r,'Trade','Trade',f,'Import','PJ','%emissionPathway%_%emissionScenario%',y) = sum(l, output_energy_balance(r,'Trade','Trade','1',f,l,'Import','PJ','%emissionPathway%_%emissionScenario%',y)) ;
 output_energy_balance_annual(r,'Trade','Trade',f,'Export','PJ','%emissionPathway%_%emissionScenario%',y) = sum(l, output_energy_balance(r,'Trade','Trade','1',f,l,'Export','PJ','%emissionPathway%_%emissionScenario%',y)) ;
 
-parameter CapacityUsedByTechnologyEachTS, PeakCapacityByTechnology;
+
+
+
 CapacityUsedByTechnologyEachTS(y,l,t,r)$(AvailabilityFactor(r,t,y) <> 0 and CapacityToActivityUnit(t) <> 0 and CapacityFactor(r,t,l,y) <> 0) = RateOfProductionByTechnology(y,l,t,'Power',r)*YearSplit(l,y)/(AvailabilityFactor(r,t,y)*CapacityToActivityUnit(t)*CapacityFactor(r,t,l,y));
 PeakCapacityByTechnology(r,t,y)$(sum(l,CapacityUsedByTechnologyEachTS(y,l,t,r)) <> 0) = smax(l, CapacityUsedByTechnologyEachTS(y,l,t,r));
 
-parameter output_capacity(*,*,*,*,*,*);
+
 output_capacity(r,se,t,'PeakCapacity','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se)) = PeakCapacityByTechnology(y,t,r) ;
 output_capacity(r,se,t,'NewCapacity','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se)) = NewCapacity.l(y,t,r) ;
 output_capacity(r,se,t,'ResidualCapacity','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se)) = ResidualCapacity(r,t,y) ;
 output_capacity(r,se,t,'TotalCapacity','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se)) = TotalCapacityAnnual.l(y,t,r) ;
 
-parameter output_emissions(*,*,*,*,*,*,*);
+
 output_emissions(r,se,e,t,'Emissions','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se))  = AnnualTechnologyEmission.l(y,t,e,r);
 output_emissions(r,'ExogenousEmissions',e,'ExogenousEmissions','ExogenousEmissions','%emissionPathway%_%emissionScenario%',y)  = AnnualExogenousEmission(r,e,y);
 
-parameter output_model(*,*,*,*);
-output_model('Objective Value','%emissionPathway%_%emissionScenario%','%emissionPathway%','%emissionScenario%') = z.l;
-output_model('Heapsize Before Solve','%emissionPathway%_%emissionScenario%','%emissionPathway%','%emissionScenario%') = heapSizeBeforSolve;
-output_model('Heapsize After Solve','%emissionPathway%_%emissionScenario%','%emissionPathway%','%emissionScenario%') = heapSizeAfterSolve;
-output_model('Elapsed Time','%emissionPathway%_%emissionScenario%','%emissionPathway%','%emissionScenario%') = elapsed;
 
-parameter z_maxgenerationperyear(r_full,t,y_full);
+
+
 z_maxgenerationperyear(r,t,y) = CapacityToActivityUnit(t)*smax(yy,AvailabilityFactor(r,t,yy))*sum(l,CapacityFactor(r,t,l,y)/card(l));
 
-parameter output_technology_costs_detailed;
+
 output_technology_costs_detailed(r,t,f,'Capital Costs','MEUR/GW',y)$(TagTechnologyToSector(t,'Power') and sum(m,InputActivityRatio(r,t,f,m,y))) = CapitalCost(r,t,y);
 output_technology_costs_detailed(r,t,f,'Fixed Costs','MEUR/GW',y)$(TagTechnologyToSector(t,'Power') and sum(m,InputActivityRatio(r,t,f,m,y))) = FixedCost(r,t,y);
 output_technology_costs_detailed(r,t,f,'Variable Costs [excl. Fuel Costs]','MEUR/PJ',y)$(z_maxgenerationperyear(r,t,y) and TagTechnologyToSector(t,'Power') and sum(m,InputActivityRatio(r,t,f,m,y))) = sum(m$(InputActivityRatio(r,t,f,m,y)),VariableCost(r,t,m,y));
@@ -114,22 +112,24 @@ output_technology_costs_detailed(r,t,'none','Levelized Costs [Total]','EUR/MWh',
 output_technology_costs_detailed(r,t,'none','Levelized Costs [Total w/o Emissions]','EUR/MWh',y)$(TagTechnologyToSector(t,'Power') and not sum((f,m),InputActivityRatio(r,t,f,m,y))) = output_technology_costs_detailed(r,t,'none','Levelized Costs [Total w/o Emissions]','MEUR/PJ',y)*3.6;
 
 
-parameter output_exogenous_costs;
+
 output_exogenous_costs(r,t,'Capital Costs',y) = CapitalCost(r,t,y);
 output_exogenous_costs(r,t,'Fixed Costs',y) = FixedCost(r,t,y);
 output_exogenous_costs(r,t,'Variable Costs',y) = VariableCost(r,t,'1',y) + sum((f),InputActivityRatio(r,t,f,'1',y)*z_fuelcosts(f,y,r));
 output_exogenous_costs(r,'Carbon','Carbon Price',y) = EmissionsPenalty(r,'CO2',y);
 
-parameter output_trade_capacity;
+
+
+
 output_trade_capacity(r,rr,'Power Transmissions Capacity',y) = TotalTradeCapacity.l(y, 'power', r, rr);
 output_trade_capacity(r,rr,'Transmission Expansion Costs in MEUR/GW',y) = TradeCapacityGrowthCosts(r,'Power',rr)*TradeRoute(r,'Power',y,rr);
 *output_trade_capacity('General','General','Transmission Expansion Costs in MEUR/GW/km',y) = TradeCapacityGrowthCosts('AT','Power','DE');
 
-parameters SelfSufficiencyRate,ElectrificationRate,output_other;
+
 SelfSufficiencyRate(r,y)$(SpecifiedAnnualDemand(r,'Power',y)>0) = ProductionAnnual(y,'Power',r)/(SpecifiedAnnualDemand(r,'Power',y)+UseAnnual(y,'Power',r));
 ElectrificationRate(Sector,y)$(sum((f,r)$(TagDemandFuelToSector(f,Sector)>0),TagDemandFuelToSector(f,Sector)*ProductionAnnual(y,f,r)) > 0) = sum((f,t,r)$(ProductionByTechnologyAnnual.l(y,t,f,r) > 0), TagDemandFuelToSector(f,Sector)*TagElectricTechnology(t)*ProductionByTechnologyAnnual.l(y,t,f,r))/sum((f,r)$(TagDemandFuelToSector(f,Sector)>0),TagDemandFuelToSector(f,Sector)*ProductionAnnual(y,f,r));
 
-Set FinalEnergy(f);
+
 FinalEnergy(f) = no;
 FinalEnergy('Power') = yes;
 FinalEnergy('Biomass') = yes;
@@ -140,7 +140,7 @@ FinalEnergy('Gas_Natural') = yes;
 FinalEnergy('Oil') = yes;
 FinalEnergy('Nuclear') = yes;
 
-Set EU27(r_full);
+
 EU27(r) = yes;
 EU27('World') = no;
 *EU27('CH') = no;
@@ -149,7 +149,7 @@ EU27('World') = no;
 *EU27('TR') = no;
 *EU27('UK') = no;
 
-parameter TagFinalDemandSector(se);
+
 TagFinalDemandSector('Power')=1;
 TagFinalDemandSector('Transportation')=1;
 TagFinalDemandSector('Industry')=1;
@@ -164,7 +164,7 @@ output_other('FinalEnergyConsumption',r,'InputDemand',f,y) = (SpecifiedAnnualDem
 output_other('ElectricityShareOfFinalEnergy',r,'X','X',y)$(SpecifiedAnnualDemand(r,'Power',y)>0) = (UseAnnual(y,'Power',r)+SpecifiedAnnualDemand(r,'Power',y)) /  (sum(FinalEnergy,UseAnnual(y,FinalEnergy,r))+SpecifiedAnnualDemand(r,'Power',y));
 output_other('ElectricityShareOfFinalEnergy','Total','X','X',y) = sum(r,(UseAnnual(y,'Power',r)+SpecifiedAnnualDemand(r,'Power',y))) /  sum(r,(sum(FinalEnergy,UseAnnual(y,FinalEnergy,r))+SpecifiedAnnualDemand(r,'Power',y)));
 
-parameter output_energydemandstatistics;
+
 *** Final Energy for all regions per sector
 output_energydemandstatistics('Final Energy Demand [TWh]',se,r,f,y)$(TagFinalDemandSector(se) and not (diag(f,'Area_Rooftop_Residential')+diag(f,'Area_Rooftop_Commercial')+diag(f,'Heat_District'))) = sum(t$(TagTechnologyToSector(t,se)),UseByTechnologyAnnual.l(y,t,f,r))/3.6;
 output_energydemandstatistics('Final Energy Demand [TWh]','Exogenous',r,'Power',y) = SpecifiedAnnualDemand(r,'Power',y)/3.6;
@@ -209,9 +209,9 @@ output_energydemandstatistics('Import Share of Primary Energy [%]','Total','EU27
 
 
 $ifthen set Info
-execute_unload "%gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%.gdx"
+execute_unload "%gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%_%iterator%.gdx"
 $else
-execute_unload "%gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%.gdx"
+execute_unload "%gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%iterator%.gdx"
 $endif
 output_energy_balance
 output_energy_balance_annual
@@ -231,36 +231,36 @@ $endif
 
 $ifthen %switch_write_output% == csv
 $ifthen set Info
-execute "echo 'Region','Sector','Technology','Mode','Fuel','Timeslice','Type','Unit','PathwayScenario','Year','Value' > %resultdir%Output_Prodcution_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
-execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%.gdx symb=output_energy_balance format=csv noHeader >> %resultdir%Output_Prodcution_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
+execute "echo 'Region','Sector','Technology','Mode','Fuel','Timeslice','Type','Unit','PathwayScenario','Year','Value' > %resultdir%Output_Prodcution_%model_region%_%emissionPathway%_%emissionScenario%_%info%_%iterator%.csv"
+execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%_%iterator%.gdx symb=output_energy_balance format=csv noHeader >> %resultdir%Output_Prodcution_%model_region%_%emissionPathway%_%emissionScenario%_%info%_%iterator%.csv"
 
-execute "echo 'Region','Sector','Technology','Mode','Fuel','Type','Unit','PathwayScenario','Year','Value' > %resultdir%Output_AnnualProdcution_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
-execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%.gdx symb=output_energy_balance_annual format=csv noHeader >> %resultdir%Output_AnnualProdcution_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
+execute "echo 'Region','Sector','Technology','Mode','Fuel','Type','Unit','PathwayScenario','Year','Value' > %resultdir%Output_AnnualProdcution_%model_region%_%emissionPathway%_%emissionScenario%_%info%_%iterator%.csv"
+execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%_%iterator%.gdx symb=output_energy_balance_annual format=csv noHeader >> %resultdir%Output_AnnualProdcution_%model_region%_%emissionPathway%_%emissionScenario%_%info%_%iterator%.csv"
 
-execute "echo 'File','Region','Sector','Technology','Type','PathwayScenario','Year','Value' > %resultdir%Output_Capacity_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
-execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%.gdx symb=output_capacity format=csv noHeader >> %resultdir%Output_Capacity_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
+execute "echo 'File','Region','Sector','Technology','Type','PathwayScenario','Year','Value' > %resultdir%Output_Capacity_%model_region%_%emissionPathway%_%emissionScenario%_%info%_%iterator%.csv"
+execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%_%iterator%.gdx symb=output_capacity format=csv noHeader >> %resultdir%Output_Capacity_%model_region%_%emissionPathway%_%emissionScenario%_%info%_%iterator%.csv"
 
-execute "echo 'File','Region','Sector','Emission','Technology','Type','PathwayScenario','Year','Value' > %resultdir%Output_Emission_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
-execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%.gdx symb=output_emissions format=csv noHeader >> %resultdir%Output_Emission_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
+execute "echo 'File','Region','Sector','Emission','Technology','Type','PathwayScenario','Year','Value' > %resultdir%Output_Emission_%model_region%_%emissionPathway%_%emissionScenario%_%info%_%iterator%.csv"
+execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%_%iterator%.gdx symb=output_emissions format=csv noHeader >> %resultdir%Output_Emission_%model_region%_%emissionPathway%_%emissionScenario%_%info%_%iterator%.csv"
 
-execute "echo 'File','Name','Region','Sector/Technology','Fuel','Year','Value' > %resultdir%Output_Other_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
-execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%.gdx symb=output_other format=csv noHeader >> %resultdir%Output_Other_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
+execute "echo 'File','Name','Region','Sector/Technology','Fuel','Year','Value' > %resultdir%Output_Other_%model_region%_%emissionPathway%_%emissionScenario%_%info%_%iterator%.csv"
+execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%_%iterator%.gdx symb=output_other format=csv noHeader >> %resultdir%Output_Other_%model_region%_%emissionPathway%_%emissionScenario%_%info%_%iterator%.csv"
 
 $else
-execute "echo 'Region','Sector','Technology','Mode','Fuel','Timeslice','Type','Unit','PathwayScenario','Year','Value' > %resultdir%Output_Prodcution_%model_region%_%emissionPathway%_%emissionScenario%.csv"
-execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%.gdx symb=output_energy_balance format=csv noHeader >> %resultdir%Output_Prodcution_%model_region%_%emissionPathway%_%emissionScenario%.csv"
+execute "echo 'Region','Sector','Technology','Mode','Fuel','Timeslice','Type','Unit','PathwayScenario','Year','Value' > %resultdir%Output_Prodcution_%model_region%_%emissionPathway%_%emissionScenario%_%iterator%.csv"
+execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%iterator%.gdx symb=output_energy_balance format=csv noHeader >> %resultdir%Output_Prodcution_%model_region%_%emissionPathway%_%emissionScenario%_%iterator%.csv"
 
-execute "echo 'Region','Sector','Technology','Mode','Fuel','Type','Unit','PathwayScenario','Year','Value' > %resultdir%Output_AnnualProdcution_%model_region%_%emissionPathway%_%emissionScenario%.csv"
-execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%.gdx symb=output_energy_balance_annual format=csv noHeader >> %resultdir%Output_AnnualProdcution_%model_region%_%emissionPathway%_%emissionScenario%.csv"
+execute "echo 'Region','Sector','Technology','Mode','Fuel','Type','Unit','PathwayScenario','Year','Value' > %resultdir%Output_AnnualProdcution_%model_region%_%emissionPathway%_%emissionScenario%_%iterator%.csv"
+execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%iterator%.gdx symb=output_energy_balance_annual format=csv noHeader >> %resultdir%Output_AnnualProdcution_%model_region%_%emissionPathway%_%emissionScenario%_%iterator%.csv"
 
-execute "echo 'File','Region','Sector','Technology','Type','PathwayScenario','Year','Value' > %resultdir%Output_Capacity_%model_region%_%emissionPathway%_%emissionScenario%.csv"
-execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%.gdx symb=output_capacity format=csv noHeader >> %resultdir%Output_Capacity_%model_region%_%emissionPathway%_%emissionScenario%.csv"
+execute "echo 'File','Region','Sector','Technology','Type','PathwayScenario','Year','Value' > %resultdir%Output_Capacity_%model_region%_%emissionPathway%_%emissionScenario%_%iterator%.csv"
+execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%iterator%.gdx symb=output_capacity format=csv noHeader >> %resultdir%Output_Capacity_%model_region%_%emissionPathway%_%emissionScenario%_%iterator%.csv"
 
-execute "echo 'File','Region','Sector','Emission','Technology','Type','PathwayScenario','Year','Value' > %resultdir%Output_Emission_%model_region%_%emissionPathway%_%emissionScenario%.csv"
-execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%.gdx symb=output_emissions format=csv noHeader >> %resultdir%Output_Emission_%model_region%_%emissionPathway%_%emissionScenario%.csv"
+execute "echo 'File','Region','Sector','Emission','Technology','Type','PathwayScenario','Year','Value' > %resultdir%Output_Emission_%model_region%_%emissionPathway%_%emissionScenario%_%iterator%.csv"
+execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%iterator%.gdx symb=output_emissions format=csv noHeader >> %resultdir%Output_Emission_%model_region%_%emissionPathway%_%emissionScenario%_%iterator%.csv"
 
-execute "echo 'File','Name','Region','Sector/Technology','Fuel','Year','Value' > %resultdir%Output_Other_%model_region%_%emissionPathway%_%emissionScenario%.csv"
-execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%.gdx symb=output_other format=csv noHeader >> %resultdir%Output_Other_%model_region%_%emissionPathway%_%emissionScenario%.csv"
+execute "echo 'File','Name','Region','Sector/Technology','Fuel','Year','Value' > %resultdir%Output_Other_%model_region%_%emissionPathway%_%emissionScenario%_%iterator%.csv"
+execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%iterator%.gdx symb=output_other format=csv noHeader >> %resultdir%Output_Other_%model_region%_%emissionPathway%_%emissionScenario%_%iterator%.csv"
 $endif
 $endif
 

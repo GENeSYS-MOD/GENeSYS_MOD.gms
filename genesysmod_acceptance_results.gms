@@ -36,20 +36,20 @@
 $ifthen %switch_acceptance_factor% == 1
 
 
-Parameter AverageYearlyAcceptancePerRegion(r_full,y_full);
+
 AverageYearlyAcceptancePerRegion(r,y)$(TotalNCapacityperRegion.l(r,y) > 0) = TotalAcceptanceperRegion.l(r,y)/TotalNCapacityperRegion.l(r,y);
 
-Parameter AverageYearlyAcceptance(y_full);
+
 AverageYearlyAcceptance(y)$(TotalNCapacity.l(y) > 0) = TotalAcceptance.l(y)/TotalNCapacity.l(y);
 
-Parameter ShareofTotalAcceptanceperRegion(r_full,y_Full);
-ShareofTotalAcceptanceperRegion(r,y)$(TotalAcceptance.l(y) > 0) = TotalAcceptanceperRegion.l(r,y)/TotalAcceptance.l(y)
 
-Parameter ShareofNCapacity(r_full,y_Full);
-ShareofNCapacity(r,y)$(TotalNCapacity.l(y) > 8) = TotalNCapacityperRegion.l(r,y)/TotalNCapacity.l(y)
+ShareofTotalAcceptanceperRegion(r,y)$(TotalAcceptance.l(y) > 0) = TotalAcceptanceperRegion.l(r,y)/TotalAcceptance.l(y);
+
+
+ShareofNCapacity(r,y)$(TotalNCapacity.l(y) > 8) = TotalNCapacityperRegion.l(r,y)/TotalNCapacity.l(y);
 
 *######AcceptanceFactor
-execute_unload "%gdxdir%Acceptance_%model_region%_%emissionPathway%_%emissionScenario%.gdx"
+if (b=0,execute_unload "%gdxdir%Acceptance_%model_region%_%emissionPathway%_%emissionScenario%_0.gdx"
 Acceptance
 TotalAcceptanceperRegion
 TotalAcceptance
@@ -59,10 +59,84 @@ AverageYearlyAcceptance
 AverageYearlyAcceptancePerRegion
 ShareofTotalAcceptanceperRegion
 ShareofNCapacity
-;
+z
+; );
+if (b=1,execute_unload "%gdxdir%Acceptance_%model_region%_%emissionPathway%_%emissionScenario%_1.gdx"
+Acceptance
+TotalAcceptanceperRegion
+TotalAcceptance
+TotalNCapacityperRegion
+TotalNCapacity
+AverageYearlyAcceptance
+AverageYearlyAcceptancePerRegion
+ShareofTotalAcceptanceperRegion
+ShareofNCapacity
+z
+; );
+if (b=2,execute_unload "%gdxdir%Acceptance_%model_region%_%emissionPathway%_%emissionScenario%_2.gdx"
+Acceptance
+TotalAcceptanceperRegion
+TotalAcceptance
+TotalNCapacityperRegion
+TotalNCapacity
+AverageYearlyAcceptance
+AverageYearlyAcceptancePerRegion
+ShareofTotalAcceptanceperRegion
+ShareofNCapacity
+z
+; );
+if (b=3,execute_unload "%gdxdir%Acceptance_%model_region%_%emissionPathway%_%emissionScenario%_3.gdx"
+Acceptance
+TotalAcceptanceperRegion
+TotalAcceptance
+TotalNCapacityperRegion
+TotalNCapacity
+AverageYearlyAcceptance
+AverageYearlyAcceptancePerRegion
+ShareofTotalAcceptanceperRegion
+ShareofNCapacity
+z
+; );
+if (b=4,execute_unload "%gdxdir%Acceptance_%model_region%_%emissionPathway%_%emissionScenario%_4.gdx"
+Acceptance
+TotalAcceptanceperRegion
+TotalAcceptance
+TotalNCapacityperRegion
+TotalNCapacity
+AverageYearlyAcceptance
+AverageYearlyAcceptancePerRegion
+ShareofTotalAcceptanceperRegion
+ShareofNCapacity
+z
+; );
+if (b=5,execute_unload "%gdxdir%Acceptance_%model_region%_%emissionPathway%_%emissionScenario%_5.gdx"
+Acceptance
+TotalAcceptanceperRegion
+TotalAcceptance
+TotalNCapacityperRegion
+TotalNCapacity
+AverageYearlyAcceptance
+AverageYearlyAcceptancePerRegion
+ShareofTotalAcceptanceperRegion
+ShareofNCapacity
+z
+; );
+if (b=6,execute_unload "%gdxdir%Acceptance_%model_region%_%emissionPathway%_%emissionScenario%_6.gdx"
+Acceptance
+TotalAcceptanceperRegion
+TotalAcceptance
+TotalNCapacityperRegion
+TotalNCapacity
+AverageYearlyAcceptance
+AverageYearlyAcceptancePerRegion
+ShareofTotalAcceptanceperRegion
+ShareofNCapacity
+z
+; );
 
-$onecho >%tempdir%temp_%Acceptance_data_file%.tmp
-se=0   
+
+$onecho >%tempdir%temp_%acceptance_factor_data_file%.tmp
+se=0
     var=Acceptance                            Rng=Acceptance!A1     rdim=3        cdim=0
     text="Region"                             Rng=Acceptance!A1
     text="Technology"                         Rng=Acceptance!B1
@@ -73,7 +147,7 @@ se=0
     text="Region"                             Rng=TotalAcceptanceperRegion!A1
     text="Year"                               Rng=TotalAcceptanceperRegion!B1
     text="TotalAcceptanceperRegion"           Rng=TotalAcceptanceperRegion!C1
-    
+
     var=TotalAcceptance                       Rng=TotalAcceptance!A1     rdim=1        cdim=0
     text="Year"                               Rng=TotalAcceptance!A1
     text="TotalAcceptance"                    Rng=TotalAcceptance!B1
@@ -82,25 +156,25 @@ se=0
     text="Region"                             Rng=TotalNCapacityperRegion!A1
     text="Year"                               Rng=TotalNCapacityperRegion!B1
     text="TotalNCapacityperRegion"            Rng=TotalNCapacityperRegion!C1
-        
+
     var=TotalNCapacity                        Rng=TotalNCapacity!A1     rdim=1        cdim=0
     text="Year"                               Rng=TotalNCapacity!A1
     text="TotalNCapacity"                     Rng=TotalNCapacity!B1
-    
+
     par=AverageYearlyAcceptance               Rng=AverageYearlyAcceptance!A1     rdim=1        cdim=0
     text="Year"                               Rng=AverageYearlyAcceptance!A1
     text="AverageYearlyAcceptance"            Rng=AverageYearlyAcceptance!B1
-    
+
     par=AverageYearlyAcceptancePerRegion      Rng=AvgYearlyAcceptancePerRegion!A1     rdim=2        cdim=0
     text="Region"                             Rng=AvgYearlyAcceptancePerRegion!A1
     text="Year"                               Rng=AvgYearlyAcceptancePerRegion!B1
     text="AverageYearlyAcceptancePerRegion"   Rng=AvgYearlyAcceptancePerRegion!C1
-    
+
     par=ShareofTotalAcceptanceperRegion       Rng=ShareofTotalAcceptanceperRegion!A1     rdim=2        cdim=0
     text="Region"                             Rng=ShareofTotalAcceptanceperRegion!A1
     text="Year"                               Rng=ShareofTotalAcceptanceperRegion!B1
     text="ShareofTotalAcceptanceperRegion"    Rng=ShareofTotalAcceptanceperRegion!C1
-    
+
     par=ShareofNCapacity                      Rng=ShareofNCapacity!A1     rdim=2        cdim=0
     text="Region"                             Rng=ShareofNCapacity!A1
     text="Year"                               Rng=ShareofNCapacity!B1
@@ -108,7 +182,7 @@ se=0
 
 $offecho
 
-execute 'gdxxrw.exe i=%gdxdir%Acceptance_%model_region%_%emissionPathway%_%emissionScenario%.gdx UpdLinks=3 o=%resultdir%Acceptance_Results.xlsx @%tempdir%temp_%Acceptance_data_file%.tmp';
+execute 'gdxxrw.exe i=%gdxdir%Acceptance_%model_region%_%emissionPathway%_%emissionScenario%_%iterator%.gdx UpdLinks=3 o=%resultdir%Acceptance_Results_%iterator%.xlsx @%tempdir%temp_%acceptance_factor_data_file%.tmp';
 
 
 $endif

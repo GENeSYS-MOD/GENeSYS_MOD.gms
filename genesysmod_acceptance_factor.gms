@@ -36,7 +36,7 @@ $ifthen %switch_acceptance_factor% == 1
 
 *
 * ############## Acceptance Factor #############
-* 
+*
 * ######Acceptance######
 
 positive variable Acceptance;
@@ -45,7 +45,7 @@ equation Acceptance1_Acceptance(r_full,TECHNOLOGY,y_full);
 Acceptance1_Acceptance(r,t,y)..
                  NewCapacity(y,t,r)*AcceptanceFactor(r,t,y)
                  =e= Acceptance(r,t,y);
-                 
+
 
 positive variable TotalAcceptanceperRegion(r_full,y_full);
 
@@ -60,7 +60,7 @@ equation Acceptance3_TotalAcceptance(y_full);
 Acceptance3_TotalAcceptance(y)..
                  sum(r, TotalAcceptanceperRegion(r,y))
                  =e= TotalAcceptance(y);
-                 
+
 positive variable TotalNCapacityperRegion(r_full,y_full);
 
 equation Acceptance4_TotalNCapacityperRegion(r_full,y_full);
@@ -120,12 +120,12 @@ YearlyAcceptanceChange('2050') = 1.025;
 
 
 
-*equation Acceptance4_TotalAverageAcceptance(r_full,y_full); 
+*equation Acceptance4_TotalAverageAcceptance(r_full,y_full);
 *Acceptance4_TotalAverageAcceptance(r,y)$(YearVal(y) > 2030).. TotalAcceptance('2040') =g= TotalAcceptance('2030')*TotalNCapacity('2040');
 
 ****old formulation before April, 24
-equation Acceptance4_TotalAverageAcceptance(r_full,y_full); 
-Acceptance4_TotalAverageAcceptance(r,y)$(YearVal(y) > 2025).. TotalAcceptance(y) =g= (YearlyAcceptanceChange(y)*StartingAcceptance(y)) * TotalNCapacity(y);
+equation Acceptance4_TotalAverageAcceptance(r_full,y_full);
+Acceptance4_TotalAverageAcceptance(r,y)$(YearVal(y) > 2020).. TotalAcceptance(y) =g= (YearlyAcceptanceChange(y)*StartingAcceptance(y)) * TotalNCapacity(y);
 
 
 ***equation NoJusticeLost(r_full,y_full);
@@ -136,7 +136,7 @@ Acceptance4_TotalAverageAcceptance(r,y)$(YearVal(y) > 2025).. TotalAcceptance(y)
 
 $endif
 
-****GINI COEFFICIENT 
+****GINI COEFFICIENT
 
 
 $endif
