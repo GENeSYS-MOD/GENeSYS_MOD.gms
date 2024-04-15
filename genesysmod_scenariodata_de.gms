@@ -16,11 +16,41 @@
 *
 * #############################################################
 
+*_______________________________________SENSITIVITIES__________________________________________*
 
 
-* ################### CHOOSE CALCULATED YEARS ###################
-***  TO LEAVE OUT A CERTAIN YEAR, REMOVE COMMENT OF RESPECTIVE LINE ***
-*
+
+
+
+
+$ifthen not %switch_capital_costs% == 0
+
+CapitalCost(r,'X_Alkaline_Electrolysis',y)$(YearVal(y) > 2018) = CapitalCost(r,'X_Alkaline_Electrolysis',y) * %switch_capital_costs%;
+CapitalCost(r,'X_SOEC_Electrolysis',y)$(YearVal(y) > 2018) = CapitalCost(r,'X_SOEC_Electrolysis',y) * %switch_capital_costs%;
+CapitalCost(r,'X_PEM_Electrolysis',y)$(YearVal(y) > 2018) = CapitalCost(r,'X_PEM_Electrolysis',y) * %switch_capital_costs%;
+
+$endif
+
+
+$ifthen not %switch_transport_costs_power% == 0
+
+TradeCosts('Power',r,rr) = TradeCosts('Power',r,rr) * %switch_transport_costs_power%;
+
+$endif
+
+$ifthen not %switch_transport_costs_h2% == 0
+
+TradeCosts('H2',r,rr) = TradeCosts('H2',r,rr) * %switch_transport_costs_h2%;
+
+$endif
+
+
+
+
+
+
+
+*______________________________________________________________________________________________*
 
 *fix for offshore hub regions
 CapacityFactor(r,'HLR_Solar_Thermal',l,y)$(CapacityFactor(r,'RES_PV_Utility_Avg',l,y)=0) = 0.00001;
@@ -115,15 +145,15 @@ equation TotalCapOffshoreBaltic2045(YEAR_FULL,TECHNOLOGY,REGION_FULL);
 TotalCapOffshoreBaltic2045(y,t,r)..sum((Offshore,offshore_baltic), TotalCapacityAnnual('2045',Offshore,offshore_baltic)) =g= 5.6;
 
 
-equation TotalCapOffshoreTotal2030(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-TotalCapOffshoreTotal2030(y,t,r)..sum((Offshore,region), TotalCapacityAnnual('2030',Offshore,region)) =g= 33;
-equation TotalCapOffshoreTotal2045(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-TotalCapOffshoreTotal2045(y,t,r)..sum((Offshore,region), TotalCapacityAnnual('2045',Offshore,region)) =e= 70;
+*equation TotalCapOffshoreTotal2030(YEAR_FULL,TECHNOLOGY,REGION_FULL);
+*TotalCapOffshoreTotal2030(y,t,r)..sum((Offshore,region), TotalCapacityAnnual('2030',Offshore,region)) =g= 33;
+*equation TotalCapOffshoreTotal2045(YEAR_FULL,TECHNOLOGY,REGION_FULL);
+*TotalCapOffshoreTotal2045(y,t,r)..sum((Offshore,region), TotalCapacityAnnual('2045',Offshore,region)) =e= 70;
 
 
 
-TotalCapacityAnnual.lo('2030','RES_Wind_Offshore_Deep','DE_Nord') = 28;
-TotalCapacityAnnual.lo('2030','RES_Wind_Offshore_Deep','DE_Baltic') = 5;
+*TotalCapacityAnnual.lo('2030','RES_Wind_Offshore_Deep','DE_Nord') = 28;
+*TotalCapacityAnnual.lo('2030','RES_Wind_Offshore_Deep','DE_Baltic') = 5;
 
 *infeasible
 *TotalCapacityAnnual.lo('2035','RES_Wind_Offshore_Deep','DE_Nord') = 33;
@@ -152,13 +182,24 @@ GrowthRateTradeCapacity(r,'H2',y,rr) = 0.15;
 
 $ifthen %switch_Policy_Scenario% == 1
 *######## Policy Scenario Osterpaket ##########
-set t_group /onshore,offshore,solar/;
+
+
+
+set t_group /onshore,offshore,solar,h2/;
 
 parameter OsterpaketCapacity(y_full,t_group);
 
 OsterpaketCapacity('2030','onshore') = 115;
-OsterpaketCapacity('2030','offshore') = 30;
+*OsterpaketCapacity('2030','offshore') = 30;
 OsterpaketCapacity('2030','solar') = 215;
+OsterpaketCapacity('2030','h2') = 10;
+
+set h2(t);
+h2(t) = no;
+h2('X_Alkaline_Electrolysis') = yes;
+h2('X_SOEC_Electrolysis') = yes;
+h2('X_PEM_Electrolysis') = yes;
+
 
 set onshore(t);
 onshore(t) = no;
@@ -166,16 +207,17 @@ onshore('RES_Wind_Onshore_Opt') = yes;
 onshore('RES_Wind_Onshore_Avg') = yes;
 onshore('RES_Wind_Onshore_Inf') = yes;
 
-set offshore(t);
-offshore(t) = no;
-offshore('RES_Wind_Offshore_Deep') = yes;
-offshore('RES_Wind_Offshore_Transitional') = yes;
-offshore('RES_Wind_Offshore_Shallow') = yes;
+*set offshore(t);
+*offshore(t) = no;
+*offshore('RES_Wind_Offshore_Deep') = yes;
+*offshore('RES_Wind_Offshore_Transitional') = yes;
+*offshore('RES_Wind_Offshore_Shallow') = yes;
 
 
 parameter TagTechnologyToTechGroup(t,t_group);
 TagTechnologyToTechGroup(Onshore,'onshore')=1;
-TagTechnologyToTechGroup(Offshore,'offshore')=1;
+*TagTechnologyToTechGroup(Offshore,'offshore')=1;
+TagTechnologyToTechGroup(h2,'h2')=1;
 TagTechnologyToTechGroup(t,'solar')$(TagTechnologyToSubsets(t,'Solar'))=1;
 TagTechnologyToTechGroup('HLR_Solar_Thermal','solar')=0;
 TagTechnologyToTechGroup('HLI_Solar_Thermal','solar')=0;
@@ -276,7 +318,7 @@ Renovierungsrate(y)$(YearVal(y)>2030)=0.045;
 Renovierungsrate(y)$(YearVal(y)>2040)=0.065;
 
 equation BuildingsInertia(REGION_FULL,TECHNOLOGY,YEAR_FULL);
-BuildingsInertia(r,t,y)$(TagTechnologyToSector(t,'Buildings') and YearVal(y)>2015 and sum((tt)$(TagTechnologyToSubsets(tt,'CHP')),diag(t,tt))=0).. ProductionByTechnologyAnnual(y,t,'Heat_Low_Residential',r) =g= (1-sum(yy$(Yearval(yy)<=Yearval(y)),Renovierungsrate(yy)*YearlyDifferenceMultiplier(yy-1)))*ProductionByTechnologyAnnual('2015',t,'Heat_Low_Residential',r);
+BuildingsInertia(r,t,y)$(TagTechnologyToSector(t,'Buildings') and YearVal(y)>2015 and sum((tt)$(TagTechnologyToSubsets(tt,'CHP')),diag(t,tt))=0).. ProductionByTechnologyAnnual(y,t,'Heat_Low_Residential',r) =g= (1-sum(yy$(Yearval(yy)<=Yearval(y)),Renovierungsrate(yy)*YearlyDifferenceMultiplier(yy-1)))*ProductionByTechnologyAnnual('2018',t,'Heat_Low_Residential',r);
 
 ***constraint on emissions: emissions per sector are not allowed to increase***
 equation E13_SectoralEmissionReduction(y_full, EMISSION, SECTOR, REGION_FULL);

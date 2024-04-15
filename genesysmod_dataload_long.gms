@@ -185,6 +185,19 @@ MinStorageCharge(r_full,s,y)$(MinStorageCharge(r_full,s,y)=0) = MinStorageCharge
 CapitalCostStorage(r_full,s,y)$(CapitalCostStorage(r_full,s,y)=0) = CapitalCostStorage('World',s,y);
 
 
+*___________________________scenario data_______________________*
+
+$ifthen %switch_h2_waste_heat% == 0
+
+OutputActivityRatio(REGION_FULL,'X_Alkaline_Electrolysis',FUEL,'2',YEAR_FULL) = 0;
+OutputActivityRatio(REGION_FULL,'X_PEM_Electrolysis',FUEL,'2',YEAR_FULL) = 0;
+
+$endif
+
+
+*_______________________________________________________________*
+
+
 *
 * ####### Including Subsets #############
 *
