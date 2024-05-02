@@ -100,6 +100,7 @@ parameter RegionalBaseYearProduction(REGION_FULL,TECHNOLOGY,FUEL,YEAR_FULL);
 parameter TagElectricTechnology(TECHNOLOGY);
 parameter TagTechnologyToSubsets(TECHNOLOGY,*);
 parameter TagFuelToSubsets(FUEL,*);
+parameter TimeDepEfficiency(REGION_FULL,TECHNOLOGY,TIMESLICE_FULL,YEAR_FULL) Time dependent efficiency for technologies like heatpumps;   
 
 
 parameter RegionalCCSLimit(REGION_FULL);
