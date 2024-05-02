@@ -48,7 +48,7 @@ parameter Production(y_full,TIMESLICE_FULL,FUEL,REGION_FULL);
 Production(y,l,f,r) = sum((t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity.l(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y))*YearSplit(l,y);
 
 parameter Use(y_full,TIMESLICE_FULL,FUEL,REGION_FULL);
-Use(y,l,f,r) = sum((t,m)$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity.l(y,l,t,m,r)*InputActivityRatio(r,t,f,m,y))*YearSplit(l,y)*TimeDepEfficiency(r,t,l,y);
+Use(y,l,f,r) = sum((t,m)$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity.l(y,l,t,m,r)*InputActivityRatio(r,t,f,m,y)*TimeDepEfficiency(r,t,l,y))*YearSplit(l,y);
 
 parameter ProductionAnnual(y_full,FUEL,REGION_FULL);
 ProductionAnnual(y,f,r) = sum((l,t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity.l(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y));
