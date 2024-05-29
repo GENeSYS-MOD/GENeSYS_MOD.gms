@@ -62,7 +62,7 @@ $onecho >%tempdir%temp_%data_file%_par.tmp
 se=0     
 
         par=SpecifiedAnnualDemand    Rng=Par_SpecifiedAnnualDemand!A2                   rdim=3  cdim=0
-*        par=SpecifiedDemandProfile   Rng=Par_SpecifiedDemandProfile!A2                  rdim=4  cdim=0
+*       par=SpecifiedDemandProfile   Rng=Par_SpecifiedDemandProfile!A2                  rdim=4  cdim=0
         par=ReserveMarginTagFuel     Rng=Par_ReserveMarginTagFuel!A2                    rdim=3  cdim=0
 
         par=EmissionsPenalty         Rng=Par_EmissionsPenalty!A2                         rdim=3  cdim=0
@@ -122,6 +122,7 @@ se=0
         
         par=TagTechnologyToSubsets                Rng=Par_TagTechnologyToSubsets!A2                rdim=2        cdim=0
         par=TagFuelToSubsets                      Rng=Par_TagFuelToSubsets!A2                      rdim=2        cdim=0
+        par=MaximumJobAvailability               Rng=Par_MaximumJobAvailability!A2                rdim=2       cdim=0
 $offecho
 
 $ifi %switch_only_load_gdx%==0 $call "gdxxrw %inputdir%%data_file%.xlsx @%tempdir%temp_%data_file%_par.tmp o=%gdxdir%%data_file%_par.gdx MaxDupeErrors=99 CheckDate ";
@@ -142,6 +143,7 @@ $loadm Readin_ModalSplitByFuelAndModalType TagTechnologyToModalType BaseYearProd
 $loadm TagTechnologyToSector AnnualSectoralEmissionLimit
 $loadm RegionalCCSLimit TagDemandFuelToSector TagElectricTechnology
 $loadm TagTechnologyToSubsets TagFuelToSubsets
+$loadm MaximumJobAvailability
 $offUNDF
 
 

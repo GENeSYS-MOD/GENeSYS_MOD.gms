@@ -788,3 +788,13 @@ ADD_Employment(r,y)..  sum((t,f),((NewCapacity(y,t,r)*EFactorManufacturing(t,y)*
 $endif
 
 
+
+$ifthen %switch_employment_constraints% == 1
+parameter MaximumJobAvailability(r_full,y_full);
+
+*currently no distinction between job types in this equation --> maximum job availability can be connected to the type of education and hence ability to install e.g. heat pumps
+equation Employment_Constraint_EC1(r_full,y_full);
+Employment_Constraint_EC1(r,y).. TotalJobs(r,y) =l= MaximumJobAvailability(r,y)
+
+
+$endif

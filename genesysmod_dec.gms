@@ -387,8 +387,8 @@ parameter EFactorOM;
 parameter EFactorManufacturing;
 parameter EFactorFuelSupply;
 parameter EFactorCoalJobs;
-parameter CoalSupply
-parameter CoalDigging
+parameter CoalSupply;
+parameter CoalDigging;
 parameter RegionalAdjustmentFactor;
 parameter LocalManufacturingFactor;
 parameter DeclineRate;
@@ -401,4 +401,6 @@ parameter CoalJobs;
 parameter output_energyjobs;
 $endif
 
-
+*$ifthen %switch_employment_constraints% == 1
+parameter MaximumJobAvailability(r_full,y_full);
+*$endif
