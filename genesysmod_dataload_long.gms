@@ -62,7 +62,7 @@ $onecho >%tempdir%temp_%data_file%_par.tmp
 se=0     
 
         par=SpecifiedAnnualDemand    Rng=Par_SpecifiedAnnualDemand!A2                   rdim=3  cdim=0
-*        par=SpecifiedDemandProfile   Rng=Par_SpecifiedDemandProfile!A2                  rdim=4  cdim=0
+        par=SpecifiedDemandProfile   Rng=Par_SpecifiedDemandProfile!A2                  rdim=4  cdim=0
         par=ReserveMarginTagFuel     Rng=Par_ReserveMarginTagFuel!A2                    rdim=3  cdim=0
 
         par=EmissionsPenalty         Rng=Par_EmissionsPenalty!A2                         rdim=3  cdim=0
@@ -305,10 +305,13 @@ se=0
         dset=Technology              Rng=Sets!A2                         rdim=1        cdim=0
         set=Year                     Rng=Sets!B2                         rdim=1        cdim=0
         set=Region                   Rng=Sets!C2                         rdim=1        cdim=0
+        set=Fuel                     Rng=Sets!D2                         rdim=1        cdim=0
+        set=Region2                   Rng=Sets!E2                         rdim=1        cdim=0
+
 
 
         par=AcceptanceFactor    Rng=Par_AcceptanceFactor!A5                rdim=2        cdim=1
-        par=AcceptanceFactorPowerLines  Rng=Par_Acceptance_Powerlines!A5                rdim=2        cdim=1
+        par=AcceptanceFactorPowerLines  Rng=Par_Acceptance_Powerlines!A5                rdim=3        cdim=1
 
 
 

@@ -45,7 +45,13 @@ equation Acceptance1_Acceptance(r_full,TECHNOLOGY,y_full);
 Acceptance1_Acceptance(r,t,y)..
                  NewCapacity(y,t,r)*AcceptanceFactor(r,t,y)
                  =e= Acceptance(r,t,y);
-                 
+  
+positive variable Acceptance_Powerlines;
+** To account for acceptance for the lines going from a region and coming to a region.
+equation Acceptance1_1_Acceptance_Powerlines(r_full,rr_full,FUEL,y_full);
+Acceptance1_1_Acceptance_Powerlines(r,rr,'Power',y)..
+                 (NewTradeCapacity(y,'Power',r,rr)*AcceptanceFactorPowerLines(r,rr,'Power',y)+NewTradeCapacity(y,'Power',rr,r)*AcceptanceFactorPowerLines(r,rr,'Power',y))
+                 =e= Acceptance_Powerlines(r,rr,'Power',y);               
 
 positive variable TotalAcceptanceperRegion(r_full,y_full);
 
@@ -53,6 +59,24 @@ equation Acceptance2_TotalAcceptanceperRegion(r_full,y_full);
 Acceptance2_TotalAcceptanceperRegion(r,y)..
                  sum(t, Acceptance(r,t,y))
                  =e= TotalAcceptanceperRegion(r,y);
+                 
+
+
+*positive variable TotalAcceptanceperRegion_Powerlines(r_full,FUEL,y_full);
+
+*equation Acceptance2_1_TotalAcceptanceperRegion_Powerlines(r_full,FUEL,y_full);
+*Acceptance2_1_TotalAcceptanceperRegion_Powerlines(r,'Power',y)..
+*                 (sum(rr,(Acceptance_Powerlines(r,rr,'Power',y)+Acceptance_Powerlines(rr,r,'Power',y))))
+*                 =e= TotalAcceptanceperRegion_Powerlines(r,'Power',y);
+
+
+positive variable TotalAcceptanceperRegion_Powerlines(r_full,y_full);
+
+equation Acceptance2_1_TotalAcceptanceperRegion_Powerlines(r_full,y_full);
+Acceptance2_1_TotalAcceptanceperRegion_Powerlines(r,y)..
+                 sum(rr,(Acceptance_Powerlines(r,rr,'Power',y)))
+                 =e= TotalAcceptanceperRegion_Powerlines(r,y);
+
 
 positive variable TotalAcceptance(y_full);
 
@@ -61,12 +85,27 @@ Acceptance3_TotalAcceptance(y)..
                  sum(r, TotalAcceptanceperRegion(r,y))
                  =e= TotalAcceptance(y);
                  
+positive variable TotalAcceptance_Powerlines(y_full);
+
+equation Acceptance3_1_TotalAcceptance_Powerlines(y_full);
+Acceptance3_1_TotalAcceptance_Powerlines(y)..
+                 sum(r, TotalAcceptanceperRegion_Powerlines(r,y))
+                 =e= TotalAcceptance_Powerlines(y);
+                
+                 
 positive variable TotalNCapacityperRegion(r_full,y_full);
 
 equation Acceptance4_TotalNCapacityperRegion(r_full,y_full);
 Acceptance4_TotalNCapacityperRegion(r,y)..
-                 sum(t$(AcceptanceFactor(r,t,y) > 0), NewCapacity(y,t,r))
+                 (sum(t$(AcceptanceFactor(r,t,y) > 0), NewCapacity(y,t,r)))
                  =e= TotalNCapacityperRegion(r,y);
+                 
+positive variable TotalNCapacityperRegion_Powerlines(r_full,y_full);
+
+equation Acceptance4_1_TotalNCapacityperRegion_Powerlines(r_full,y_full);
+Acceptance4_1_TotalNCapacityperRegion_Powerlines(r,y)..
+                 (sum(rr,((NewTradeCapacity(y,'Power',rr,r)+NewTradeCapacity(y,'Power',r,rr)))))
+                 =e= TotalNCapacityperRegion_Powerlines(r,y);
 
 positive variable TotalNCapacity(y_full);
 
@@ -74,7 +113,13 @@ equation Acceptance5_TotalNCapacity(y_full);
 Acceptance5_TotalNCapacity(y)..
                  sum(r, TotalNCapacityperRegion(r,y))
                  =e= TotalNCapacity(y);
+                 
+positive variable TotalNCapacity_PowerLines(y_full);
 
+equation Acceptance5_1_TotalNCapacity_PowerLines(y_full);
+Acceptance5_1_TotalNCapacity_PowerLines(y)..
+                 sum(r, TotalNCapacityperRegion_Powerlines(r,y))
+                 =e= TotalNCapacity_PowerLines(y);
 *positive variable TotalAcceptanceBase(r_full);
 *equation Acceptance4_TotalAcceptanceBase(r_full);
 *Acceptance4_TotalAcceptanceBase(r)..
@@ -88,35 +133,20 @@ $ifthen %switch_acceptance_constraint% == 1
 *$ifthen %Info% == SA2dgJOBS
 
 Parameter StartingAcceptance(y_full);
-*StartingAcceptance('2025') = 70.30363194;
-*StartingAcceptance('2030') = 67.9662792602794;
-*StartingAcceptance('2035') = 67.8527606551304;
-*StartingAcceptance('2040') = 67.340590703187;
-*StartingAcceptance('2045') = 66.8937244905644;
-*StartingAcceptance('2050') = 66.896608484273;
-
-
-*StartingAcceptance('2030') = 0.843702;
-*StartingAcceptance('2035') = 0.844454;
-*StartingAcceptance('2040') = 0.844709;
-*StartingAcceptance('2045') = 0.847219;
-*StartingAcceptance('2050') = 0.851116;
-
-StartingAcceptance('2025') = 84.85667641;
-StartingAcceptance('2030') = 84.85667641;
-StartingAcceptance('2035') = 84.85667641;
-StartingAcceptance('2040') = 84.85667641;
-StartingAcceptance('2045') = 84.85667641;
-StartingAcceptance('2050') = 84.85667641;
+StartingAcceptance('2025') = 87.7805;
+StartingAcceptance('2030') = 87.7805;
+StartingAcceptance('2035') = 87.7805;
+StartingAcceptance('2040') = 87.7805;
+StartingAcceptance('2045') = 87.7805;
+StartingAcceptance('2050') = 87.7805;
 
 Parameter YearlyAcceptanceChange(y_full);
-
-YearlyAcceptanceChange('2025') = 1;
-YearlyAcceptanceChange('2030') = 1.01;
-YearlyAcceptanceChange('2035') = 1.0125;
-YearlyAcceptanceChange('2040') = 1.015;
-YearlyAcceptanceChange('2045') = 1.02;
-YearlyAcceptanceChange('2050') = 1.025;
+YearlyAcceptanceChange('2025') = 1.0;
+YearlyAcceptanceChange('2030') = 1.0;
+YearlyAcceptanceChange('2035') = 1.0;
+YearlyAcceptanceChange('2040') = 1.0;
+YearlyAcceptanceChange('2045') = 1.0;
+YearlyAcceptanceChange('2050') = 1.0;
 
 
 
@@ -125,7 +155,7 @@ YearlyAcceptanceChange('2050') = 1.025;
 
 ****old formulation before April, 24
 equation Acceptance4_TotalAverageAcceptance(r_full,y_full); 
-Acceptance4_TotalAverageAcceptance(r,y)$(YearVal(y) > 2025).. TotalAcceptance(y) =g= (YearlyAcceptanceChange(y)*StartingAcceptance(y)) * TotalNCapacity(y);
+Acceptance4_TotalAverageAcceptance(r,y)$(YearVal(y) > 2020).. TotalAcceptance(y) =g= (YearlyAcceptanceChange(y)*StartingAcceptance(y)) * TotalNCapacity(y);
 
 
 ***equation NoJusticeLost(r_full,y_full);
