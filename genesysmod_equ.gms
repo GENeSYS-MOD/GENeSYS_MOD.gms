@@ -733,15 +733,15 @@ PeakingDemand(y,r) =e=
 *     Demand per Year in PJ             to Gwh     Highest peak hour value   /number hours per year
   ) + SpecifiedAnnualDemand(r,'power',y)/GWh_to_PJ*x_peakingDemand(r,'power')/8760
 ;
-    
-    equation PC2_PowerPeakingCapacity(YEAR_FULL,REGION_FULL);
-    PC2_PowerPeakingCapacity(y,r)..
-    PeakingCapacity(y,r) =e=
-      sum((t)$(sum(m,OutputActivityRatio(r,t,'power',m,y)) and sum((s,m),TechnologyToStorage(t,s,m,y)) = 0),
-        (TotalCapacityAnnual(y,t,r)*AvailabilityFactor(r,t,y)*RenewableCapacityFactorReduction*(sum(l,CapacityFactor(r,t,l,y))/card(l)))$(sum(l,CapacityFactor(r,t,l,y)) < card(l))
-      + (TotalCapacityAnnual(y,t,r)*AvailabilityFactor(r,t,y))$(sum(l,CapacityFactor(r,t,l,y)) >= card(l))
-      )
-    ;
+
+equation PC2_PowerPeakingCapacity(YEAR_FULL,REGION_FULL);
+PC2_PowerPeakingCapacity(y,r)..
+PeakingCapacity(y,r) =e=
+  sum((t)$(sum(m,OutputActivityRatio(r,t,'power',m,y)) and sum((s,m),TechnologyToStorage(t,s,m,y)) = 0),
+    (TotalCapacityAnnual(y,t,r)*AvailabilityFactor(r,t,y)*RenewableCapacityFactorReduction*(sum(l,CapacityFactor(r,t,l,y))/card(l)))$(sum(l,CapacityFactor(r,t,l,y)) < card(l))
+  + (TotalCapacityAnnual(y,t,r)*AvailabilityFactor(r,t,y))$(sum(l,CapacityFactor(r,t,l,y)) >= card(l))
+  )
+;
 
 equation PC3_PeakingConstraint(YEAR_FULL,REGION_FULL);
 PC3_PeakingConstraint(y,r)$(YearVal(y) > %set_peaking_startyear%)..
@@ -780,10 +780,7 @@ equation ADD_Employment(r_full,y_full);
 ADD_Employment(r,y)..  sum((t,f),((NewCapacity(y,t,r)*EFactorManufacturing(t,y)*RegionalAdjustmentFactor('%model_region%',y)*LocalManufacturingFactor('%model_region%',y))
                  +(NewCapacity(y,t,r)*EFactorConstruction(t,y)*RegionalAdjustmentFactor('%model_region%',y))
                  +(TotalCapacityAnnual(y,t,r)*EFactorOM(t,y)*RegionalAdjustmentFactor('%model_region%',y))
-                 +(UseByTechnologyAnnual(y,t,f,r)*EFactorFuelSupply(t,y)))*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)
-                 +((UseByTechnologyAnnual(y,'HLI_Hardcoal','Hardcoal',r)+UseByTechnologyAnnual(y,'HMI_HardCoal','Hardcoal',r)
-                 +(UseByTechnologyAnnual(y,'HHI_BF_BOF','Hardcoal',r))*EFactorCoalJobs('Coal_Heat',y)*CoalSupply(r,y)))
-                 +(CoalSupply(r,y)*CoalDigging('%model_region%','Coal_Export','%emissionPathway%_%emissionScenario%',y)*EFactorCoalJobs('Coal_Export',y)))
+                 +(UseByTechnologyAnnual(y,t,f,r)*EFactorFuelSupply(t,y)))*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y))
                  =e= TotalJobs(r,y);
 $endif
 
