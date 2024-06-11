@@ -723,7 +723,7 @@ scalar GWh_to_PJ /0.0036/;
 scalar PeakingSlack /%set_peaking_slack%/;
 scalar MinRunShare /%set_peaking_minrun_share%/;
 scalar RenewableCapacityFactorReduction /%set_peaking_res_cf%/;
-scalar MinThermalShare /%set_peaking_min_thermal%/
+scalar MinThermalShare /%set_peaking_min_thermal%/;
 
 equation PC1_PowerPeakingDemand(YEAR_FULL,REGION_FULL);
 PC1_PowerPeakingDemand(y,r)..
@@ -733,15 +733,15 @@ PeakingDemand(y,r) =e=
 *     Demand per Year in PJ             to Gwh     Highest peak hour value   /number hours per year
   ) + SpecifiedAnnualDemand(r,'power',y)/GWh_to_PJ*x_peakingDemand(r,'power')/8760
 ;
-
-equation PC2_PowerPeakingCapacity(YEAR_FULL,REGION_FULL);
-PC2_PowerPeakingCapacity(y,r)..
-PeakingCapacity(y,r) =e=
-  sum((t)$(sum(m,OutputActivityRatio(r,t,'power',m,y)) and sum((s,m),TechnologyToStorage(t,s,m,y)) = 0),
-    (TotalCapacityAnnual(y,t,r)*AvailabilityFactor(r,t,y)*RenewableCapacityFactorReduction*(sum(l,CapacityFactor(r,t,l,y))/card(l)))$(sum(l,CapacityFactor(r,t,l,y)) < card(l))
-  + (TotalCapacityAnnual(y,t,r)*AvailabilityFactor(r,t,y))$(sum(l,CapacityFactor(r,t,l,y)) >= card(l))
-  )
-;
+    
+    equation PC2_PowerPeakingCapacity(YEAR_FULL,REGION_FULL);
+    PC2_PowerPeakingCapacity(y,r)..
+    PeakingCapacity(y,r) =e=
+      sum((t)$(sum(m,OutputActivityRatio(r,t,'power',m,y)) and sum((s,m),TechnologyToStorage(t,s,m,y)) = 0),
+        (TotalCapacityAnnual(y,t,r)*AvailabilityFactor(r,t,y)*RenewableCapacityFactorReduction*(sum(l,CapacityFactor(r,t,l,y))/card(l)))$(sum(l,CapacityFactor(r,t,l,y)) < card(l))
+      + (TotalCapacityAnnual(y,t,r)*AvailabilityFactor(r,t,y))$(sum(l,CapacityFactor(r,t,l,y)) >= card(l))
+      )
+    ;
 
 equation PC3_PeakingConstraint(YEAR_FULL,REGION_FULL);
 PC3_PeakingConstraint(y,r)$(YearVal(y) > %set_peaking_startyear%)..

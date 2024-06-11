@@ -22,7 +22,7 @@ $onuelxref
 scalar starttime;
 starttime = jnow;
 
-$if not set data_file                    $setglobal data_file Input_Germany_Employment_v01_phe_27_05_2024
+$if not set data_file                    $setglobal data_file Input_Germany_Employment_v02_phe_06_06_2024
 $if not set hourly_data_file             $setglobal hourly_data_file input_timeseries_DE_v03_jb_26-03-2024
 $if not set elmod_nthhour                $setglobal elmod_nthhour 484
 $if not set elmod_starthour              $setglobal elmod_starthour 8
@@ -184,6 +184,7 @@ $onecho > cplex.opt
 threads %threads%
 parallelmode -1
 lpmethod 4
+*barcrossalg -1
 names yes
 writemps mpsfile
 *solutiontype 2
@@ -199,7 +200,7 @@ names yes
 barhomogeneous 1
 timelimit 1000000
 writeprob mps_GAMS.mps
-Crossover 0
+Crossover 1
 $offecho
 
 
