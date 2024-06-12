@@ -52,6 +52,9 @@ $endif
 
 *______________________________________________________________________________________________*
 
+
+*AvailabilityFactor(r,'HLR_H2_Boiler',y)$(YearVal(y)>2018) = 0;
+
 *fix for offshore hub regions
 CapacityFactor(r,'HLR_Solar_Thermal',l,y)$(CapacityFactor(r,'RES_PV_Utility_Avg',l,y)=0) = 0.00001;
 CapacityFactor(r,'HLI_Solar_Thermal',l,y)$(CapacityFactor(r,'RES_PV_Utility_Avg',l,y)=0) = 0.00001;
@@ -67,8 +70,6 @@ TotalTechnologyAnnualActivityUpperLimit(r,'P_Nuclear',y)$(YearVal(y) >= 2025) = 
 AvailabilityFactor('DE_Nord',t,y) = 0;
 AvailabilityFactor('DE_Baltic',t,y) = 0;
 
-*TotalTechnologyAnnualActivityUpperLimit('DE_Nord',t,y) = 0;
-*TotalTechnologyAnnualActivityUpperLimit('DE_Baltic',t,y) = 0;
 
 AvailabilityFactor('DE_Baltic','RES_Wind_Offshore_Deep',y) = 1;
 AvailabilityFactor('DE_Baltic','X_Alkaline_Electrolysis',y) = 1;
@@ -84,27 +85,11 @@ AvailabilityFactor('DE_Nord','D_Battery_Li-Ion',y) = 1;
 ReserveMargin('DE_Nord',y) = 0;
 ReserveMargin('DE_Baltic',y) = 0;
 
-*NewCapacity.fx('2018','RES_Wind_Offshore_Deep','DE_Nord') = 1;
-ResidualCapacity('DE_Nord','RES_Wind_Offshore_Deep',y) = 1;
-ResidualCapacity('DE_Baltic','RES_Wind_Offshore_Deep',y) = 1;
-*ProductionByTechnologyAnnual.fx('2018','RES_Wind_Offshore_Deep','Power','DE_Nord') = 1;
-*TotalTechnologyAnnualActivityLowerLimit('DE_Nord','X_Alkaline_Electrolysis',y)$(YearVal(y)>2018) = 0.5;
-*RateOfActivity.fx(y,l,'RES_Wind_Offshore_Deep','1','DE_Nord') = 0.015;
-
-*TradeCapacity(r,'Power',y,'DE_Nord') = TradeCapacity('DE_Nord','Power',y,r); 
-*Export.fx(y,l,'Power','DE_Nord',rr) = 0.01;
-
-*TradeRoute(r,f,y,'DE_Nord') = 0;
-Import.fx(y,l,f,'DE_Nord',rr) = 0;
-*Import.fx(y,l,f,'DE_Baltic',rr) = 0;
-
 
 TotalTechnologyAnnualActivityUpperLimit(r,'X_Alkaline_Electrolysis','2018') = 0.01*SpecifiedAnnualDemand(r,'H2','2018');
 TotalTechnologyAnnualActivityUpperLimit(r,'X_SMR','2018') = 0.37*SpecifiedAnnualDemand(r,'H2','2018');
 RegionalBaseYearProduction(r,'X_SMR','H2','2018') = 0.37*SpecifiedAnnualDemand(r,'H2','2018');
 RegionalBaseYearProduction(r,'X_Alkaline_Electrolysis','H2','2018') = 0.01*SpecifiedAnnualDemand(r,'H2','2018');
-*NewCapacity.up('2018','X_SMR',r) = 999999;
-*NewCapacity.up('2018','X_Alkaline_Electrolysis',r) = 999999;
 
 
 *___________________________________________________________________________________________________________*
@@ -138,30 +123,11 @@ equation TotalCapOffshoreNord2045(YEAR_FULL,TECHNOLOGY,REGION_FULL);
 TotalCapOffshoreNord2045(y,t,r)..sum((Offshore,offshore_nordic), TotalCapacityAnnual('2045',Offshore,offshore_nordic)) =g= 64.4;
 
 
-
 equation TotalCapOffshoreBaltic2030(YEAR_FULL,TECHNOLOGY,REGION_FULL);
 TotalCapOffshoreBaltic2030(y,t,r)..sum((Offshore,offshore_baltic), TotalCapacityAnnual('2030',Offshore,offshore_baltic)) =g= 2.4;
 equation TotalCapOffshoreBaltic2045(YEAR_FULL,TECHNOLOGY,REGION_FULL);
 TotalCapOffshoreBaltic2045(y,t,r)..sum((Offshore,offshore_baltic), TotalCapacityAnnual('2045',Offshore,offshore_baltic)) =g= 5.6;
 
-
-*equation TotalCapOffshoreTotal2030(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-*TotalCapOffshoreTotal2030(y,t,r)..sum((Offshore,region), TotalCapacityAnnual('2030',Offshore,region)) =g= 33;
-*equation TotalCapOffshoreTotal2045(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-*TotalCapOffshoreTotal2045(y,t,r)..sum((Offshore,region), TotalCapacityAnnual('2045',Offshore,region)) =e= 70;
-
-
-
-*TotalCapacityAnnual.lo('2030','RES_Wind_Offshore_Deep','DE_Nord') = 28;
-*TotalCapacityAnnual.lo('2030','RES_Wind_Offshore_Deep','DE_Baltic') = 5;
-
-*infeasible
-*TotalCapacityAnnual.lo('2035','RES_Wind_Offshore_Deep','DE_Nord') = 33;
-*TotalCapacityAnnual.lo('2035','RES_Wind_Offshore_Deep','DE_Baltic') = 7;
-*TotalCapacityAnnual.lo('2045','RES_Wind_Offshore_Deep','DE_Nord') = 55;
-*TotalCapacityAnnual.lo('2045','RES_Wind_Offshore_Deep','DE_Baltic') = 15;
-*TotalCapacityAnnual.lo('2050','RES_Wind_Offshore_Deep','DE_Nord') = 55;
-*TotalCapacityAnnual.lo('2050','RES_Wind_Offshore_Deep','DE_Baltic') = 15;
 
 $endif
 
@@ -178,8 +144,6 @@ GrowthRateTradeCapacity(r,'Gas_Natural',y,rr) = 0.1;
 GrowthRateTradeCapacity(r,'H2',y,rr) = 0.15;
 
 
-*TradeCapacity(r,'H2','2018',rr) = 5;
-
 $ifthen %switch_Policy_Scenario% == 1
 *######## Policy Scenario Osterpaket ##########
 
@@ -190,7 +154,7 @@ set t_group /onshore,offshore,solar,h2/;
 parameter OsterpaketCapacity(y_full,t_group);
 
 OsterpaketCapacity('2030','onshore') = 115;
-*OsterpaketCapacity('2030','offshore') = 30;
+OsterpaketCapacity('2030','offshore') = 30;
 OsterpaketCapacity('2030','solar') = 215;
 OsterpaketCapacity('2030','h2') = 10;
 
@@ -207,16 +171,16 @@ onshore('RES_Wind_Onshore_Opt') = yes;
 onshore('RES_Wind_Onshore_Avg') = yes;
 onshore('RES_Wind_Onshore_Inf') = yes;
 
-*set offshore(t);
-*offshore(t) = no;
-*offshore('RES_Wind_Offshore_Deep') = yes;
-*offshore('RES_Wind_Offshore_Transitional') = yes;
-*offshore('RES_Wind_Offshore_Shallow') = yes;
+set offshore(t);
+offshore(t) = no;
+offshore('RES_Wind_Offshore_Deep') = yes;
+offshore('RES_Wind_Offshore_Transitional') = yes;
+offshore('RES_Wind_Offshore_Shallow') = yes;
 
 
 parameter TagTechnologyToTechGroup(t,t_group);
 TagTechnologyToTechGroup(Onshore,'onshore')=1;
-*TagTechnologyToTechGroup(Offshore,'offshore')=1;
+TagTechnologyToTechGroup(Offshore,'offshore')=1;
 TagTechnologyToTechGroup(h2,'h2')=1;
 TagTechnologyToTechGroup(t,'solar')$(TagTechnologyToSubsets(t,'Solar'))=1;
 TagTechnologyToTechGroup('HLR_Solar_Thermal','solar')=0;
@@ -227,16 +191,16 @@ equations Add_Osterpaket(y_full,t_group);
 
 Add_Osterpaket(y,t_group).. sum((t,r)$(TagTechnologyToTechGroup(t,t_group)),TotalCapacityAnnual(y,t,r)) =g= OsterpaketCapacity(y,t_group);
 
-*###########Coal-Exit###########*
-ProductionByTechnologyAnnual.fx('2040',t,'Power',r)$(sum(m,InputActivityRatio(r,t,'Hardcoal',m,'2040'))) = 0;
-ProductionByTechnologyAnnual.fx('2040',t,'Power',r)$(sum(m,InputActivityRatio(r,t,'Lignite',m,'2040'))) = 0;
-AvailabilityFactor(r,'P_Nuclear',y)$(YearVal(y)>2020) = 0;
-AvailabilityFactor(r,'P_Coal_Lignite',y)$(YearVal(y)>2035) = 0;
-AvailabilityFactor('DE_NRW','P_Coal_Lignite',y)$(YearVal(y)>2030) = 0;
-AvailabilityFactor(r,'P_Coal_Hardcoal',y)$(YearVal(y)>2035) = 0;
-AvailabilityFactor(r,'CHP_Coal_Hardcoal',y)$(YearVal(y)>2035) = 0;
-AvailabilityFactor(r,'CHP_Coal_Lignite',y)$(YearVal(y)>2035) = 0;
-AvailabilityFactor('DE_NRW','CHP_Coal_Lignite',y)$(YearVal(y)>2030) = 0;
+**###########Coal-Exit###########*NOW OUTSIDE OF POLICY SWITCH
+*ProductionByTechnologyAnnual.fx('2040',t,'Power',r)$(sum(m,InputActivityRatio(r,t,'Hardcoal',m,'2040'))) = 0;
+*ProductionByTechnologyAnnual.fx('2040',t,'Power',r)$(sum(m,InputActivityRatio(r,t,'Lignite',m,'2040'))) = 0;
+*AvailabilityFactor(r,'P_Nuclear',y)$(YearVal(y)>2020) = 0;
+*AvailabilityFactor(r,'P_Coal_Lignite',y)$(YearVal(y)>2035) = 0;
+*AvailabilityFactor('DE_NRW','P_Coal_Lignite',y)$(YearVal(y)>2030) = 0;
+*AvailabilityFactor(r,'P_Coal_Hardcoal',y)$(YearVal(y)>2035) = 0;
+*AvailabilityFactor(r,'CHP_Coal_Hardcoal',y)$(YearVal(y)>2035) = 0;
+*AvailabilityFactor(r,'CHP_Coal_Lignite',y)$(YearVal(y)>2035) = 0;
+*AvailabilityFactor('DE_NRW','CHP_Coal_Lignite',y)$(YearVal(y)>2030) = 0;
 
 
 *########SectorEmissionLimits######
@@ -269,6 +233,15 @@ HeatREProduction(y,r)$(YearVal(y)>2025)..sum(f$(TagFuelToSubsets(f,'HeatFuels'))
 
 
 $endif
+ProductionByTechnologyAnnual.fx('2040',t,'Power',r)$(sum(m,InputActivityRatio(r,t,'Hardcoal',m,'2040'))) = 0;
+ProductionByTechnologyAnnual.fx('2040',t,'Power',r)$(sum(m,InputActivityRatio(r,t,'Lignite',m,'2040'))) = 0;
+AvailabilityFactor(r,'P_Nuclear',y)$(YearVal(y)>2020) = 0;
+AvailabilityFactor(r,'P_Coal_Lignite',y)$(YearVal(y)>2035) = 0;
+AvailabilityFactor('DE_NRW','P_Coal_Lignite',y)$(YearVal(y)>2030) = 0;
+AvailabilityFactor(r,'P_Coal_Hardcoal',y)$(YearVal(y)>2035) = 0;
+AvailabilityFactor(r,'CHP_Coal_Hardcoal',y)$(YearVal(y)>2035) = 0;
+AvailabilityFactor(r,'CHP_Coal_Lignite',y)$(YearVal(y)>2035) = 0;
+AvailabilityFactor('DE_NRW','CHP_Coal_Lignite',y)$(YearVal(y)>2030) = 0;
 
 
 AvailabilityFactor(r,'R_Coal_Hardcoal',y)$(YearVal(y) > 2020) = 0;

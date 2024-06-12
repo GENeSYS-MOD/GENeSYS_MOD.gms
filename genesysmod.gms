@@ -22,7 +22,7 @@ $onuelxref
 scalar starttime;
 starttime = jnow;
 
-$if not set data_file                    $setglobal data_file input_Germany_H2_v12_jb_08_04_2024
+$if not set data_file                    $setglobal data_file input_Germany_H2_v15_nim_12_06_2024
 $if not set hourly_data_file             $setglobal hourly_data_file input_timeseries_DE_v03_jb_26-03-2024
 $if not set elmod_nthhour                $setglobal elmod_nthhour 484
 $if not set elmod_starthour              $setglobal elmod_starthour 8
@@ -61,7 +61,7 @@ $if not set switch_only_write_results    $setglobal switch_only_write_results 0
 $if not set switch_read_data_long        $setglobal switch_read_data_long 1
 
 
-$if not set set_symmetric_transmission   $setglobal set_symmetric_transmission 0
+$if not set set_symmetric_transmission   $setglobal set_symmetric_transmission 0.85
 $if not set switch_hydrogen_blending_share      $setglobal switch_hydrogen_blending_share 1
 $if not set set_storagelevelstart_up     $setglobal set_storagelevelstart_up 0.75
 $if not set set_storagelevelstart_low    $setglobal set_storagelevelstart_low 0.75
@@ -69,7 +69,7 @@ $if not set set_storagelevelstart_low    $setglobal set_storagelevelstart_low 0.
 $if not set switch_peaking_capacity      $setglobal switch_peaking_capacity 1
 $if not set switch_peaking_with_trade    $setglobal switch_peaking_with_trade 0
 $if not set switch_peaking_with_storages $setglobal switch_peaking_with_storages 0
-$if not set switch_peaking_minrun        $setglobal switch_peaking_minrun 0
+$if not set switch_peaking_minrun        $setglobal switch_peaking_minrun 1
 $if not set set_peaking_slack            $setglobal set_peaking_slack 1.0
 *consider vRES only partially (1.0 consider vRES fully, 0.0 ignore vRES in peaking equation)
 $if not set set_peaking_res_cf           $setglobal set_peaking_res_cf 0.5
@@ -79,7 +79,7 @@ $if not set set_peaking_minrun_share     $setglobal set_peaking_minrun_share 0.1
 
 $if not set model_region                 $setglobal model_region de
 $if not set eployment_data_file          $setglobal employment_data_file Employment_v01_06_11_2019
-$if not set threads                      $setglobal threads 8
+$if not set threads                      $setglobal threads 6
 $if not set elmod_dunkelflaute           $setglobal elmod_dunkelflaute 0
 $if not set hydrogen_growthcost_multiplier $setglobal hydrogen_growthcost_multiplier 1
 
@@ -195,6 +195,7 @@ names yes
 barhomogeneous 1
 timelimit 1000000
 writeprob mps_GAMS.mps
+*crossover 0
 $offecho
 
 

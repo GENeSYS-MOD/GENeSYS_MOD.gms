@@ -73,7 +73,7 @@ CapitalCost(r,t,y)$(CapitalCost(r,t,y) = 0) = 0.01;
 *
 * ####### Bounds for non-supply technologies #############
 *
-TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'Transformation')and not (sameas('HLR_Heatpump_Geo_Deep',t) or sameas('HLR_Heatpump_Geo_Surface',t))) = 999999;
+TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'Transformation')and not (sameas('HLR_Heatpump_Geo_Deep',t) or sameas('HLR_Heatpump_Geo_Surface',t) or sameas('D_SCS_H2',t))) = 999999;
 TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'FossilPower')) = 999999;
 TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'FossilFuelGeneration')) = 999999;
 TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'CHP')) = 999999;
