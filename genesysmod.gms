@@ -72,7 +72,7 @@ $if not set set_peaking_minrun_share     $setglobal set_peaking_minrun_share 0.1
 
 $if not set model_region                 $setglobal model_region europe
 $if not set eployment_data_file          $setglobal employment_data_file Employment_v01_06_11_2019
-$if not set threads                      $setglobal threads 8
+$if not set threads                      $setglobal threads 6
 $if not set elmod_dunkelflaute           $setglobal elmod_dunkelflaute 0
 $if not set hydrogen_growthcost_multiplier $setglobal hydrogen_growthcost_multiplier 1
 

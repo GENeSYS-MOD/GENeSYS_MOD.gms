@@ -55,7 +55,7 @@ $offUNDF
 
 
 $onecho >%tempdir%temp_%data_file%_par.tmp
-se=0     
+se=0
 
         par=SpecifiedAnnualDemand    Rng=Par_SpecifiedAnnualDemand!A1                   rdim=2  cdim=1
 *        par=SpecifiedDemandProfile   Rng=Par_SpecifiedDemandProfile!A1                  rdim=3  cdim=1
@@ -115,9 +115,10 @@ se=0
         par=AnnualSectoralEmissionLimit      Rng=Par_AnnualSectoralEmissionLimit!A1                      rdim=2  cdim=1
         par=TagDemandFuelToSector       Rng=Par_TagDemandFuelToSector!A2                       rdim=2        cdim=0
         par=TagElectricTechnology       Rng=Par_TagElectricTechnology!A2                       rdim=1        cdim=0
-        
+
         par=TagTechnologyToSubsets                Rng=Par_TagTechnologyToSubsets!A2                rdim=2        cdim=0
         par=TagFuelToSubsets                      Rng=Par_TagFuelToSubsets!A2                      rdim=2        cdim=0
+*        par=StorageE2PRatio                      Rng=Par_StorageE2PRatio!A2                      rdim=1          cdim=0
 
 $offecho
 
@@ -139,6 +140,7 @@ $loadm ModalSplitByFuelAndModalType TagTechnologyToModalType BaseYearProduction 
 $loadm TagTechnologyToSector AnnualSectoralEmissionLimit
 $loadm RegionalCCSLimit TagDemandFuelToSector TagElectricTechnology
 $loadm TagTechnologyToSubsets TagFuelToSubsets
+*StorageE2PRatio
 $offUNDF
 
 *
@@ -266,7 +268,7 @@ se=0
         par=RampingDownFactor              Rng=Par_RampingDownFactor!A5                    rdim=2        cdim=0
         par=ProductionChangeCost           Rng=Par_ProductionChangeCost!A5                 rdim=2        cdim=0
 
-        
+
 $offecho
 
 $ifi %switch_only_load_gdx%==0 $call "gdxxrw %inputdir%%data_file%.xlsx @%tempdir%temp_%data_file%_par2.tmp o=%gdxdir%%data_file%_par2.gdx MaxDupeErrors=99 CheckDate ";

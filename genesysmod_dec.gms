@@ -100,7 +100,7 @@ parameter RegionalBaseYearProduction(REGION_FULL,TECHNOLOGY,FUEL,YEAR_FULL);
 parameter TagElectricTechnology(TECHNOLOGY);
 parameter TagTechnologyToSubsets(TECHNOLOGY,*);
 parameter TagFuelToSubsets(FUEL,*);
-parameter TimeDepEfficiency(REGION_FULL,TECHNOLOGY,TIMESLICE_FULL,YEAR_FULL) Time dependent efficiency for technologies like heatpumps;   
+parameter TimeDepEfficiency(REGION_FULL,TECHNOLOGY,TIMESLICE_FULL,YEAR_FULL) Time dependent efficiency for technologies like heatpumps;
 
 
 parameter RegionalCCSLimit(REGION_FULL);
@@ -124,6 +124,7 @@ parameter TechnologyToStorage(TECHNOLOGY,STORAGE,MODE_OF_OPERATION,YEAR_FULL);
 parameter TechnologyFromStorage(TECHNOLOGY,STORAGE,MODE_OF_OPERATION,YEAR_FULL);
 
 parameter StorageMaxCapacity(REGION_FULL,STORAGE,YEAR_FULL);
+parameter StorageE2PRatio(STORAGE);
 
 *
 * ######## Capacity Constraints #############
