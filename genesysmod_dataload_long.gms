@@ -28,7 +28,6 @@ Readin_GrowthRateTradeCapacity(r_full,rr_full,f,y_full)
 Readin_TradeCapacityGrowthCosts(r_full,rr_full,f)
 Readin_ModalSplitByFuelAndModalType(r_full,f,y_full,mt)
 Readin_TotalTechnologyModelPeriodActivityUpperLimit(REGION_FULL,TECHNOLOGY)
-test(REGION_FULL,FUEL,YEAR_FULL)
 ;
 
 * Step 1: REDONE - Now reads from combined data file
@@ -59,7 +58,7 @@ $offUNDF
 
 
 $onecho >%tempdir%temp_%data_file%_par.tmp
-se=0     
+se=0
 
         par=SpecifiedAnnualDemand    Rng=Par_SpecifiedAnnualDemand!A2                   rdim=3  cdim=0
 *        par=SpecifiedDemandProfile   Rng=Par_SpecifiedDemandProfile!A2                  rdim=4  cdim=0
@@ -119,9 +118,11 @@ se=0
         par=AnnualSectoralEmissionLimit      Rng=Par_AnnualSectoralEmissionLimit!A2                      rdim=3  cdim=0
         par=TagDemandFuelToSector       Rng=Par_TagDemandFuelToSector!A2                       rdim=2        cdim=0
         par=TagElectricTechnology       Rng=Par_TagElectricTechnology!A2                       rdim=1        cdim=0
-        
+
         par=TagTechnologyToSubsets                Rng=Par_TagTechnologyToSubsets!A2                rdim=2        cdim=0
         par=TagFuelToSubsets                      Rng=Par_TagFuelToSubsets!A2                      rdim=2        cdim=0
+        par=StorageE2PRatio                      Rng=Par_StorageE2PRatio!A2                      rdim=1          cdim=0
+
 $offecho
 
 $ifi %switch_only_load_gdx%==0 $call "gdxxrw %inputdir%%data_file%.xlsx @%tempdir%temp_%data_file%_par.tmp o=%gdxdir%%data_file%_par.gdx MaxDupeErrors=99 CheckDate ";
@@ -141,7 +142,7 @@ $loadm ResidualStorageCapacity CapacityToActivityUnit
 $loadm Readin_ModalSplitByFuelAndModalType TagTechnologyToModalType BaseYearProduction RegionalBaseYearProduction
 $loadm TagTechnologyToSector AnnualSectoralEmissionLimit
 $loadm RegionalCCSLimit TagDemandFuelToSector TagElectricTechnology
-$loadm TagTechnologyToSubsets TagFuelToSubsets
+$loadm TagTechnologyToSubsets TagFuelToSubsets StorageE2PRatio
 $offUNDF
 
 
@@ -287,11 +288,11 @@ $ifthen %switch_ramping% == 1
 
 $onecho >%tempdir%temp_%data_file%_par2.tmp
 se=0
-        par=RampingUpFactor                Rng=Par_RampingUpFactor!A5                      rdim=2        cdim=0
-        par=RampingDownFactor              Rng=Par_RampingDownFactor!A5                    rdim=2        cdim=0
-        par=ProductionChangeCost           Rng=Par_ProductionChangeCost!A5                 rdim=2        cdim=0
+        par=RampingUpFactor                Rng=Par_RampingUpFactor!A2                      rdim=2        cdim=0
+        par=RampingDownFactor              Rng=Par_RampingDownFactor!A2                    rdim=2        cdim=0
+        par=ProductionChangeCost           Rng=Par_ProductionChangeCost!A2                 rdim=2        cdim=0
 
-        
+
 $offecho
 
 $ifi %switch_only_load_gdx%==0 $call "gdxxrw %inputdir%%data_file%.xlsx @%tempdir%temp_%data_file%_par2.tmp o=%gdxdir%%data_file%_par2.gdx MaxDupeErrors=99 CheckDate ";

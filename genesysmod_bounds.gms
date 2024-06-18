@@ -104,6 +104,17 @@ StorageLevelTSStart.fx('S_Battery_Li-Ion',y,l,r)$(mod((ord(l)+(start_hour/hour_s
 StorageLevelTSStart.fx('S_Battery_Redox',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(24/hour_steps)) = 0) = 0;
 StorageLevelTSStart.fx('S_Heat_HLR',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(24/hour_steps)) = 0) = 0;
 StorageLevelTSStart.fx('S_Heat_HLI',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(24/hour_steps)) = 0) = 0;
+*StorageLevelTSStart.fx('S_CAES',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(48/hour_steps)) = 0) = 0;
+
+
+** This scales the capital cost of storage according to the number of days in the model.
+*CapitalCostStorage(r,s,y) = CapitalCostStorage(r,s,y)/365*8760/%elmod_nthhour%/(24/hour_steps);
+
+*equation Add_E2PRatio_up(STORAGE,YEAR_FULL,REGION_FULL);
+*Add_E2PRatio_up(s,y,r).. StorageUpperLimit(s,y,r) =l=  sum((t,m)$(TechnologyToStorage(t,s,m,y)),  TotalCapacityAnnual(y,t,r) * StorageE2PRatio(s) * 0.0036 * 3);
+
+*equation Add_E2PRatio_low(STORAGE,YEAR_FULL,REGION_FULL);
+*Add_E2PRatio_low(s,y,r).. StorageUpperLimit(s,y,r) =g=  sum((t,m)$(TechnologyToStorage(t,s,m,y)),  TotalCapacityAnnual(y,t,r) * StorageE2PRatio(s) * 0.0036 * 0.5);
 
 
 *
