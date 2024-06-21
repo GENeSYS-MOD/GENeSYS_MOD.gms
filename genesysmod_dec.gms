@@ -100,6 +100,7 @@ parameter RegionalBaseYearProduction(REGION_FULL,TECHNOLOGY,FUEL,YEAR_FULL);
 parameter TagElectricTechnology(TECHNOLOGY);
 parameter TagTechnologyToSubsets(TECHNOLOGY,*);
 parameter TagFuelToSubsets(FUEL,*);
+parameter TimeDepEfficiency(REGION_FULL,TECHNOLOGY,TIMESLICE_FULL,YEAR_FULL) Time dependent efficiency for technologies like heatpumps;
 
 
 parameter RegionalCCSLimit(REGION_FULL);
@@ -123,6 +124,7 @@ parameter TechnologyToStorage(TECHNOLOGY,STORAGE,MODE_OF_OPERATION,YEAR_FULL);
 parameter TechnologyFromStorage(TECHNOLOGY,STORAGE,MODE_OF_OPERATION,YEAR_FULL);
 
 parameter StorageMaxCapacity(REGION_FULL,STORAGE,YEAR_FULL);
+parameter StorageE2PRatio(STORAGE);
 
 *
 * ######## Capacity Constraints #############
@@ -363,7 +365,13 @@ PhaseIn(YEAR_FULL) this is a lower bound for renewable integration based on the 
 
 
 Parameter BaseYearSlack(f);
-Positive Variable BaseYearOvershoot(r_full,t,f,y_full);
+positive Variable BaseYearBounds_TooLow(r_full,t,f,y_full);
+positive variable BaseYearBounds_TooHigh(y_full,r_full,t,f);
+
+$ifthen %switch_baseyear_bounds_debugging% == 0
+BaseYearBounds_TooHigh.fx(y,r,t,f) = 0;
+BaseYearBounds_TooLow.fx(r,t,f,y) = 0;
+$endif
 
 positive variable DiscountedSalvageValueTransmission(y_full,r_full);
 

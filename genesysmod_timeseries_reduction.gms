@@ -30,8 +30,8 @@ wind_onshore_avg, wind_onshore_inf, wind_onshore_opt,
 wind_offshore,wind_offshore_shallow,wind_offshore_deep,
 mobility_psng,
 heat_low, heat_high,
-heat_pump_air, heat_pump_ground,hydro_ror,pv_tracking,
 heat_pump_geo_surface,heat_pump_geo_deep/;
+heat_pump_air, heat_pump_ground,hydro_ror,pv_tracking/;
 alias (cde,COUNTRY_DATA_ENTRIES);
 
 parameter CountryData(REGION_FULL,TIMESLICE_FULL,COUNTRY_DATA_ENTRIES);
@@ -402,10 +402,14 @@ CapacityFactor(r,t,l,y) = 1;
 CapacityFactor(r,t,l,y)$(TagTechnologyToSubsets(t,'Solar')) = 0;
 CapacityFactor(r,t,l,y)$(TagTechnologyToSubsets(t,'Wind')) = 0;
 
-CapacityFactor(r,'HLR_Heatpump_Aerial',l,y) = ScaledCountryData(r,l,'heat_pump_air');
-CapacityFactor(r,'HLR_Heatpump_Ground',l,y) = ScaledCountryData(r,l,'heat_pump_ground');
 CapacityFactor(r,'HLR_Heatpump_Geo_Surface',l,y) = ScaledCountryData(r,l,'heat_pump_geo_surface');
 CapacityFactor(r,'HLR_Heatpump_Geo_Deep',l,y) = ScaledCountryData(r,l,'heat_pump_geo_deep');
+TimeDepEfficiency(r,t,l,y) = 1;
+
+CapacityFactor(r,'HLR_Heatpump_Aerial',l,y) = 1;
+CapacityFactor(r,'HLR_Heatpump_Ground',l,y) = 1;
+TimeDepEfficiency(r,'HLR_Heatpump_Aerial',l,y) = ScaledCountryData(r,l,'heat_pump_air');
+TimeDepEfficiency(r,'HLR_Heatpump_Ground',l,y) = ScaledCountryData(r,l,'heat_pump_ground');
 
 CapacityFactor(r,'Res_pv_utility_opt',l,y) = ScaledCountryData(r,l,'pv_opt');
 CapacityFactor(r,'Res_Wind_Onshore_opt',l,y) = ScaledCountryData(r,l,'wind_onshore_opt');
