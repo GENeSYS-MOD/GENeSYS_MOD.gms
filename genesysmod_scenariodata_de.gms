@@ -94,42 +94,7 @@ RegionalBaseYearProduction(r,'X_Alkaline_Electrolysis','H2','2018') = 0.01*Speci
 
 *___________________________________________________________________________________________________________*
 
-$ifthen %switch_FEP% == 1
-*###### Flächentwicklungsplan implementation #######
-set offshore_nordic(r_full);
-offshore_nordic(r_full) = no;
-offshore_nordic('DE_Nord') = yes;
-offshore_nordic('DE_NI') = yes;
-offshore_nordic('DE_SH') = yes;
 
-set offshore_baltic(r_full);
-offshore_baltic(r_full) = no;
-offshore_baltic('DE_Baltic') = yes;
-offshore_baltic('DE_MV') = yes;
-offshore_baltic('DE_SH') = yes;
-
-set offshore (t);
-offshore(t)= no;
-offshore('RES_Wind_Offshore_Deep') = yes;
-offshore('RES_Wind_Offshore_Shallow') = yes;
-offshore('RES_Wind_Offshore_Transitional') = yes;
-
-
-equation TotalCapOffshoreNord2025(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-TotalCapOffshoreNord2025(y,t,r)..sum((offshore,offshore_nordic), TotalCapacityAnnual('2025',Offshore,offshore_nordic)) =g= 9.4;
-equation TotalCapOffshoreNord2030(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-TotalCapOffshoreNord2030(y,t,r)..sum((Offshore,offshore_nordic), TotalCapacityAnnual('2030',Offshore,offshore_nordic)) =g= 31.38;
-equation TotalCapOffshoreNord2045(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-TotalCapOffshoreNord2045(y,t,r)..sum((Offshore,offshore_nordic), TotalCapacityAnnual('2045',Offshore,offshore_nordic)) =g= 64.4;
-
-
-equation TotalCapOffshoreBaltic2030(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-TotalCapOffshoreBaltic2030(y,t,r)..sum((Offshore,offshore_baltic), TotalCapacityAnnual('2030',Offshore,offshore_baltic)) =g= 2.4;
-equation TotalCapOffshoreBaltic2045(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-TotalCapOffshoreBaltic2045(y,t,r)..sum((Offshore,offshore_baltic), TotalCapacityAnnual('2045',Offshore,offshore_baltic)) =g= 5.6;
-
-
-$endif
 
 *##### Total Annual Max Capacity for Wind_offshore_Shallow/Transitional/Deep adjusted for regions connected to DE_Nord & DE_Baltic (based on residual capacity) #####
 TotalAnnualMaxCapacity('DE_SH','RES_Wind_Offshore_Deep',y)$(yearVal(y) >= 2015) = 0;
@@ -154,7 +119,6 @@ set t_group /onshore,offshore,solar,h2/;
 parameter OsterpaketCapacity(y_full,t_group);
 
 OsterpaketCapacity('2030','onshore') = 115;
-OsterpaketCapacity('2030','offshore') = 30;
 OsterpaketCapacity('2030','solar') = 215;
 OsterpaketCapacity('2030','h2') = 10;
 
@@ -180,7 +144,6 @@ offshore('RES_Wind_Offshore_Shallow') = yes;
 
 parameter TagTechnologyToTechGroup(t,t_group);
 TagTechnologyToTechGroup(Onshore,'onshore')=1;
-TagTechnologyToTechGroup(Offshore,'offshore')=1;
 TagTechnologyToTechGroup(h2,'h2')=1;
 TagTechnologyToTechGroup(t,'solar')$(TagTechnologyToSubsets(t,'Solar'))=1;
 TagTechnologyToTechGroup('HLR_Solar_Thermal','solar')=0;
@@ -233,6 +196,46 @@ HeatREProduction(y,r)$(YearVal(y)>2025)..sum(f$(TagFuelToSubsets(f,'HeatFuels'))
 
 
 $endif
+
+$ifthen %switch_FEP% == 1
+*###### Flächentwicklungsplan implementation #######
+set offshore_nordic(r_full);
+offshore_nordic(r_full) = no;
+offshore_nordic('DE_Nord') = yes;
+offshore_nordic('DE_NI') = yes;
+offshore_nordic('DE_SH') = yes;
+
+set offshore_baltic(r_full);
+offshore_baltic(r_full) = no;
+offshore_baltic('DE_Baltic') = yes;
+offshore_baltic('DE_MV') = yes;
+offshore_baltic('DE_SH') = yes;
+
+set offshore (t);
+offshore(t)= no;
+offshore('RES_Wind_Offshore_Deep') = yes;
+offshore('RES_Wind_Offshore_Shallow') = yes;
+offshore('RES_Wind_Offshore_Transitional') = yes;
+
+
+equation TotalCapOffshoreNord2025(YEAR_FULL,TECHNOLOGY,REGION_FULL);
+TotalCapOffshoreNord2025(y,t,r)..sum((offshore,offshore_nordic), TotalCapacityAnnual('2025',Offshore,offshore_nordic)) =g= 9.4;
+equation TotalCapOffshoreNord2030(YEAR_FULL,TECHNOLOGY,REGION_FULL);
+TotalCapOffshoreNord2030(y,t,r)..sum((Offshore,offshore_nordic), TotalCapacityAnnual('2030',Offshore,offshore_nordic)) =g= 31.38;
+equation TotalCapOffshoreNord2045(YEAR_FULL,TECHNOLOGY,REGION_FULL);
+TotalCapOffshoreNord2045(y,t,r)..sum((Offshore,offshore_nordic), TotalCapacityAnnual('2045',Offshore,offshore_nordic)) =g= 64.4;
+
+
+equation TotalCapOffshoreBaltic2030(YEAR_FULL,TECHNOLOGY,REGION_FULL);
+TotalCapOffshoreBaltic2030(y,t,r)..sum((Offshore,offshore_baltic), TotalCapacityAnnual('2030',Offshore,offshore_baltic)) =g= 2.4;
+equation TotalCapOffshoreBaltic2045(YEAR_FULL,TECHNOLOGY,REGION_FULL);
+TotalCapOffshoreBaltic2045(y,t,r)..sum((Offshore,offshore_baltic), TotalCapacityAnnual('2045',Offshore,offshore_baltic)) =g= 5.6;
+
+OsterpaketCapacity('2030','offshore') = 30;
+TagTechnologyToTechGroup(Offshore,'offshore')=1;
+
+$endif
+
 ProductionByTechnologyAnnual.fx('2040',t,'Power',r)$(sum(m,InputActivityRatio(r,t,'Hardcoal',m,'2040'))) = 0;
 ProductionByTechnologyAnnual.fx('2040',t,'Power',r)$(sum(m,InputActivityRatio(r,t,'Lignite',m,'2040'))) = 0;
 AvailabilityFactor(r,'P_Nuclear',y)$(YearVal(y)>2020) = 0;
