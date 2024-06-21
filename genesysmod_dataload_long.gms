@@ -330,7 +330,7 @@ se=0
         par=CoalSupply               Rng=Par_CoalSupply!A5                    rdim=1        cdim=1
         par=CoalDigging              Rng=Par_CoalDigging!A5                    rdim=3        cdim=1
         par=RegionalAdjustmentFactor          Rng=Par_RegionalAdjustmentFactor!A5                    rdim=1        cdim=1
-        par=LocalManufacturingFactor          Rng=Par_LocalManufacturingFactor!A5                    rdim=1        cdim=1
+        par=LocalManufacturingFactor          Rng=Par_LocalManufacturingFactor!A5                    rdim=2        cdim=1
         par=DeclineRate                       Rng=Par_DeclineRate!A5                                 rdim=1        cdim=1
 
 

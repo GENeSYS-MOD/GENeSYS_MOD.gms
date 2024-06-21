@@ -189,10 +189,10 @@ set t_group /onshore,offshore,solar,h2/;
 
 parameter OsterpaketCapacity(y_full,t_group);
 
-OsterpaketCapacity('2030','onshore') = 115;
+*OsterpaketCapacity('2030','onshore') = 115;
 *OsterpaketCapacity('2030','offshore') = 30;
-OsterpaketCapacity('2030','solar') = 215;
-OsterpaketCapacity('2030','h2') = 10;
+*OsterpaketCapacity('2030','solar') = 215;
+*OsterpaketCapacity('2030','h2') = 10;
 
 set h2(t);
 h2(t) = no;
@@ -223,9 +223,9 @@ TagTechnologyToTechGroup('HLR_Solar_Thermal','solar')=0;
 TagTechnologyToTechGroup('HLI_Solar_Thermal','solar')=0;
 
 
-equations Add_Osterpaket(y_full,t_group);
+*equations Add_Osterpaket(y_full,t_group);
 
-Add_Osterpaket(y,t_group).. sum((t,r)$(TagTechnologyToTechGroup(t,t_group)),TotalCapacityAnnual(y,t,r)) =g= OsterpaketCapacity(y,t_group);
+*Add_Osterpaket(y,t_group).. sum((t,r)$(TagTechnologyToTechGroup(t,t_group)),TotalCapacityAnnual(y,t,r)) =g= OsterpaketCapacity(y,t_group);
 
 *###########Coal-Exit###########*
 ProductionByTechnologyAnnual.fx('2040',t,'Power',r)$(sum(m,InputActivityRatio(r,t,'Hardcoal',m,'2040'))) = 0;
@@ -329,5 +329,17 @@ E13_SectoralEmissionReduction(y,e,se,r)$(YearVal(y)>2018).. AnnualSectoralEmissi
 *equation States_Oil_Fix2(REGION_FULL);
 *States_Oil_Fix1(Germany).. ProductionByTechnologyAnnual('2020','HLR_Oil_Boiler','Heat_Low_Residual',Germany) =g=  0.5*ProductionByTechnologyAnnual('2015','HLR_Oil_Boiler','Heat_Low_Residual',Germany);
 *States_Oil_Fix2(Germany).. ProductionByTechnologyAnnual('2025','HLR_Oil_Boiler','Heat_Low_Residual',Germany) =g=  0.25*ProductionByTechnologyAnnual('2020','HLR_Oil_Boiler','Heat_Low_Residual',Germany);
+
+
+*Determines how much of a technology needs to be built within the region
+*parameter DomesticManufacturingFactor(REGION_FULL,TECHNOLOGY, YEAR_FULL);
+*DomesticManufacturingFactor(r,'RES_PV_Rooftop_Commercial',y)=0.1;
+*DomesticManufacturingFactor(r,'RES_PV_Rooftop_Residential',y)=0.1;
+*DomesticManufacturingFactor(r,'RES_PV_Utility_Avg',y)=0.1;
+*DomesticManufacturingFactor(r,'RES_PV_Utility_Inf',y)=0.1;
+*DomesticManufacturingFactor(r,'RES_PV_Utility_Opt',y)=0.1;
+
+
+
 
 

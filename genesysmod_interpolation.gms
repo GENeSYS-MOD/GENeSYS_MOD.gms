@@ -70,6 +70,6 @@ EFactorCoalJobs('Coal_Heat',y)$(EFactorCoalJobs('Coal_Heat',y) = 0) = (EFactorCo
 CoalSupply(r,y)$(CoalSupply(r,y) = 0) = (CoalSupply(r,y-1)+CoalSupply(r,y+1))/2;
 CoalDigging('%model_region%','Coal_Export','%emissionPathway%_%emissionScenario%',y)$(CoalDigging('%model_region%','Coal_Export','%emissionPathway%_%emissionScenario%',y) = 0) = (CoalDigging('%model_region%','Coal_Export','%emissionPathway%_%emissionScenario%',y-1)+CoalDigging('%model_region%','Coal_Export','%emissionPathway%_%emissionScenario%',y+1))/2;
 RegionalAdjustmentFactor('%model_region%',y)$(RegionalAdjustmentFactor('%model_region%',y) = 0) = (RegionalAdjustmentFactor('%model_region%',y+1)+RegionalAdjustmentFactor('%model_region%',y+1))/2;
-LocalManufacturingFactor('%model_region%',y)$(LocalManufacturingFactor('%model_region%',y) = 0) = (LocalManufacturingFactor('%model_region%',y-1)+LocalManufacturingFactor('%model_region%',y+1))/2;
+LocalManufacturingFactor('%model_region%',t,y)$(LocalManufacturingFactor('%model_region%',t,y) = 0) = (LocalManufacturingFactor('%model_region%',t,y-1)+LocalManufacturingFactor('%model_region%',t,y+1))/2;
 DeclineRate(t,y)$(DeclineRate(t,y) = 0) = (DeclineRate(t,y-1)+DeclineRate(t,y+1))/2;
 $endif

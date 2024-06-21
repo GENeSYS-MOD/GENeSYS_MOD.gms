@@ -31,7 +31,7 @@ $if not set data_base_region             $setglobal data_base_region DE_BY
 $if not set timeseries                   $setglobal timeseries elmod
 $if not set solver                       $setglobal solver gurobi
 
-$if not set switch_FEP                   $setglobal switch_FEP 1
+$if not set switch_FEP                   $setglobal switch_FEP 0
 $if not set switch_Policy_Scenario       $setglobal switch_Policy_Scenario 1
 
 $if not set switch_capital_costs         $setglobal switch_capital_costs 1
@@ -191,6 +191,7 @@ writemps mpsfile
 quality yes
 barobjrng 1e+075
 tilim 1000000
+mipdisplay 2
 $offecho
 
 $onecho > gurobi.opt

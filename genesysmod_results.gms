@@ -208,6 +208,11 @@ output_energydemandstatistics('Import Share of Primary Energy [%]','Total','Tota
 output_energydemandstatistics('Import Share of Primary Energy [%]','Total','EU27',f,y)$(sum((t,m,EU27)$(TagTechnologyToSubsets(t,'ImportTechnology')),OutputActivityRatio(EU27,t,f,m,y))) = (sum((t,EU27),ProductionByTechnologyAnnual.l(y,t,f,EU27))/3.6)/sum(ff,output_energydemandstatistics('Primary Energy [TWh]','Total','EU27',ff,y));
 
 
+
+parameter output_jobstatistics;
+output_jobstatistics('Total Jobs',r,y) = TotalJobs.l(r,y);
+
+
 $ifthen set Info
 execute_unload "%gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%.gdx"
 $else
@@ -223,6 +228,7 @@ output_exogenous_costs
 output_trade_capacity
 output_other
 output_energydemandstatistics
+output_jobstatistics
 *output_fuelcosts
 *output_emissionintensity
 ;
@@ -246,6 +252,9 @@ execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenar
 execute "echo 'File','Name','Region','Sector/Technology','Fuel','Year','Value' > %resultdir%Output_Other_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
 execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%.gdx symb=output_other format=csv noHeader >> %resultdir%Output_Other_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
 
+execute "echo 'File','Name','Region','Year','Value' > %resultdir%Output_Jobstatistics_%model_region%_%emissionPathway%_%emissionScenario%.csv"
+execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%.gdx symb=output_jobstatistics format=csv noHeader >> %resultdir%Output_Jobstatistics_%model_region%_%emissionPathway%_%emissionScenario%.csv"
+
 $else
 execute "echo 'Region','Sector','Technology','Mode','Fuel','Timeslice','Type','Unit','PathwayScenario','Year','Value' > %resultdir%Output_Prodcution_%model_region%_%emissionPathway%_%emissionScenario%.csv"
 execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%.gdx symb=output_energy_balance format=csv noHeader >> %resultdir%Output_Prodcution_%model_region%_%emissionPathway%_%emissionScenario%.csv"
@@ -261,6 +270,9 @@ execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenar
 
 execute "echo 'File','Name','Region','Sector/Technology','Fuel','Year','Value' > %resultdir%Output_Other_%model_region%_%emissionPathway%_%emissionScenario%.csv"
 execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%.gdx symb=output_other format=csv noHeader >> %resultdir%Output_Other_%model_region%_%emissionPathway%_%emissionScenario%.csv"
+
+execute "echo 'File','Name','Region','Year','Value' > %resultdir%Output_Jobstatistics_%model_region%_%emissionPathway%_%emissionScenario%.csv"
+execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%.gdx symb=output_jobstatistics format=csv noHeader >> %resultdir%Output_Jobstatistics_%model_region%_%emissionPathway%_%emissionScenario%.csv"
 $endif
 $endif
 
@@ -306,6 +318,9 @@ text="Emission"                          Rng=Emissions!C1
 text="Technology"                        Rng=Emissions!D1
 text="Timeslice"                         Rng=Emissions!E1
 text="Scenario"                          Rng=Emissions!F1
+
+
+
 $offecho
 
 
