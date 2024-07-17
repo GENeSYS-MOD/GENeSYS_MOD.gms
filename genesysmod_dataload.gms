@@ -279,8 +279,8 @@ $loadm ProductionChangeCost
 $offUNDF
 
 
-MinActiveProductionPerTimeslice(y,l,'Power','RES_Hydro_Large',R_FULL) = 0.1;
-MinActiveProductionPerTimeslice(y,l,'Power','RES_Hydro_Small',R_FULL) = 0.05;
+MinActiveProductionPerTimeslice(y,l,'Power','P_Hydro_Large',R_FULL) = 0.1;
+MinActiveProductionPerTimeslice(y,l,'Power','P_Hydro_Small',R_FULL) = 0.05;
 $endif
 
 

@@ -22,8 +22,8 @@ $onuelxref
 scalar starttime;
 starttime = jnow;
 
-$if not set data_file                    $setglobal data_file RegularParameters_wide_few_zones
-$if not set hourly_data_file             $setglobal hourly_data_file output_timeseries
+$if not set data_file                    $setglobal data_file data_pre_rename
+$if not set hourly_data_file             $setglobal hourly_data_file timeseries_pre_rename
 $if not set elmod_nthhour                $setglobal elmod_nthhour 964
 $if not set elmod_starthour              $setglobal elmod_starthour 8
 $if not set year                         $setglobal year 2018
@@ -35,7 +35,7 @@ $if not set solver                       $setglobal solver gurobi
 $if not set switch_test_data_load        $setglobal switch_test_data_load 0
 $if not set switch_investLimit           $setglobal switch_investLimit 1
 $if not set switch_infeasibility_tech    $setglobal switch_infeasibility_tech 0
-$if not set switch_base_year_bounds      $setglobal switch_base_year_bounds 0
+$if not set switch_base_year_bounds      $setglobal switch_base_year_bounds 1
 $if not set switch_base_year_bounds_debugging      $setglobal switch_base_year_bounds_debugging 1
 
 
@@ -54,7 +54,7 @@ $if not set switch_only_write_results    $setglobal switch_only_write_results 0
 $if not set switch_read_data_long        $setglobal switch_read_data_long 0
 
 
-$if not set set_symmetric_transmission   $setglobal set_symmetric_transmission 0
+$if not set set_symmetric_transmission   $setglobal set_symmetric_transmission 0.85
 $if not set switch_hydrogen_blending_share      $setglobal switch_hydrogen_blending_share 1
 $if not set set_storagelevelstart_up     $setglobal set_storagelevelstart_up 0.75
 $if not set set_storagelevelstart_low    $setglobal set_storagelevelstart_low 0.75

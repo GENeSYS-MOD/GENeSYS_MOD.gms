@@ -217,7 +217,7 @@ ramping_factor('CHP_Gas_CCGT_Natural_CCS') = 0.06;
 ramping_factor('CHP_Gas_CCGT_SynGas') = 0.06;
 ramping_factor('CHP_Hydrogen_FuelCell') = 0.5;
 ramping_factor('CHP_Oil') = 0.2;
-ramping_factor('RES_Hydro_Large') = 0.25;
+ramping_factor('P_Hydro_Large') = 0.25;
 
 variable_costs(r,'P_Biomass') = resourcecosts(r,'biomass','%dispatch_year%')*InputActivityRatio(r,'P_Biomass','biomass','1','%dispatch_year%');
 variable_costs(r,'P_Biomass_CCS') = resourcecosts(r,'biomass','%dispatch_year%')*InputActivityRatio(r,'P_Biomass_CCS','biomass','1','%dispatch_year%');
@@ -266,28 +266,28 @@ co2_activity_ratio('CHP_Gas_CCGT_Natural_CCS') = EmissionContentPerFuel('Gas_Nat
 co2_activity_ratio('CHP_Oil') = EmissionContentPerFuel('oil','CO2')*InputActivityRatio('%dispatch_base_region%','CHP_Oil','oil','1','%dispatch_year%');
 co2_activity_ratio(d) = co2_activity_ratio(d)*sum(t$(sameas(d,t)),EmissionActivityRatio('%dispatch_base_region%',t,'1','CO2','%dispatch_year%'));
 
-capacity_factor(r,'RES_Hydro_Small',h) = CountryData(r, h, 'hydro_ror');
-capacity_factor(r,'RES_PV_Rooftop_Commercial',h) = CountryData(r, h, 'pv_avg');
-capacity_factor(r,'RES_PV_Rooftop_Residential',h) = CountryData(r, h, 'pv_avg');
-capacity_factor(r,'RES_PV_Utility_Avg',h) = CountryData(r, h, 'pv_avg');
-capacity_factor(r,'RES_PV_Utility_Inf',h) = CountryData(r, h, 'pv_inf');
-capacity_factor(r,'RES_PV_Utility_Opt',h) = CountryData(r, h, 'pv_opt');
-*capacity_factor(r,'RES_PV_Utility_Opt_H2',h) = CountryData(r, h, 'pv');
-capacity_factor(r,'Res_PV_Utility_Tracking',h) = CountryData(r, h, 'pv_tracking');
-capacity_factor(r,'RES_Wind_Offshore_Deep',h) = CountryData(r, h, 'wind_offshore_deep');
-capacity_factor(r,'RES_Wind_Offshore_Shallow',h) = CountryData(r, h, 'wind_offshore_shallow');
-*capacity_factor(r,'RES_Wind_Offshore_Shallow_H2',h) = CountryData(r, h, 'wind_offshore_2040');
-capacity_factor(r,'RES_Wind_Offshore_Transitional',h) = CountryData(r, h, 'wind_offshore');
-capacity_factor(r,'RES_Wind_Onshore_Avg',h) = CountryData(r, h, 'wind_onshore_avg');
-capacity_factor(r,'RES_Wind_Onshore_Inf',h) = CountryData(r, h, 'wind_onshore_inf');
-capacity_factor(r,'RES_Wind_Onshore_Opt',h) = CountryData(r, h, 'wind_onshore_opt');
-*capacity_factor(r,'RES_Wind_Onshore_Opt_H2',h) = CountryData(r, h, 'pv');
+capacity_factor(r,'P_Hydro_Small',h) = CountryData(r, h, 'hydro_ror');
+capacity_factor(r,'P_PV_Rooftop_Commercial',h) = CountryData(r, h, 'pv_avg');
+capacity_factor(r,'P_PV_Rooftop_Residential',h) = CountryData(r, h, 'pv_avg');
+capacity_factor(r,'P_PV_Utility_Avg',h) = CountryData(r, h, 'pv_avg');
+capacity_factor(r,'P_PV_Utility_Inf',h) = CountryData(r, h, 'pv_inf');
+capacity_factor(r,'P_PV_Utility_Opt',h) = CountryData(r, h, 'pv_opt');
+*capacity_factor(r,'P_PV_Utility_Opt_H2',h) = CountryData(r, h, 'pv');
+capacity_factor(r,'P_PV_Utility_Tracking',h) = CountryData(r, h, 'pv_tracking');
+capacity_factor(r,'P_Wind_Offshore_Deep',h) = CountryData(r, h, 'wind_offshore_deep');
+capacity_factor(r,'P_Wind_Offshore_Shallow',h) = CountryData(r, h, 'wind_offshore_shallow');
+*capacity_factor(r,'P_Wind_Offshore_Shallow_H2',h) = CountryData(r, h, 'wind_offshore_2040');
+capacity_factor(r,'P_Wind_Offshore_Transitional',h) = CountryData(r, h, 'wind_offshore');
+capacity_factor(r,'P_Wind_Onshore_Avg',h) = CountryData(r, h, 'wind_onshore_avg');
+capacity_factor(r,'P_Wind_Onshore_Inf',h) = CountryData(r, h, 'wind_onshore_inf');
+capacity_factor(r,'P_Wind_Onshore_Opt',h) = CountryData(r, h, 'wind_onshore_opt');
+*capacity_factor(r,'P_Wind_Onshore_Opt_H2',h) = CountryData(r, h, 'pv');
 
 capacity_factor(r,v,h) = capacity_factor(r,v,h)*sum(t$(sameas(v,t)),AvailabilityFactor(r,t,'%dispatch_year%'));
 
 transmission_capacity(r,rr) = TotalTradeCapacity.l('%dispatch_year%', 'power', r, rr);
 
-dispatchable_capacity_minactivity('RES_Hydro_Large') = 0.15;
+dispatchable_capacity_minactivity('P_Hydro_Large') = 0.15;
 
 storage_startlevel(r,sto) = sum(TIMESLICE$(ord(TIMESLICE)=1),StorageLevelTSStart.l(sto,'%dispatch_year%',TIMESLICE,r))/3.6*1000/10;
 
