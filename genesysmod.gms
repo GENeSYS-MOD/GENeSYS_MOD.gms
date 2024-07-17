@@ -22,8 +22,8 @@ $onuelxref
 scalar starttime;
 starttime = jnow;
 
-$if not set data_file                    $setglobal data_file input_Germany_H2_v15_nim_12_06_2024
-$if not set hourly_data_file             $setglobal hourly_data_file input_timeseries_DE_v03_jb_26-03-2024
+$if not set data_file                    $setglobal data_file input_Germany_H2_v20_nim_15_07_2024
+$if not set hourly_data_file             $setglobal hourly_data_file input_timeseries_DE_v04_nim_18-06-2024
 $if not set elmod_nthhour                $setglobal elmod_nthhour 484
 $if not set elmod_starthour              $setglobal elmod_starthour 8
 $if not set year                         $setglobal year 2018
@@ -31,13 +31,15 @@ $if not set data_base_region             $setglobal data_base_region DE_BY
 $if not set timeseries                   $setglobal timeseries elmod
 $if not set solver                       $setglobal solver gurobi
 
-$if not set switch_FEP                   $setglobal switch_FEP 1
+$if not set switch_FEP                   $setglobal switch_FEP 0
 $if not set switch_Policy_Scenario       $setglobal switch_Policy_Scenario 1
-
-$if not set switch_capital_costs         $setglobal switch_capital_costs 1
-$if not set switch_transport_costs_power $setglobal switch_transport_costs_power 1
-$if not set switch_transport_costs_h2    $setglobal switch_transport_costs_h2 1
+$if not set switch_central_h2         $setglobal switch_central_h2 0
 $if not set switch_h2_waste_heat         $setglobal switch_h2_waste_heat 1
+
+
+$if not set switch_import_costs_h2         $setglobal switch_import_costs_h2 1
+$if not set switch_growth_rate_power $setglobal switch_growth_rate_power 0.11
+$if not set switch_transport_costs_h2    $setglobal switch_transport_costs_h2 1
 
 
 $if not set switch_test_data_load        $setglobal switch_test_data_load 0
@@ -182,7 +184,7 @@ threads %threads%
 parallelmode -1
 lpmethod 4
 names yes
-writemps mpsfile
+*writemps mpsfile
 *solutiontype 2
 quality yes
 barobjrng 1e+075
@@ -195,7 +197,7 @@ method 2
 names yes
 barhomogeneous 1
 timelimit 1000000
-writeprob mps_GAMS.mps
+*writeprob mps_GAMS.mps
 *crossover 0
 $offecho
 
@@ -249,7 +251,7 @@ genesys.optfile = 1;
 scalar heapSizeBeforSolve;
 heapSizeBeforSolve = heapSize;
 
-solve genesys minimizing z using lp;
+solve genesys minimizing z using lp; 
 
 $include genesysmod_variable_parameter.gms
 

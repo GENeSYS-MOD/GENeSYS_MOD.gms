@@ -120,6 +120,12 @@ output_exogenous_costs(r,t,'Fixed Costs',y) = FixedCost(r,t,y);
 output_exogenous_costs(r,t,'Variable Costs',y) = VariableCost(r,t,'1',y) + sum((f),InputActivityRatio(r,t,f,'1',y)*z_fuelcosts(f,y,r));
 output_exogenous_costs(r,'Carbon','Carbon Price',y) = EmissionsPenalty(r,'CO2',y);
 
+parameter output_trade(*,*,*,*,*,*);
+output_trade(r,rr,f,'Export',l,y) = Export.l(y,l,f,r,rr);
+output_trade(r,rr,f,'Import',l,y) = Import.l(y,l,f,r,rr);
+output_trade(r,rr,f,'New Capacity','Full',y) = NewTradeCapacity.l(y,f,r,rr);
+output_trade(r,rr,f,'Total Capacity','Full',y) = TotalTradeCapacity.l(y,f,r,rr);
+
 parameter output_trade_capacity;
 output_trade_capacity(r,rr,'Power Transmissions Capacity',y) = TotalTradeCapacity.l(y, 'power', r, rr);
 output_trade_capacity(r,rr,'Transmission Expansion Costs in MEUR/GW',y) = TradeCapacityGrowthCosts(r,'Power',rr)*TradeRoute(r,'Power',y,rr);
@@ -223,6 +229,7 @@ output_exogenous_costs
 output_trade_capacity
 output_other
 output_energydemandstatistics
+output_trade
 *output_fuelcosts
 *output_emissionintensity
 ;

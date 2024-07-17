@@ -24,7 +24,7 @@
 VariableCost(r,t,m,y)$(TagTechnologyToSubsets(t,'Transport')) = 0.09;
 
 * Relevant for Europe due to unimplemented data
-CommissionedTradeCapacity(y,f,r,rr) = 0;
+*CommissionedTradeCapacity(y,f,r,rr) = 0;
 
 TradeCosts('ETS',r,rr)$(not TradeCosts('ETS',r,rr)) = 0.01;
 VariableCost(r,t,m,y)$(not VariableCost(r,t,m,y)) = 0.01;

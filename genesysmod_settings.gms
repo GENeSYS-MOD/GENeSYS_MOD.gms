@@ -42,7 +42,7 @@ SocialDiscountRate(r) = 0.05;
 
 scalar InvestmentLimit  Freedom for investment choices to spread across periods. A value of 1 would mean equal share for each period.
                       /1.9/;
-scalar NewRESCapacity /0.12/;
+scalar NewRESCapacity /0.10/;
 ProductionGrowthLimit(y,'Power') = 0.05;
 ProductionGrowthLimit(y,f)$(TagFuelToSubsets(f,'HeatFuels')) = 0.05;
 ProductionGrowthLimit(y,f)$(TagFuelToSubsets(f,'TransportFuels')) = 0.05;

@@ -267,7 +267,7 @@ TrC1_TradeCapacityPowerLinesImport(y,l,'Power',r,rr)$(TradeRoute(r,'Power',y,rr)
 equation TrC2a_TotalTradeCapacityStartYear(YEAR_FULL,FUEL,REGION_FULL,rr_full);
 TrC2a_TotalTradeCapacityStartYear(y,f,r,rr)$(TradeRoute(r,f,y,rr) > 0 and YearVal(y) = %year%).. TotalTradeCapacity(y,f,r,rr) =e= TradeCapacity(r,f,y,rr);
 equation TrC2b_TotalTradeCapacity(YEAR_FULL,FUEL,REGION_FULL,rr_full);
-TrC2b_TotalTradeCapacity(y,f,r,rr)$(TradeRoute(r,f,y,rr) > 0 and YearVal(y) > %year%).. TotalTradeCapacity(y,f,r,rr) =e= TotalTradeCapacity(y-1,f,r,rr) + NewTradeCapacity(y,f,r,rr) + CommissionedTradeCapacity(y,f,r,rr);
+TrC2b_TotalTradeCapacity(y,f,r,rr)$(TradeRoute(r,f,y,rr) > 0 and YearVal(y) > %year%).. TotalTradeCapacity(y,f,r,rr) =e= TotalTradeCapacity(y-1,f,r,rr) + NewTradeCapacity(y,f,r,rr) + CommissionedTradeCapacity(r,rr,f,y);
 
 equation TrC3_NewTradeCapacityLimitPowerLines(YEAR_FULL,FUEL,REGION_FULL,rr_full);
 TrC3_NewTradeCapacityLimitPowerLines(y,'Power',r,rr)$(TradeRoute(r,'Power',y,rr) > 0 and GrowthRateTradeCapacity(r,'Power',y,rr) > 0 and YearVal(y) > %year%).. (GrowthRateTradeCapacity(r,'Power',y,rr)*YearlyDifferenceMultiplier(y))*TotalTradeCapacity(y-1,'Power',r,rr) =g= NewTradeCapacity(y,'Power',r,rr);
@@ -293,7 +293,7 @@ DiscountedNewTradeCapacityCosts.fx(y,f,r,rr)$(TradeRoute(r,f,y,rr) = 0 or not Tr
 
 $ifthen set set_symmetric_transmission
 equation TrC6_SymmetricalTransmissionExpansion(YEAR_FULL,REGION_FULL,RR_FULL);
-TrC6_SymmetricalTransmissionExpansion(y,r,rr)$(TradeRoute(r,'Power',y,rr) > 0).. NewTradeCapacity(y,'Power',r,rr) =g= NewTradeCapacity(y,'Power',rr,r)*%set_symmetric_transmission%;
+TrC6_SymmetricalTransmissionExpansion(y,r,rr)$(TradeRoute(r,'Power',y,rr) > 0 and not sameas(r,'DE_Nord') and not sameas(r,'DE_Baltic') and not sameas(rr,'DE_Nord') and not sameas(rr,'DE_Baltic')).. NewTradeCapacity(y,'Power',r,rr) =g= NewTradeCapacity(y,'Power',rr,r)*%set_symmetric_transmission%;
 $endif
 
 equation TrC7_TradeCapacityLimitNonPower(YEAR_FULL,FUEL,REGION_FULL,rr_full);
@@ -759,7 +759,7 @@ $endif.equ_peaking_minThermal
 
 $ifthen.equ_peaking_minrun %switch_peaking_minrun% == 1
 equation PC4_MinRunConstraint(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-PC4_MinRunConstraint(y,t,r)$(TagTechnologyToSector(t,'Power')=1 and AvailabilityFactor(r,t,y)<=1 and TagDispatchableTechnology(t)=1 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0 and TotalCapacityAnnual.up(y,t,r) > 0 and YearVal(y) > %set_peaking_startyear%)..
+PC4_MinRunConstraint(y,t,r)$((TagTechnologyToSector(t,'Power')=1 or TagTechnologyToSector(t,'CHP')=1) and AvailabilityFactor(r,t,y)<=1 and TagDispatchableTechnology(t)=1 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0 and TotalCapacityAnnual.up(y,t,r) > 0 and YearVal(y) > %set_peaking_startyear%)..
 sum(l, sum(m, RateOfActivity(y,l,t,m,r))*YearSplit(l,y)) =g= sum(l,TotalCapacityAnnual(y,t,r)*CapacityFactor(r,t,l,y)*YearSplit(l,y)*AvailabilityFactor(r,t,y)*CapacityToActivityUnit(t))*MinRunShare;
 $endif.equ_peaking_minrun
 

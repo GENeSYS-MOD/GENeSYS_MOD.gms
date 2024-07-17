@@ -192,7 +192,7 @@ parameter TradeRouteInstalledCapacity(y_full,f,r_full,rr_full);
 parameter TradeLossBetweenRegions(REGION_FULL,FUEL,y_full,RR_FULL);
 
 
-parameter CommissionedTradeCapacity(y_full,f,r_full,rr_full);
+parameter CommissionedTradeCapacity(r_full,rr_full,f,y_full);
 parameter TradeCapacity(r_full, f, y_full, rr_full);
 parameter TradeCapacityGrowthCosts(r_full, f, rr_full);
 parameter GrowthRateTradeCapacity(r_full, f, y_full, rr_full);

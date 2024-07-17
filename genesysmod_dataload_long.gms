@@ -73,6 +73,7 @@ se=0
         par=Readin_TradeRoute    Rng=Par_TradeRoute!A2                          rdim=3  cdim=0
         par=Readin_TradeCosts               Rng=Par_TradeCosts!A2                           rdim=3  cdim=0
         par=Readin_TradeCapacity  Rng=Par_TradeCapacity!A2            rdim=4  cdim=0
+        par=CommissionedTradeCapacity       Rng=Par_CommissionedTradeCapacity!A2        rdim=4 cdim=0
 
         par=Readin_GrowthRateTradeCapacity         Rng=Par_GrowthRateTradeCapacity!A2  rdim=4 cdim=0
         par=Readin_TradeCapacityGrowthCosts        Rng=Par_TradeCapacityGrowthCosts!A2  rdim=3 cdim=0
@@ -131,7 +132,7 @@ $onUNDF
 $loadm
 $loadm SpecifiedAnnualDemand ReserveMarginTagFuel
 $loadm EmissionsPenalty ReserveMargin AnnualExogenousEmission  AnnualEmissionLimit RegionalAnnualEmissionLimit ReserveMarginTagTechnology
-$loadm ReserveMarginTagFuel Readin_TradeRoute Readin_TradeCapacity Readin_GrowthRateTradeCapacity Readin_TradeCapacityGrowthCosts Readin_TradeCosts
+$loadm ReserveMarginTagFuel Readin_TradeRoute Readin_TradeCapacity Readin_GrowthRateTradeCapacity Readin_TradeCapacityGrowthCosts Readin_TradeCosts CommissionedTradeCapacity
 $loadm InputActivityRatio OutputActivityRatio FixedCost CapitalCost VariableCost ResidualCapacity   EmissionsPenaltyTagTechnology
 $loadm AvailabilityFactor CapacityFactor EmissionActivityRatio OperationalLife TotalAnnualMaxCapacity TotalAnnualMinCapacity EmissionContentPerFuel
 $loadm TotalTechnologyAnnualActivityLowerLimit TotalTechnologyAnnualActivityUpperLimit

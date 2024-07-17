@@ -30,8 +30,8 @@ wind_onshore_avg, wind_onshore_inf, wind_onshore_opt,
 wind_offshore,wind_offshore_shallow,wind_offshore_deep,
 mobility_psng,
 heat_low, heat_high,
-heat_pump_geo_surface,heat_pump_geo_deep/;
-heat_pump_air, heat_pump_ground,hydro_ror,pv_tracking/;
+heat_pump_geo_surface,heat_pump_geo_deep
+heat_pump_air,heat_pump_ground,hydro_ror,pv_tracking/;
 alias (cde,COUNTRY_DATA_ENTRIES);
 
 parameter CountryData(REGION_FULL,TIMESLICE_FULL,COUNTRY_DATA_ENTRIES);
