@@ -22,8 +22,8 @@ $onuelxref
 scalar starttime;
 starttime = jnow;
 
-$if not set data_file                    $setglobal data_file data_pre_rename
-$if not set hourly_data_file             $setglobal hourly_data_file timeseries_pre_rename
+$if not set data_file                    $setglobal data_file data_post
+$if not set hourly_data_file             $setglobal hourly_data_file timeseries_post
 $if not set elmod_nthhour                $setglobal elmod_nthhour 964
 $if not set elmod_starthour              $setglobal elmod_starthour 8
 $if not set year                         $setglobal year 2018

@@ -45,7 +45,7 @@ SelfSufficiency(y, f, r) = 0;
 RETagTechnology(t,y)$(TagTechnologyToSubsets(t,'Renewables')) = 1;
 *needs to be removed, now in data
 RETagFuel('Power',y) = 1;
-RETagFuel('Heat_Low_Residential',y) = 1;
+RETagFuel('Heat_Buildings',y) = 1;
 RETagFuel('Heat_Low_Industrial',y) = 1;
 RETagFuel('Heat_Medium_Industrial',y) = 1;
 RETagFuel('Heat_High_Industrial',y) = 1;
@@ -102,7 +102,7 @@ ReserveMargin(r,y)$(not ReserveMargin(r,y)) = 0;
 *
 StorageLevelTSStart.fx('S_Battery_Li-Ion',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(24/hour_steps)) = 0) = 0;
 StorageLevelTSStart.fx('S_Battery_Redox',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(24/hour_steps)) = 0) = 0;
-StorageLevelTSStart.fx('S_Heat_HLR',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(24/hour_steps)) = 0) = 0;
+StorageLevelTSStart.fx('S_Heat_HB',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(24/hour_steps)) = 0) = 0;
 StorageLevelTSStart.fx('S_Heat_HLI',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(24/hour_steps)) = 0) = 0;
 *StorageLevelTSStart.fx('S_CAES',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(48/hour_steps)) = 0) = 0;
 
@@ -180,7 +180,7 @@ $ifthen %switch_infeasibility_tech% == 1
 OutputActivityRatio(REGION,'Infeasibility_HLI','Heat_Low_Industrial','1',y) = 1;
 OutputActivityRatio(REGION,'Infeasibility_HMI','Heat_Medium_Industrial','1',y) = 1;
 OutputActivityRatio(REGION,'Infeasibility_HHI','Heat_High_Industrial','1',y) = 1;
-OutputActivityRatio(REGION,'Infeasibility_HRI','Heat_Low_Residential','1',y) = 1;
+OutputActivityRatio(REGION,'Infeasibility_HRI','Heat_Buildings','1',y) = 1;
 OutputActivityRatio(REGION,'Infeasibility_Power','Power','1',y) = 1;
 OutputActivityRatio(REGION,'Infeasibility_Mob_Passenger','Mobility_Passenger','1',y) = 1 ;
 OutputActivityRatio(REGION,'Infeasibility_Mob_Freight','Mobility_Freight','1',y) = 1 ;

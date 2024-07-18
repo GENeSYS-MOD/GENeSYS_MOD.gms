@@ -36,7 +36,7 @@ Set TierFive(f);
 TierFive(f) = no;
 TierFive('Mobility_Passenger') = yes;
 TierFive('Mobility_Freight') = yes;
-TierFive('Heat_Low_Residential') = yes;
+TierFive('Heat_Buildings') = yes;
 TierFive('Heat_Low_Industrial') = yes;
 TierFive('Heat_Medium_Industrial') = yes;
 TierFive('Heat_High_Industrial') = yes;

@@ -88,7 +88,7 @@ map_techToCategory('D_Battery_Redox','Storage') = Yes;
 map_techToCategory('D_Gas_H2','Storage') = Yes;
 map_techToCategory('D_Gas_Methane','Storage') = Yes;
 map_techToCategory('D_Heat_HLI','Storage') = Yes;
-map_techToCategory('D_Heat_HLR','Storage') = Yes;
+map_techToCategory('D_Heat_HB','Storage') = Yes;
 map_techToCategory('D_PHS','Storage') = Yes;
 map_techToCategory('D_PHS_Residual','Storage') = Yes;
 map_techToCategory('D_CAES','Storage') = Yes;
@@ -233,12 +233,12 @@ additional_production(r,'InputDemand','Power_Demand_IHS_Residential','1','Power'
 additional_production(r,'InputDemand','Power_Demand_IHS_Industrial','1','Power',y,l,'Use','TWh','%EmissionPathway%_%sensitivity%') = - Demand(y,l,'Power',r) * 0.2778*powerSubsectorShares(r,'ind');
 additional_production(r,'InputDemand','Power_Demand_IHS_Commercial','1','Power',y,l,'Use','TWh','%EmissionPathway%_%sensitivity%') = - Demand(y,l,'Power',r) * 0.2778*powerSubsectorShares(r,'com');
 
-*additional_production(r,'InputDemand','Heat_Low_Residential_Demand','1','Heat_Low_Residential',y,l,'Use','PJ','%EmissionPathway%_%sensitivity%') = - Demand.l(y,l,'Heat_Low_Residential',r) ;
+*additional_production(r,'InputDemand','Heat_Buildings_Demand','1','Heat_Buildings',y,l,'Use','PJ','%EmissionPathway%_%sensitivity%') = - Demand.l(y,l,'Heat_Buildings',r) ;
 *additional_production(r,'InputDemand','Heat_Low_Industrial_Demand','1','Heat_Low_Industrial',y,l,'Use','PJ','%EmissionPathway%_%sensitivity%') = - Demand.l(y,l,'Heat_Low_Industrial',r) ;
 *additional_production(r,'InputDemand','Heat_Medium_Industrial_Demand','1','Heat_Medium_Industrial',y,l,'Use','PJ','%EmissionPathway%_%sensitivity%') = - Demand.l(y,l,'Heat_Medium_Industrial',r) ;
 *additional_production(r,'InputDemand','Heat_High_Industrial_Demand','1','Heat_High_Industrial',y,l,'Use','PJ','%EmissionPathway%_%sensitivity%') = - Demand.l(y,l,'Heat_High_Industrial',r) ;
 
-additional_production(r,'InputDemand','Heat_Low_Residential_Demand','1','Heat_Low_Residential',y,l,'Use','TWh','%EmissionPathway%_%sensitivity%') = - Demand(y,l,'Heat_Low_Residential',r) * 0.2778 ;
+additional_production(r,'InputDemand','Heat_Buildings_Demand','1','Heat_Buildings',y,l,'Use','TWh','%EmissionPathway%_%sensitivity%') = - Demand(y,l,'Heat_Buildings',r) * 0.2778 ;
 additional_production(r,'InputDemand','Heat_Low_Industrial_Demand','1','Heat_Low_Industrial',y,l,'Use','TWh','%EmissionPathway%_%sensitivity%') = - Demand(y,l,'Heat_Low_Industrial',r) * 0.2778 ;
 additional_production(r,'InputDemand','Heat_Medium_Industrial_Demand','1','Heat_Medium_Industrial',y,l,'Use','TWh','%EmissionPathway%_%sensitivity%') = - Demand(y,l,'Heat_Medium_Industrial',r) * 0.2778 ;
 additional_production(r,'InputDemand','Heat_High_Industrial_Demand','1','Heat_High_Industrial',y,l,'Use','TWh','%EmissionPathway%_%sensitivity%') = - Demand(y,l,'Heat_High_Industrial',r) * 0.2778 ;
