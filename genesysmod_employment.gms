@@ -54,19 +54,37 @@ RegionalAdjustmentFactor('%model_region%',y)$(RegionalAdjustmentFactor('%model_r
 LocalManufacturingFactor('%model_region%',t,y)$(LocalManufacturingFactor('%model_region%',t,y) = 0) = (LocalManufacturingFactor('%model_region%',t,y-1)+LocalManufacturingFactor('%model_region%',t,y+1))/2;
 DeclineRate(t,y)$(DeclineRate(t,y) = 0) = (DeclineRate(t,y-1)+DeclineRate(t,y+1))/2;
 
-*ManufacturingJobs(r,c,t,y,'%emissionPathway%_%emissionScenario%') = excel_capacity(r,c,t,y,'NewCapacity','%emissionPathway%_%emissionScenario%')*EFactorManufacturing(t,y)*RegionalAdjustmentFactor('southafrica',y)*LocalManufacturingFactor('southafrica',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y);
-*ConstructionJobs(r,c,t,y,'%emissionPathway%_%emissionScenario%') = excel_capacity(r,c,t,y,'NewCapacity','%emissionPathway%_%emissionScenario%')*EFactorConstruction(t,y)*RegionalAdjustmentFactor('southafrica',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y);
-*OMJobs(r,c,t,y,'%emissionPathway%_%emissionScenario%') = excel_capacity(r,c,t,y,'TotalCapacity','%emissionPathway%_%emissionScenario%')*EFactorOM(t,y)*RegionalAdjustmentFactor('southafrica',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y);
-*SupplyJobs(r,c,t,y,'Production','%emissionPathway%_%emissionScenario%') = sum((f,m,l),excel_production(r,c,t,m,f,y,l,'Production','PJ','%emissionPathway%_%emissionScenario%'))*EFactorFuelSupply(t,y)*RegionalAdjustmentFactor('southafrica',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y);
+*######################### OLD #####################
+*ManufacturingJobs(r,c,t,y,'%emissionPathway%_%emissionScenario%') = excel_capacity(r,c,t,y,'NewCapacity','%emissionPathway%_%emissionScenario%')*EFactorManufacturing(t,y)*RegionalAdjustmentFactor('%model_region%',y)*LocalManufacturingFactor('%model_region%',t,y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y);
+*ConstructionJobs(r,c,t,y,'%emissionPathway%_%emissionScenario%') = excel_capacity(r,c,t,y,'NewCapacity','%emissionPathway%_%emissionScenario%')*EFactorConstruction(t,y)*RegionalAdjustmentFactor('%model_region%',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y);
+*OMJobs(r,c,t,y,'%emissionPathway%_%emissionScenario%') = excel_capacity(r,c,t,y,'TotalCapacity','%emissionPathway%_%emissionScenario%')*EFactorOM(t,y)*RegionalAdjustmentFactor('%model_region%',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y);
+*SupplyJobs(r,c,t,y,'Production','%emissionPathway%_%emissionScenario%') = sum((f,m,l),excel_production(r,c,t,m,f,y,l,'Production','PJ','%emissionPathway%_%emissionScenario%'))*EFactorFuelSupply(t,y)*RegionalAdjustmentFactor('%model_region%',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y);
+
+*output_energyjobs(r,t,'ManufacturingJobs','%emissionPathway%_%emissionScenario%',y) = sum((se),output_capacity(r,se,t,'NewCapacity','%emissionPathway%_%emissionScenario%',y)*EFactorManufacturing(t,y)*RegionalAdjustmentFactor('%model_region%',y)*LocalManufacturingFactor('%model_region%',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y));
+*output_energyjobs(r,t,'ConstructionJobs','%emissionPathway%_%emissionScenario%',y) =  sum((se),output_capacity(r,se,t,'NewCapacity','%emissionPathway%_%emissionScenario%',y)*EFactorConstruction(t,y)*RegionalAdjustmentFactor('%model_region%',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y));
+*output_energyjobs(r,t,'OMJobs','%emissionPathway%_%emissionScenario%',y) =  sum((se),output_capacity(r,se,t,'TotalCapacity','%emissionPathway%_%emissionScenario%',y)*EFactorOM(t,y)*RegionalAdjustmentFactor('%model_region%',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y));
+*output_energyjobs(r,t,'SupplyJobs','%emissionPathway%_%emissionScenario%',y) = (sum((se),sum((f,m,l),output_energy_balance(r,se,t,m,f,l,'Use','PJ','%emissionPathway%_%emissionScenario%',y))*EFactorFuelSupply(t,y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)))*(-1);
+*EnergyJobs(r,'P_Coal_Hardcoal','SupplyJobs','%emissionPathway%_%emissionScenario%',y) = sum((c),sum((f,m,l),excel_production(r,c,'P_Coal_Hardcoal',m,f,y,l,'Production','PJ','%emissionPathway%_%emissionScenario%')))*RegionalAdjustmentFactor('southafrica',y)*EFactorCoalJobs('P_Coal_Hardcoal',y);
+
+*output_energyjobs(r,'Coal_Heat','SupplyJobs','%emissionPathway%_%emissionScenario%',y) = (sum(rr,sum((m,l,se),(output_energy_balance(rr,se,'HLI_Hardcoal',m,'Hardcoal',l,'Use','PJ','%emissionPathway%_%emissionScenario%',y)+output_energy_balance(rr,se,'HMI_HardCoal',m,'Hardcoal',l,'Use','PJ','%emissionPathway%_%emissionScenario%',y)+output_energy_balance(rr,se,'HHI_BF_BOF',m,'Hardcoal',l,'Use','PJ','%emissionPathway%_%emissionScenario%',y))))*EFactorCoalJobs('Coal_Heat',y)*CoalSupply(r,y))*(-1);
+*output_energyjobs(r,'Coal_Export','SupplyJobs','%emissionPathway%_%emissionScenario%',y) = CoalSupply(r,y)*CoalDigging('%model_region%','Coal_Export','%emissionPathway%_%emissionScenario%',y)*EFactorCoalJobs('Coal_Export',y);
+*######################### OLD #####################
+
+ManufacturingJobs(r,t,y,'%emissionPathway%_%emissionScenario%') = NewCapacity.l(y,t,r)*EFactorManufacturing(t,y)*RegionalAdjustmentFactor('%model_region%',y)*LocalManufacturingFactor('%model_region%',t,y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y);
+ConstructionJobs(r,t,y,'%emissionPathway%_%emissionScenario%') = NewCapacity.l(y,t,r)*EFactorConstruction(t,y)*RegionalAdjustmentFactor('%model_region%',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y);
+OMJobs(r,t,y,'%emissionPathway%_%emissionScenario%') = TotalCapacityAnnual(y,t,r)*EFactorOM(t,y)*RegionalAdjustmentFactor('%model_region%',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y);
+* Supply of input fuels 
+SupplyJobs(r,c,t,y,'Production','%emissionPathway%_%emissionScenario%') = sum((f,m,l),excel_production(r,c,t,m,f,y,l,'Production','PJ','%emissionPathway%_%emissionScenario%'))*EFactorFuelSupply(t,y)*RegionalAdjustmentFactor('%model_region%',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y);
 
 output_energyjobs(r,t,'ManufacturingJobs','%emissionPathway%_%emissionScenario%',y) = sum((se),output_capacity(r,se,t,'NewCapacity','%emissionPathway%_%emissionScenario%',y)*EFactorManufacturing(t,y)*RegionalAdjustmentFactor('%model_region%',y)*LocalManufacturingFactor('%model_region%',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y));
 output_energyjobs(r,t,'ConstructionJobs','%emissionPathway%_%emissionScenario%',y) =  sum((se),output_capacity(r,se,t,'NewCapacity','%emissionPathway%_%emissionScenario%',y)*EFactorConstruction(t,y)*RegionalAdjustmentFactor('%model_region%',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y));
 output_energyjobs(r,t,'OMJobs','%emissionPathway%_%emissionScenario%',y) =  sum((se),output_capacity(r,se,t,'TotalCapacity','%emissionPathway%_%emissionScenario%',y)*EFactorOM(t,y)*RegionalAdjustmentFactor('%model_region%',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y));
 output_energyjobs(r,t,'SupplyJobs','%emissionPathway%_%emissionScenario%',y) = (sum((se),sum((f,m,l),output_energy_balance(r,se,t,m,f,l,'Use','PJ','%emissionPathway%_%emissionScenario%',y))*EFactorFuelSupply(t,y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)))*(-1);
-*EnergyJobs(r,'P_Coal_Hardcoal','SupplyJobs','%emissionPathway%_%emissionScenario%',y) = sum((c),sum((f,m,l),excel_production(r,c,'P_Coal_Hardcoal',m,f,y,l,'Production','PJ','%emissionPathway%_%emissionScenario%')))*RegionalAdjustmentFactor('southafrica',y)*EFactorCoalJobs('P_Coal_Hardcoal',y);
+EnergyJobs(r,'P_Coal_Hardcoal','SupplyJobs','%emissionPathway%_%emissionScenario%',y) = sum((c),sum((f,m,l),excel_production(r,c,'P_Coal_Hardcoal',m,f,y,l,'Production','PJ','%emissionPathway%_%emissionScenario%')))*RegionalAdjustmentFactor('southafrica',y)*EFactorCoalJobs('P_Coal_Hardcoal',y);
 
 output_energyjobs(r,'Coal_Heat','SupplyJobs','%emissionPathway%_%emissionScenario%',y) = (sum(rr,sum((m,l,se),(output_energy_balance(rr,se,'HLI_Hardcoal',m,'Hardcoal',l,'Use','PJ','%emissionPathway%_%emissionScenario%',y)+output_energy_balance(rr,se,'HMI_HardCoal',m,'Hardcoal',l,'Use','PJ','%emissionPathway%_%emissionScenario%',y)+output_energy_balance(rr,se,'HHI_BF_BOF',m,'Hardcoal',l,'Use','PJ','%emissionPathway%_%emissionScenario%',y))))*EFactorCoalJobs('Coal_Heat',y)*CoalSupply(r,y))*(-1);
 output_energyjobs(r,'Coal_Export','SupplyJobs','%emissionPathway%_%emissionScenario%',y) = CoalSupply(r,y)*CoalDigging('%model_region%','Coal_Export','%emissionPathway%_%emissionScenario%',y)*EFactorCoalJobs('Coal_Export',y);
+
 
 $ontext
 Positive Variables
@@ -92,10 +110,10 @@ $offtext
 
 
 execute_unload "%gdxdir%employment_%model_region%_%emissionPathway%_%emissionScenario%.gdx"
-*OMJobs
-*ConstructionJobs
-*ManufacturingJobs
-*SupplyJobs
+OMJobs
+ConstructionJobs
+ManufacturingJobs
+SupplyJobs
 output_energyjobs
 ;
 
@@ -104,7 +122,7 @@ output_energyjobs
 * ##########Employment Output Excel Inhalt##########
 
 $onecho >%tempdir%temp_%employment_data_file%.tmp
-        par=output_energyjobs                       Rng=EnergyJobs!A1     rdim=4        cdim=1
+        +par=output_energyjobs                       Rng=EnergyJobs!A1     rdim=4        cdim=1
 text="Region"                            Rng=EnergyJobs!A1
 text="Technology"                        Rng=EnergyJobs!B1
 text="JobType"                           Rng=EnergyJobs!C1
