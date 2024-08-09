@@ -702,11 +702,16 @@ $ifthen %switch_base_year_bounds% == 1
 * ##############* General BaseYear Limits and trajectories #############
 *
 
+$ifthen %switch_base_year_bounds_debugging% == 0
+BaseYearBounds_TooHigh.fx(y,r,t,f) = 0;
+BaseYearBounds_TooLow.fx(y,r,t,f) = 0;
+$endif
+
 equation BYB1_RegionalBaseYearProductionLowerBound(YEAR_FULL,REGION_FULL,t,f);
 BYB1_RegionalBaseYearProductionLowerBound(y,r,t,f)$(RegionalBaseYearProduction(r,t,f,y) <> 0).. ProductionByTechnologyAnnual(y,t,f,r) =g= RegionalBaseYearProduction(r,t,f,y)*(1-BaseYearSlack(f))  - BaseYearBounds_TooHigh(y,r,t,f);
 
 equation BYB2_RegionalBaseYearProductionUpperBound(YEAR_FULL,REGION_FULL,t,f);
-BYB2_RegionalBaseYearProductionUpperBound(y,r,t,'Power')$(RegionalBaseYearProduction(r,t,'Power',y) <> 0).. ProductionByTechnologyAnnual(y,t,'Power',r) =l= RegionalBaseYearProduction(r,t,'Power',y) + BaseYearBounds_TooLow(r,t,'Power',y);
+BYB2_RegionalBaseYearProductionUpperBound(y,r,t,f)$(RegionalBaseYearProduction(r,t,f,y) <> 0).. ProductionByTechnologyAnnual(y,t,f,r) =l= RegionalBaseYearProduction(r,t,f,y) + BaseYearBounds_TooLow(r,t,f,y);
 
 $endif
 
