@@ -149,6 +149,16 @@ NewCapacity.up('%year%','HHI_DRI_EAF',r) = +INF;
 NewCapacity.up('%year%',t,r)$(TagTechnologyToSubsets(t,'CHP')) = +INF;
 NewCapacity.up('%year%','D_Gas_Methane',r) = +INF;
 
+
+NewCapacity.up('%year%','HLR_Hardcoal',r) = +INF;
+NewCapacity.up('%year%','HLR_Heatpump_Ground',r) = +INF;
+*NewCapacity.up('%year%','RES_Wind_Onshore_Opt',r) = +INF;
+NewCapacity.up('%year%','HLI_Hardcoal',r) = +INF;
+NewCapacity.up('%year%','HLR_Biomass',r) = +INF;
+NewCapacity.up('%year%','CHP_Biomass_Solid',r) = +INF;
+
+
+
 ReserveMargin('DE_HB','2018') = 0;
 
 

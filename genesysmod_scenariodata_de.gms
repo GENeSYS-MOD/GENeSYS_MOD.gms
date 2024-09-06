@@ -20,6 +20,17 @@
 *NewTradeCapacity.fx(y,'Power', 'DE_Nord','DE_NI')$(YearVal(y) > 2018) = 0.11;
 
 
+$if not set h2_pricetarget $setglobal h2_pricetarget 1.82
+$ifthen %h2_pricetarget% == 0
+$else
+VariableCost(r,'Z_Import_H2',m,'2050') = %h2_pricetarget%*7.68736;
+VariableCost(r,'Z_Import_H2',m,'2045') = VariableCost(r,'Z_Import_H2',m,'2050')*(((1.1-1)/(%h2_pricetarget%/1.82))+1);
+VariableCost(r,'Z_Import_H2',m,'2040') = VariableCost(r,'Z_Import_H2',m,'2045')*(((1.15-1)/(%h2_pricetarget%/1.82))+1);
+VariableCost(r,'Z_Import_H2',m,'2035') = VariableCost(r,'Z_Import_H2',m,'2040')*(((1.25-1)/(%h2_pricetarget%/1.82))+1);
+VariableCost(r,'Z_Import_H2',m,'2030') = VariableCost(r,'Z_Import_H2',m,'2035')*(((1.4-1)/(%h2_pricetarget%/1.82))+1);
+VariableCost(r,'Z_Import_H2',m,'2025') = VariableCost(r,'Z_Import_H2',m,'2030')*(((1.5-1)/(%h2_pricetarget%/1.82))+1);
+$endif
+
 **
 **
 $ifthen not %switch_growth_rate_power% == 0
@@ -31,12 +42,6 @@ $endif
 $ifthen not %switch_transport_costs_h2% == 0
 
 TradeCosts('H2',r,rr) = TradeCosts('H2',r,rr) * %switch_transport_costs_h2%;
-
-$endif
-
-$ifthen not %switch_import_costs_h2% == 0
-
-VariableCost(r,'Z_Import_H2',m,y) = VariableCost(r,'Z_Import_H2',m,y) * %switch_import_costs_h2%;
 
 $endif
 
@@ -55,6 +60,7 @@ $endif
 *
 
 AvailabilityFactor(r,'Z_Import_H2',y)$(YearVal(y)<2030) = 0;
+AvailabilityFactor(r,'Z_Import_H2','2025') = 1;
 AvailabilityFactor('DE_BE','Z_Import_H2',y) = 0;
 AvailabilityFactor('DE_HB','Z_Import_H2',y) = 0;
 AvailabilityFactor('DE_HE','Z_Import_H2',y) = 0;
@@ -125,6 +131,8 @@ ReserveMargin(r,y) = 0;
 *TotalTechnologyAnnualActivityUpperLimit(r,'X_SMR','2018')$(AvailabilityFactor(r,'X_SMR','2018')) = 0.37*SpecifiedAnnualDemand(r,'H2','2018');
 *RegionalBaseYearProduction(r,'X_SMR','H2','2018')$(AvailabilityFactor(r,'X_SMR','2018')) = 0.37*SpecifiedAnnualDemand(r,'H2','2018');
 RegionalBaseYearProduction(r,'X_Alkaline_Electrolysis','H2','2018')$(AvailabilityFactor(r,'X_Alkaline_Electrolysis','2018')) = 0.01*SpecifiedAnnualDemand(r,'H2','2018');
+RegionalBaseYearProduction(r,'X_Alkaline_Electrolysis','H2','2025')$(AvailabilityFactor(r,'X_Alkaline_Electrolysis','2025')) = 0.02*SpecifiedAnnualDemand(r,'H2','2025');
+
 *
 *
 **___________________________________________________________________________________________________________*
@@ -155,7 +163,6 @@ parameter OsterpaketCapacity(y_full,t_group);
 
 OsterpaketCapacity('2030','onshore') = 115;
 OsterpaketCapacity('2030','solar') = 215;
-OsterpaketCapacity('2030','h2') = 10;
 
 set h2(t);
 h2(t) = no;
@@ -179,7 +186,6 @@ offshore('RES_Wind_Offshore_Shallow') = yes;
 
 parameter TagTechnologyToTechGroup(t,t_group);
 TagTechnologyToTechGroup(Onshore,'onshore')=1;
-TagTechnologyToTechGroup(h2,'h2')=1;
 TagTechnologyToTechGroup(t,'solar')$(TagTechnologyToSubsets(t,'Solar'))=1;
 TagTechnologyToTechGroup('HLR_Solar_Thermal','solar')=0;
 TagTechnologyToTechGroup('HLI_Solar_Thermal','solar')=0;
@@ -274,8 +280,10 @@ TotalCapOffshoreTotal2045(y,t)..sum((Offshore,r), TotalCapacityAnnual('2045',Off
 
 
 OsterpaketCapacity('2030','offshore') = 30;
-TagTechnologyToTechGroup(Offshore,'offshore')=1;
+OsterpaketCapacity('2030','h2') = 10;
 
+TagTechnologyToTechGroup(Offshore,'offshore')=1;
+TagTechnologyToTechGroup(h2,'h2')=1;
 
 $endif
 
@@ -305,19 +313,23 @@ AvailabilityFactor(r,'R_Coal_Hardcoal',y)$(YearVal(y) > 2020) = 0;
 
 RegionalBaseYearProduction('DE_Nord','RES_Wind_Offshore_Deep','Power','2018') = 55;
 RegionalBaseYearProduction('DE_Baltic','RES_Wind_Offshore_Deep','Power','2018') = 13;
+RegionalBaseYearProduction('DE_MV','RES_Wind_Offshore_Transitional','Power','2018') = 0;
+RegionalBaseYearProduction('DE_NI','RES_Wind_Offshore_Transitional','Power','2018') = 0;
+RegionalBaseYearProduction('DE_SH','RES_Wind_Offshore_Transitional','Power','2018') = 0;
+
 
 *### Residual Capaciy der bundeslÃ¤nder auf Null & Neue ResCap fÃ¼r DE_Nord & DE_Baltic 
 ResidualCapacity('DE_MV','RES_Wind_Offshore_Transitional',y) = 0;
 ResidualCapacity('DE_NI','RES_Wind_Offshore_Transitional',y) = 0;
 ResidualCapacity('DE_SH','RES_Wind_Offshore_Transitional',y) = 0;
 
-ResidualCapacity('DE_Nord','RES_Wind_Offshore_Deep','2018') = 4.81735;
+ResidualCapacity('DE_Nord','RES_Wind_Offshore_Deep','2018') = 5.3060;
 ResidualCapacity('DE_Nord','RES_Wind_Offshore_Deep','2020') = 6.6980;
 ResidualCapacity('DE_Nord','RES_Wind_Offshore_Deep','2025') = 6.6980;
 ResidualCapacity('DE_Nord','RES_Wind_Offshore_Deep','2030') = 6.2930;
 ResidualCapacity('DE_Nord','RES_Wind_Offshore_Deep','2035') = 4.6538;
 
-ResidualCapacity('DE_Baltic','RES_Wind_Offshore_Deep','2018') = 0.70765;
+ResidualCapacity('DE_Baltic','RES_Wind_Offshore_Deep','2018') = 1.0760;
 ResidualCapacity('DE_Baltic','RES_Wind_Offshore_Deep','2020') = 1.0720;
 ResidualCapacity('DE_Baltic','RES_Wind_Offshore_Deep','2025') = 1.0675;
 ResidualCapacity('DE_Baltic','RES_Wind_Offshore_Deep','2030') = 1.0650;

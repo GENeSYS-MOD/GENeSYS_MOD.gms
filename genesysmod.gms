@@ -22,9 +22,9 @@ $onuelxref
 scalar starttime;
 starttime = jnow;
 
-$if not set data_file                    $setglobal data_file input_Germany_H2_v20_nim_15_07_2024
+$if not set data_file                    $setglobal data_file input_Germany_H2_v23-2_nim_23_08_2024
 $if not set hourly_data_file             $setglobal hourly_data_file input_timeseries_DE_v04_nim_18-06-2024
-$if not set elmod_nthhour                $setglobal elmod_nthhour 484
+$if not set elmod_nthhour                $setglobal elmod_nthhour 244
 $if not set elmod_starthour              $setglobal elmod_starthour 8
 $if not set year                         $setglobal year 2018
 $if not set data_base_region             $setglobal data_base_region DE_BY
@@ -37,8 +37,9 @@ $if not set switch_central_h2         $setglobal switch_central_h2 0
 $if not set switch_h2_waste_heat         $setglobal switch_h2_waste_heat 1
 
 
-$if not set switch_import_costs_h2         $setglobal switch_import_costs_h2 1
-$if not set switch_growth_rate_power $setglobal switch_growth_rate_power 0.11
+*$if not set switch_import_costs_h2         $setglobal switch_import_costs_h2 1.82
+$if not set h2_pricetarget_h2         $setglobal h2_pricetarget 1.82
+$if not set switch_growth_rate_power $setglobal switch_growth_rate_power 1
 $if not set switch_transport_costs_h2    $setglobal switch_transport_costs_h2 1
 
 
@@ -46,7 +47,7 @@ $if not set switch_test_data_load        $setglobal switch_test_data_load 0
 $if not set switch_investLimit           $setglobal switch_investLimit 1
 $if not set switch_infeasibility_tech    $setglobal switch_infeasibility_tech 0
 $if not set switch_base_year_bounds      $setglobal switch_base_year_bounds 1
-$if not set switch_base_year_bounds_debugging      $setglobal switch_base_year_bounds_debugging 1
+$if not set switch_base_year_bounds_debugging      $setglobal switch_base_year_bounds_debugging 0
 
 
 $if not set switch_unixPath              $setglobal switch_unixPath 0
@@ -148,6 +149,7 @@ $include genesysmod_scenariodata_%model_region%.gms
 $else
 display "HINT: No scenario data for region %model_region% found!";
 $endif
+
 
 $offlisting
 $include genesysmod_errorcheck.gms

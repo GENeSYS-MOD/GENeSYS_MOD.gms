@@ -265,7 +265,7 @@ equation TrC1_TradeCapacityPowerLinesImport(YEAR_FULL,TIMESLICE_FULL,FUEL,REGION
 TrC1_TradeCapacityPowerLinesImport(y,l,'Power',r,rr)$(TradeRoute(r,'Power',y,rr) > 0).. (Import(y,l,'Power',r,rr)) =l= TotalTradeCapacity(y,'Power',rr,r)*YearSplit(l,y)*31.536;
 
 equation TrC2a_TotalTradeCapacityStartYear(YEAR_FULL,FUEL,REGION_FULL,rr_full);
-TrC2a_TotalTradeCapacityStartYear(y,f,r,rr)$(TradeRoute(r,f,y,rr) > 0 and YearVal(y) = %year%).. TotalTradeCapacity(y,f,r,rr) =e= TradeCapacity(r,f,y,rr);
+TrC2a_TotalTradeCapacityStartYear(y,f,r,rr)$(TradeRoute(r,f,y,rr) > 0 and YearVal(y) = %year%).. TotalTradeCapacity(y,f,r,rr) =e= TradeCapacity(r,f,y,rr) + NewTradeCapacity(y,f,r,rr)$(sameas(f,'Biomass'));
 equation TrC2b_TotalTradeCapacity(YEAR_FULL,FUEL,REGION_FULL,rr_full);
 TrC2b_TotalTradeCapacity(y,f,r,rr)$(TradeRoute(r,f,y,rr) > 0 and YearVal(y) > %year%).. TotalTradeCapacity(y,f,r,rr) =e= TotalTradeCapacity(y-1,f,r,rr) + NewTradeCapacity(y,f,r,rr) + CommissionedTradeCapacity(r,rr,f,y);
 
@@ -702,11 +702,16 @@ $ifthen %switch_base_year_bounds% == 1
 * ##############* General BaseYear Limits and trajectories #############
 *
 
+$ifthen %switch_base_year_bounds_debugging% == 0
+BaseYearBounds_TooHigh.fx(y,r,t,f) = 0;
+BaseYearBounds_TooLow.fx(r,t,f,y) = 0;
+$endif
+
 equation BYB1_RegionalBaseYearProductionLowerBound(YEAR_FULL,REGION_FULL,t,f);
 BYB1_RegionalBaseYearProductionLowerBound(y,r,t,f)$(RegionalBaseYearProduction(r,t,f,y) <> 0).. ProductionByTechnologyAnnual(y,t,f,r) =g= RegionalBaseYearProduction(r,t,f,y)*(1-BaseYearSlack(f))  - BaseYearBounds_TooHigh(y,r,t,f);
 
 equation BYB2_RegionalBaseYearProductionUpperBound(YEAR_FULL,REGION_FULL,t,f);
-BYB2_RegionalBaseYearProductionUpperBound(y,r,t,'Power')$(RegionalBaseYearProduction(r,t,'Power',y) <> 0).. ProductionByTechnologyAnnual(y,t,'Power',r) =l= RegionalBaseYearProduction(r,t,'Power',y) + BaseYearBounds_TooLow(r,t,'Power',y);
+BYB2_RegionalBaseYearProductionUpperBound(y,r,t,f)$(RegionalBaseYearProduction(r,t,f,y) <> 0).. ProductionByTechnologyAnnual(y,t,f,r) =l= RegionalBaseYearProduction(r,t,f,y) + BaseYearBounds_TooLow(r,t,f,y);
 
 $endif
 
