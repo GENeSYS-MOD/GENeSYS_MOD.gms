@@ -136,6 +136,7 @@ FinalEnergy('Biomass') = yes;
 FinalEnergy('Hardcoal') = yes;
 FinalEnergy('Lignite') = yes;
 FinalEnergy('H2') = yes;
+FinalEnergy('H2_Blend') = yes;
 FinalEnergy('Gas_Natural') = yes;
 FinalEnergy('Oil') = yes;
 FinalEnergy('Nuclear') = yes;

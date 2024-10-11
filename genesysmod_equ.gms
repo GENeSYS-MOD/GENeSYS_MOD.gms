@@ -300,29 +300,48 @@ equation TrC7_TradeCapacityLimitNonPower(YEAR_FULL,FUEL,REGION_FULL,rr_full);
 TrC7_TradeCapacityLimitNonPower(y,f,r,rr)$(TradeCapacityGrowthCosts(r,f,rr) and not sameas(f,'Power')).. sum(l,Import(y,l,f,rr,r)) =l= TotalTradeCapacity(y,f,r,rr);
 
 
+
+
+equation TrPl1aa_TradeCapacityPipelinesLines(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,rr_full);
+TrPl1aa_TradeCapacityPipelinesLines(y,l,r,rr).. Import(y,l,'H2',rr,r) =l= TotalTradeCapacity(y,'H2',r,rr)*YearSplit(l,y);
+
+
+**##################LH2 Trucks####
+equation TrPl1aaa_TradeCapacityTrucks(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,rr_full);
+TrPl1aaa_TradeCapacityTrucks(y,l,r,rr).. Import(y,l,'LH2',rr,r) =l= TotalTradeCapacity(y,'LH2',r,rr)*YearSplit(l,y);
+**######################
+
+
+
 *
 * ##############* Pipeline-specific Capacity Accounting #############
 *
 
+$ifthen.equ_hydrogen_tradecapacity %switch_hydrogen_blending_share% == 0
 
-*$ifthen.equ_hydrogen_tradecapacity %switch_hydrogen_blending_share% == 0
+
+
 equation TrPA1a_TradeCapacityPipelineAccounting(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,rr_full);
-TrPA1a_TradeCapacityPipelineAccounting(y,l,r,rr).. sum(f$(not sameas(f,'H2') and TagFuelToSubsets(f,'GasFuels')), Import(y,l,f,rr,r)) =l= TotalTradeCapacity(y,'gas_natural',r,rr)*YearSplit(l,y);
+* before it was H2 - instead of H2_blend - - update GM_Coding_Week_Berlin-Trondheim_2024
+TrPA1a_TradeCapacityPipelineAccounting(y,l,r,rr).. sum(f$(not sameas(f,'H2_blend') and TagFuelToSubsets(f,'GasFuels')), Import(y,l,f,rr,r)) =l= TotalTradeCapacity(y,'Gas_Natural',r,rr)*YearSplit(l,y);
 
-*$else.equ_hydrogen_tradecapacity
-*scalar dedicated_h2;
-*dedicated_h2 = %switch_hydrogen_blending_share%;
+$else.equ_hydrogen_tradecapacity
 
 
-*equation TrPA1b_TradeCapacityPipelineAccountingGasFuels(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,rr_full);
-*TrPA1b_TradeCapacityPipelineAccountingGasFuels(y,l,r,rr)$(%switch_hydrogen_blending_share%>0 and %switch_hydrogen_blending_share%<1).. sum(GasFuels$(not sameas(GasFuels,'H2_blend')), Import(y,l,GasFuels,rr,r)) + Import(y,l,'H2_blend',rr,r)*(11.4/3.0) =l= TotalTradeCapacity(y,'gas_natural',r,rr)*YearSplit(l,y);
-*equation TrPA1c_TradeCapacityPipelineAccountingH2Blend(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,rr_full);
-*TrPl1c_TradeCapacityPipelinesLines(y,l,r,rr)$(%switch_hydrogen_blending_share%>0 and %switch_hydrogen_blending_share%<1).. Import(y,l,'H2_blend',rr,r) =l= (%switch_hydrogen_blending_share%/((1-%switch_hydrogen_blending_share%)*(11.4/3.0))) * sum(GasFuels$(not sameas(GasFuels,'H2_blend')), Import(y,l,GasFuels,rr,r));
 
-*equation TrPA1d_TradeCapacityPipelineAccountingCombined(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,rr_full);
-*TrPA1d_TradeCapacityPipelineAccountingCombined(y,l,r,rr)$(%switch_hydrogen_blending_share% = 1).. sum(GasFuels$(not sameas(GasFuels,'H2_blend')), Import(y,l,GasFuels,rr,r)) + Import(y,l,'H2_blend',rr,r)*(11.4/3.0) =l= TotalTradeCapacity(y,'gas_natural',r,rr)*YearSplit(l,y);
+scalar dedicated_h2;
+dedicated_h2 = %switch_hydrogen_blending_share%;
 
-*$endif.equ_hydrogen_tradecapacity
+
+equation TrPA1b_TradeCapacityPipelineAccountingGasFuels(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,rr_full);
+TrPA1b_TradeCapacityPipelineAccountingGasFuels(y,l,r,rr)$(%switch_hydrogen_blending_share%>0 and %switch_hydrogen_blending_share%<1).. sum(f$(not sameas(f,'H2_blend') and TagFuelToSubsets(f,'GasFuels')), Import(y,l,f,rr,r)) + Import(y,l,'H2_blend',rr,r)*(11.4/3.0) =l= TotalTradeCapacity(y,'gas_natural',r,rr)*YearSplit(l,y);
+equation TrPA1c_TradeCapacityPipelineAccountingH2Blend(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,rr_full);
+TrPA1c_TradeCapacityPipelineAccountingH2Blend(y,l,r,rr)$(%switch_hydrogen_blending_share%>0 and %switch_hydrogen_blending_share%<1).. Import(y,l,'H2_blend',rr,r) =l= (%switch_hydrogen_blending_share%/((1-%switch_hydrogen_blending_share%)*(11.4/3.0))) * sum(f$(not sameas(f,'H2_blend') and TagFuelToSubsets(f,'GasFuels')), Import(y,l,f,rr,r));
+
+equation TrPA1d_TradeCapacityPipelineAccountingCombined(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,rr_full);
+TrPA1d_TradeCapacityPipelineAccountingCombined(y,l,r,rr)$(%switch_hydrogen_blending_share% = 1).. sum(f$(not sameas(f,'H2_blend') and TagFuelToSubsets(f,'GasFuels')), Import(y,l,f,rr,r)) + Import(y,l,'H2_blend',rr,r)*(11.4/3.0) =l= TotalTradeCapacity(y,'Gas_Natural',r,rr)*YearSplit(l,y);
+
+$endif.equ_hydrogen_tradecapacity
 
 
 

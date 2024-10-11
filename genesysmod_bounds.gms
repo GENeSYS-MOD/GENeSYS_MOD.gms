@@ -50,6 +50,10 @@ RETagFuel('Heat_Low_Industrial',y) = 1;
 RETagFuel('Heat_Medium_Industrial',y) = 1;
 RETagFuel('Heat_High_Industrial',y) = 1;
 
+
+
+
+
 TotalAnnualMaxCapacityInvestment(r,t,y) = 999999;
 TotalAnnualMinCapacityInvestment(r,t,y) = 0 ;
 TotalTechnologyModelPeriodActivityUpperLimit(r,t) = 999999;
@@ -81,8 +85,9 @@ TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'Transport')) = 999999;
 TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'ImportTechnology')) = 999999;
 TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'Biomass')) = 999999;
 TotalAnnualMaxCapacity(r,'P_Biomass',y) = 999999;
-*TotalAnnualMaxCapacity(r,'X_H2_blend_to_H2',y) = 999999;
-*TotalAnnualMaxCapacity(r,'X_H2_to_H2_blend',y) = 999999;
+TotalAnnualMaxCapacity(r,'X_H2_blend_to_H2',y) = 999999;
+TotalAnnualMaxCapacity(r,'X_H2_to_H2_blend',y) = 999999;
+
 
 AvailabilityFactor(r,t,y)$(TagTechnologyToSubsets(t,'ImportTechnology')) = 1;
 CapacityFactor(r,t,l,y)$(TagTechnologyToSubsets(t,'ImportTechnology')) = 1 ;
