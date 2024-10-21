@@ -24,15 +24,15 @@ starttime = jnow;
 
 $if not set data_file                    $setglobal data_file input_Germany_H2_v11_jb_26_03_2024
 $if not set hourly_data_file             $setglobal hourly_data_file input_timeseries_DE_v03_jb_26-03-2024
-$if not set elmod_nthhour                $setglobal elmod_nthhour 1666
+$if not set elmod_nthhour                $setglobal elmod_nthhour 964
 $if not set elmod_starthour              $setglobal elmod_starthour 8
 $if not set year                         $setglobal year 2018
 $if not set data_base_region             $setglobal data_base_region DE_BY
 $if not set timeseries                   $setglobal timeseries elmod
 $if not set solver                       $setglobal solver gurobi
 
-$if not set switch_FEP                   $setglobal switch_FEP 0
-$if not set switch_Policy_Scenario       $setglobal switch_Policy_Scenario 0
+$if not set switch_FEP                   $setglobal switch_FEP 0 
+$if not set switch_Policy_Scenario       $setglobal switch_Policy_Scenario 1
 
 $if not set switch_test_data_load        $setglobal switch_test_data_load 0
 $if not set switch_investLimit           $setglobal switch_investLimit 1
@@ -40,7 +40,7 @@ $if not set switch_infeasibility_tech    $setglobal switch_infeasibility_tech 0
 $if not set switch_base_year_bounds      $setglobal switch_base_year_bounds 1
 
 $if not set switch_acceptance_factor        $setglobal switch_acceptance_factor 1
-$if not set switch_acceptance_constraint    $setglobal switch_acceptance_constraint 0
+$if not set switch_acceptance_constraint    $setglobal switch_acceptance_constraint 1
 $if not set acceptance_factor_data_file     $setglobal acceptance_factor_data_file Justice_Factor_v02_joh_02_11_2023
 
 $if not set switch_unixPath              $setglobal switch_unixPath 0
@@ -149,7 +149,6 @@ $offlisting
 $ifthen %switch_acceptance_factor% == 1
 $include genesysmod_acceptance_factor.gms
 $endif
-
 
 $include genesysmod_errorcheck.gms
 

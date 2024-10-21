@@ -46,7 +46,7 @@ Parameter ShareofTotalAcceptanceperRegion(r_full,y_Full);
 ShareofTotalAcceptanceperRegion(r,y)$(TotalAcceptance.l(y) > 0) = (TotalAcceptanceperRegion.l(r,y)+TotalAcceptanceperRegion_PowerLines.l(r,y))/(TotalAcceptance.l(y)+TotalAcceptance_PowerLines.l(y))
 
 Parameter ShareofNCapacity(r_full,y_Full);
-ShareofNCapacity(r,y)$(TotalNCapacity.l(y) > 8) = (TotalNCapacityperRegion.l(r,y)+TotalNCapacityperRegion_PowerLines.l(r,y))/(TotalNCapacity.l(y)+TotalNCapacity_PowerLines.l(y))
+ShareofNCapacity(r,y)$(TotalNCapacity.l(y) > 0) = (TotalNCapacityperRegion.l(r,y)+TotalNCapacityperRegion_PowerLines.l(r,y))/(TotalNCapacity.l(y)+TotalNCapacity_PowerLines.l(y))
 
 *######AcceptanceFactor
 execute_unload "%gdxdir%Acceptance_%model_region%_%emissionPathway%_%emissionScenario%.gdx"

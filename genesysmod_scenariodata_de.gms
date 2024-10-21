@@ -17,6 +17,99 @@
 * #############################################################
 
 
+$ifthen %switch_acceptance_constraint% == 1
+
+******Geothermal******
+*AcceptanceFactor('DE_BB','RES_Geothermal',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Geothermal',y)+1;
+*AcceptanceFactor('DE_BE','RES_Geothermal',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Geothermal',y)+1;
+*AcceptanceFactor('DE_BW','RES_Geothermal',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Geothermal',y)+1;
+*AcceptanceFactor('DE_BY','RES_Geothermal',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Geothermal',y)+1;
+*AcceptanceFactor('DE_HB','RES_Geothermal',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Geothermal',y)+1;
+*AcceptanceFactor('DE_HE','RES_Geothermal',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Geothermal',y)+1;
+*AcceptanceFactor('DE_HH','RES_Geothermal',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Geothermal',y)+1;
+*AcceptanceFactor('DE_MV','RES_Geothermal',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Geothermal',y)+1;
+*AcceptanceFactor('DE_NI','RES_Geothermal',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Geothermal',y)+1;
+*AcceptanceFactor('DE_NRW','RES_Geothermal',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Geothermal',y)+1;
+*AcceptanceFactor('DE_RP','RES_Geothermal',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Geothermal',y)+1;
+*AcceptanceFactor('DE_SH','RES_Geothermal',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Geothermal',y)+1;
+*AcceptanceFactor('DE_SL','RES_Geothermal',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Geothermal',y)+1;
+*AcceptanceFactor('DE_SN','RES_Geothermal',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Geothermal',y)+1;
+*AcceptanceFactor('DE_ST','RES_Geothermal',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Geothermal',y)+1;
+*AcceptanceFactor('DE_TH','RES_Geothermal',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Geothermal',y)+1;
+*AcceptanceFactor('DE_Nord','RES_Geothermal',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Geothermal',y)+1;
+*AcceptanceFactor('DE_Baltic','RES_Geothermal',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Geothermal',y)+1;
+
+
+******Wind onshore inf******
+AcceptanceFactor(r,'RES_Wind_Onshore_Inf',y)$(YearVal(y)= 2025)=AcceptanceFactor(r,'RES_Wind_Onshore_Inf',y)-1;
+
+*AcceptanceFactor('DE_BB','RES_Wind_Onshore_Inf',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Wind_Onshore_Inf',y)+1;
+*AcceptanceFactor('DE_BE','RES_Wind_Onshore_Inf',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BE','RES_Wind_Onshore_Inf',y)+1;
+*AcceptanceFactor('DE_BW','RES_Wind_Onshore_Inf',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BW','RES_Wind_Onshore_Inf',y)+1;
+*AcceptanceFactor('DE_BY','RES_Wind_Onshore_Inf',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BY','RES_Wind_Onshore_Inf',y)+1;
+*AcceptanceFactor('DE_HB','RES_Wind_Onshore_Inf',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_HB','RES_Wind_Onshore_Inf',y)+1;
+*AcceptanceFactor('DE_HE','RES_Wind_Onshore_Inf',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_HE','RES_Wind_Onshore_Inf',y)+1;
+*AcceptanceFactor('DE_HH','RES_Wind_Onshore_Inf',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_HH','RES_Wind_Onshore_Inf',y)+1;
+*AcceptanceFactor('DE_MV','RES_Wind_Onshore_Inf',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_MV','RES_Wind_Onshore_Inf',y)+1;
+*AcceptanceFactor('DE_NI','RES_Wind_Onshore_Inf',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_NI','RES_Wind_Onshore_Inf',y)+1;
+*AcceptanceFactor('DE_NRW','RES_Wind_Onshore_Inf',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_NRW','RES_Wind_Onshore_Inf',y)+1;
+*AcceptanceFactor('DE_RP','RES_Wind_Onshore_Inf',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_RP','RES_Wind_Onshore_Inf',y)+1;
+*AcceptanceFactor('DE_SH','RES_Wind_Onshore_Inf',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_SH','RES_Wind_Onshore_Inf',y)+1;
+*AcceptanceFactor('DE_SL','RES_Wind_Onshore_Inf',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_SL','RES_Wind_Onshore_Inf',y)+1;
+*AcceptanceFactor('DE_SN','RES_Wind_Onshore_Inf',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_SN','RES_Wind_Onshore_Inf',y)+1;
+*AcceptanceFactor('DE_ST','RES_Wind_Onshore_Inf',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_ST','RES_Wind_Onshore_Inf',y)+1;
+*AcceptanceFactor('DE_TH','RES_Wind_Onshore_Inf',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_TH','RES_Wind_Onshore_Inf',y)+1;
+*AcceptanceFactor('DE_Nord','RES_Wind_Onshore_Inf',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_Nord','RES_Wind_Onshore_Inf',y)+1;
+*AcceptanceFactor('DE_Baltic','RES_Wind_Onshore_Inf',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_Baltic','RES_Wind_Onshore_Inf',y)+1;
+
+******Wind onshore AVG******
+AcceptanceFactor(r,'RES_Wind_Onshore_Avg',y)$(YearVal(y) = 2025)=AcceptanceFactor(r,'RES_Wind_Onshore_Avg',y)-1;
+
+*AcceptanceFactor('DE_BB','RES_Wind_Onshore_Avg',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Wind_Onshore_Avg',y)+1;
+*AcceptanceFactor('DE_BE','RES_Wind_Onshore_Avg',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BE','RES_Wind_Onshore_Avg',y)+1;
+*AcceptanceFactor('DE_BW','RES_Wind_Onshore_Avg',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BW','RES_Wind_Onshore_Avg',y)+1;
+*AcceptanceFactor('DE_BY','RES_Wind_Onshore_Avg',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BY','RES_Wind_Onshore_Avg',y)+1;
+*AcceptanceFactor('DE_HB','RES_Wind_Onshore_Avg',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_HB','RES_Wind_Onshore_Avg',y)+1;
+*AcceptanceFactor('DE_HE','RES_Wind_Onshore_Avg',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_HE','RES_Wind_Onshore_Avg',y)+1;
+*AcceptanceFactor('DE_HH','RES_Wind_Onshore_Avg',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_HH','RES_Wind_Onshore_Avg',y)+1;
+*AcceptanceFactor('DE_MV','RES_Wind_Onshore_Avg',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_MV','RES_Wind_Onshore_Avg',y)+1;
+*AcceptanceFactor('DE_NI','RES_Wind_Onshore_Avg',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_NI','RES_Wind_Onshore_Avg',y)+1;
+*AcceptanceFactor('DE_NRW','RES_Wind_Onshore_Avg',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_NRW','RES_Wind_Onshore_Avg',y)+1;
+*AcceptanceFactor('DE_RP','RES_Wind_Onshore_Avg',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_RP','RES_Wind_Onshore_Avg',y)+1;
+*AcceptanceFactor('DE_SH','RES_Wind_Onshore_Avg',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_SH','RES_Wind_Onshore_Avg',y)+1;
+*AcceptanceFactor('DE_SL','RES_Wind_Onshore_Avg',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_SL','RES_Wind_Onshore_Avg',y)+1;
+*AcceptanceFactor('DE_SN','RES_Wind_Onshore_Avg',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_SN','RES_Wind_Onshore_Avg',y)+1;
+*AcceptanceFactor('DE_ST','RES_Wind_Onshore_Avg',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_ST','RES_Wind_Onshore_Avg',y)+1;
+*AcceptanceFactor('DE_TH','RES_Wind_Onshore_Avg',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_TH','RES_Wind_Onshore_Avg',y)+1;
+*AcceptanceFactor('DE_Nord','RES_Wind_Onshore_Avg',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_Nord','RES_Wind_Onshore_Avg',y)+1;
+*AcceptanceFactor('DE_Baltic','RES_Wind_Onshore_Avg',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_Baltic','RES_Wind_Onshore_Avg',y)+1;
+
+******Wind onshore oPT******
+AcceptanceFactor(r,'RES_Wind_Onshore_Opt',y)$(YearVal(y) = 2025)=AcceptanceFactor(r,'RES_Wind_Onshore_Opt',y)-1;
+*AcceptanceFactor('DE_BB','RES_Wind_Onshore_Opt',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Wind_Onshore_Opt',y)+1;
+*AcceptanceFactor('DE_BE','RES_Wind_Onshore_Opt',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BE','RES_Wind_Onshore_Opt',y)+1;
+*AcceptanceFactor('DE_BW','RES_Wind_Onshore_Opt',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BW','RES_Wind_Onshore_Opt',y)+1;
+*AcceptanceFactor('DE_BY','RES_Wind_Onshore_Opt',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BY','RES_Wind_Onshore_Opt',y)+1;
+*AcceptanceFactor('DE_HB','RES_Wind_Onshore_Opt',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_HB','RES_Wind_Onshore_Opt',y)+1;
+*AcceptanceFactor('DE_HE','RES_Wind_Onshore_Opt',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_HE','RES_Wind_Onshore_Opt',y)+1;
+*AcceptanceFactor('DE_HH','RES_Wind_Onshore_Opt',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_HH','RES_Wind_Onshore_Opt',y)+1;
+*AcceptanceFactor('DE_MV','RES_Wind_Onshore_Opt',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_MV','RES_Wind_Onshore_Opt',y)+1;
+*AcceptanceFactor('DE_NI','RES_Wind_Onshore_Opt',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_NI','RES_Wind_Onshore_Opt',y)+1;
+*AcceptanceFactor('DE_NRW','RES_Wind_Onshore_Opt',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_NRW','RES_Wind_Onshore_Opt',y)+1;
+*AcceptanceFactor('DE_RP','RES_Wind_Onshore_Opt',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_RP','RES_Wind_Onshore_Opt',y)+1;
+*AcceptanceFactor('DE_SH','RES_Wind_Onshore_Opt',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_SH','RES_Wind_Onshore_Opt',y)+1;
+*AcceptanceFactor('DE_SL','RES_Wind_Onshore_Opt',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_SL','RES_Wind_Onshore_Opt',y)+1;
+*AcceptanceFactor('DE_SN','RES_Wind_Onshore_Opt',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_SN','RES_Wind_Onshore_Opt',y)+1;
+*AcceptanceFactor('DE_ST','RES_Wind_Onshore_Opt',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_ST','RES_Wind_Onshore_Opt',y)+1;
+*AcceptanceFactor('DE_TH','RES_Wind_Onshore_Opt',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_TH','RES_Wind_Onshore_Opt',y)+1;
+*AcceptanceFactor('DE_Nord','RES_Wind_Onshore_Opt',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_Nord','RES_Wind_Onshore_Opt',y)+1;
+*AcceptanceFactor('DE_Baltic','RES_Wind_Onshore_Opt',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_Baltic','RES_Wind_Onshore_Opt',y)+1;
+
+
+
+$endif
+
+
 
 * ################### CHOOSE CALCULATED YEARS ###################
 ***  TO LEAVE OUT A CERTAIN YEAR, REMOVE COMMENT OF RESPECTIVE LINE ***

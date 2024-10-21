@@ -74,6 +74,10 @@ parameter output_emissions(*,*,*,*,*,*,*);
 output_emissions(r,se,e,t,'Emissions','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se))  = AnnualTechnologyEmission.l(y,t,e,r);
 output_emissions(r,'ExogenousEmissions',e,'ExogenousEmissions','ExogenousEmissions','%emissionPathway%_%emissionScenario%',y)  = AnnualExogenousEmission(r,e,y);
 
+parameter output_z(*,*);
+output_z('objective_value','%emissionPathway%_%emissionScenario%')=z.l;
+
+
 parameter output_model(*,*,*,*);
 output_model('Objective Value','%emissionPathway%_%emissionScenario%','%emissionPathway%','%emissionScenario%') = z.l;
 output_model('Heapsize Before Solve','%emissionPathway%_%emissionScenario%','%emissionPathway%','%emissionScenario%') = heapSizeBeforSolve;
@@ -223,6 +227,7 @@ output_exogenous_costs
 output_trade_capacity
 output_other
 output_energydemandstatistics
+output_z
 *output_fuelcosts
 *output_emissionintensity
 ;
