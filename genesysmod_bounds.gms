@@ -45,7 +45,7 @@ SelfSufficiency(y, f, r) = 0;
 RETagTechnology(t,y)$(TagTechnologyToSubsets(t,'Renewables')) = 1;
 *needs to be removed, now in data
 RETagFuel('Power',y) = 1;
-RETagFuel('Heat_Low_Residential',y) = 1;
+RETagFuel('Heat_Buildings',y) = 1;
 RETagFuel('Heat_Low_Industrial',y) = 1;
 RETagFuel('Heat_Medium_Industrial',y) = 1;
 RETagFuel('Heat_High_Industrial',y) = 1;
@@ -85,8 +85,6 @@ TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'Transport')) = 999999;
 TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'ImportTechnology')) = 999999;
 TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'Biomass')) = 999999;
 TotalAnnualMaxCapacity(r,'P_Biomass',y) = 999999;
-TotalAnnualMaxCapacity(r,'X_H2_blend_to_H2',y) = 999999;
-TotalAnnualMaxCapacity(r,'X_H2_to_H2_blend',y) = 999999;
 
 
 AvailabilityFactor(r,t,y)$(TagTechnologyToSubsets(t,'ImportTechnology')) = 1;
@@ -107,7 +105,7 @@ ReserveMargin(r,y)$(not ReserveMargin(r,y)) = 0;
 *
 StorageLevelTSStart.fx('S_Battery_Li-Ion',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(24/hour_steps)) = 0) = 0;
 StorageLevelTSStart.fx('S_Battery_Redox',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(24/hour_steps)) = 0) = 0;
-StorageLevelTSStart.fx('S_Heat_HLR',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(24/hour_steps)) = 0) = 0;
+StorageLevelTSStart.fx('S_Heat_HB',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(24/hour_steps)) = 0) = 0;
 StorageLevelTSStart.fx('S_Heat_HLI',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(24/hour_steps)) = 0) = 0;
 *StorageLevelTSStart.fx('S_CAES',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(48/hour_steps)) = 0) = 0;
 
@@ -126,11 +124,11 @@ StorageLevelTSStart.fx('S_Heat_HLI',y,l,r)$(mod((ord(l)+(start_hour/hour_steps))
 * ####### Capacity factor for heat technologies #############
 *
 CapacityFactor(r,t,l,y)$(sum(ll,CapacityFactor(r,t,ll,y) = 0 and TagTechnologyToSubsets(t,'Heat'))) = 1;
-CapacityFactor(r,'RES_PV_Rooftop_Commercial',l,y) = CapacityFactor(r,'RES_PV_Utility_Avg',l,y) ;
-CapacityFactor(r,'RES_PV_Rooftop_Residential',l,y) = CapacityFactor(r,'RES_PV_Utility_Avg',l,y) ;
-CapacityFactor(r,'RES_CSP',l,y) = CapacityFactor(r,'RES_PV_Utility_Opt',l,y) ;
-CapacityFactor(r,'HLR_Solar_Thermal',l,y) = CapacityFactor(r,'RES_PV_Utility_Avg',l,y) ;
-CapacityFactor(r,'HLI_Solar_Thermal',l,y) = CapacityFactor(r,'RES_PV_Utility_Avg',l,y) ;
+CapacityFactor(r,'P_PV_Rooftop_Commercial',l,y) = CapacityFactor(r,'P_PV_Utility_Avg',l,y) ;
+CapacityFactor(r,'P_PV_Rooftop_Residential',l,y) = CapacityFactor(r,'P_PV_Utility_Avg',l,y) ;
+CapacityFactor(r,'P_CSP',l,y) = CapacityFactor(r,'P_PV_Utility_Opt',l,y) ;
+CapacityFactor(r,'HB_Solar_Thermal',l,y) = CapacityFactor(r,'P_PV_Utility_Avg',l,y) ;
+CapacityFactor(r,'HLI_Solar_Thermal',l,y) = CapacityFactor(r,'P_PV_Utility_Avg',l,y) ;
 
 *
 * ####### No new capacity construction in 2015 #############
@@ -141,7 +139,7 @@ NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'SectorCoupling')) = 0;
 NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'StorageDummies')) = 0;
 
 NewCapacity.up('%year%',t,r)$(TagTechnologyToSubsets(t,'Biomass')) = +INF;
-NewCapacity.up('%year%','HLR_Gas_Boiler',r) = +INF;
+NewCapacity.up('%year%','HB_Gas_Boiler',r) = +INF;
 NewCapacity.up('%year%','HLI_Gas_Boiler',r) = +INF;
 NewCapacity.up('%year%','HHI_BF_BOF',r) = +INF;
 NewCapacity.up('%year%','HHI_Bio_BF_BOF',r) = +INF;
@@ -159,7 +157,7 @@ TagDispatchableTechnology(t)$(TagTechnologyToSubsets(t,'Solar')) = 0;
 TagDispatchableTechnology(t)$(TagTechnologyToSubsets(t,'Wind')) = 0;
 AvailabilityFactor(REGION,t,y)$(TagTechnologyToSubsets(t,'Solar')) = 1;
 *TagDispatchableTechnology(t)$(TagTechnologyToSubsets(t,'Transport')) = 0;
-TagDispatchableTechnology('RES_Hydro_Small') = 0;
+TagDispatchableTechnology('P_Hydro_RoR') = 0;
 
 
 CurtailmentCostFactor = 0.1;
