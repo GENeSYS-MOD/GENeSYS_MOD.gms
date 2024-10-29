@@ -22,16 +22,16 @@ $onuelxref
 scalar starttime;
 starttime = jnow;
 
-$if not set data_file                    $setglobal data_file input_Germany_H2_v23-2_nim_23_08_2024
+$if not set data_file                    $setglobal data_file input_Germany_H2_v24_nim_16_09_2024
 $if not set hourly_data_file             $setglobal hourly_data_file input_timeseries_DE_v04_nim_18-06-2024
-$if not set elmod_nthhour                $setglobal elmod_nthhour 244
+$if not set elmod_nthhour                $setglobal elmod_nthhour 964
 $if not set elmod_starthour              $setglobal elmod_starthour 8
 $if not set year                         $setglobal year 2018
 $if not set data_base_region             $setglobal data_base_region DE_BY
 $if not set timeseries                   $setglobal timeseries elmod
 $if not set solver                       $setglobal solver gurobi
 
-$if not set switch_FEP                   $setglobal switch_FEP 0
+$if not set switch_FEP                   $setglobal switch_FEP 1
 $if not set switch_Policy_Scenario       $setglobal switch_Policy_Scenario 1
 $if not set switch_central_h2         $setglobal switch_central_h2 0
 $if not set switch_h2_waste_heat         $setglobal switch_h2_waste_heat 1
