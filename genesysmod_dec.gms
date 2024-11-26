@@ -179,7 +179,7 @@ parameter AnnualEmissionLimit(EMISSION,YEAR_FULL);
 parameter RegionalAnnualEmissionLimit(REGION_FULL,EMISSION,YEAR_FULL);
 parameter ModelPeriodExogenousEmission(REGION_FULL,EMISSION);
 parameter ModelPeriodEmissionLimit(EMISSION);
-parameter RegionalModelPeriodEmissionLimit(EMISSION,REGION_FULL);
+parameter RegionalModelPeriodEmissionLimit(REGION_FULL,EMISSION);
 parameter CurtailmentCostFactor;
 
 *
@@ -292,7 +292,7 @@ variable AnnualTechnologyEmissionPenaltyByEmission(y_full,TECHNOLOGY,EMISSION,RE
 variable AnnualTechnologyEmissionsPenalty(y_full,TECHNOLOGY,REGION_FULL);
 variable DiscountedTechnologyEmissionsPenalty(y_full,TECHNOLOGY,REGION_FULL);
 variable AnnualEmissions(y_full,EMISSION,REGION_FULL);
-variable ModelPeriodEmissions(EMISSION,REGION_FULL);
+variable ModelPeriodEmissions(REGION_FULL,EMISSION);
 variable WeightedAnnualEmissions(year_full,emission,region_full);
 
 

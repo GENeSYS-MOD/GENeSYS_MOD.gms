@@ -576,7 +576,7 @@ $ifthen %switch_weighted_emissions% == 1
 E7_ModelPeriodEmissionsAccounting(e,r)..
   sum(y$(YearVal(y+1)-YearVal(y) > 0), WeightedAnnualEmissions(y,e,r)*(YearVal(y+1)-YearVal(y)))
 + sum(y$(YearVal(y)=smax(yy,YearVal(yy))),  WeightedAnnualEmissions(y,e,r))
-=e= ModelPeriodEmissions(e,r)- ModelPeriodExogenousEmission(r,e);
+=e= ModelPeriodEmissions(r,e)- ModelPeriodExogenousEmission(r,e);
 equation E7a_WeightedEmissions(year_full,EMISSION,REGION_FULL);
 E7a_WeightedEmissions(y,e,r)$(YearVal(y)<smax(yy,YearVal(yy))).. (AnnualEmissions(y,e,r)+AnnualEmissions(y+1,e,r))/2 =e= WeightedAnnualEmissions(y,e,r);
 equation E7b_WeightedLastYearEmissions(year_full,EMISSION,REGION_FULL);
@@ -586,7 +586,7 @@ $else
 E7_ModelPeriodEmissionsAccounting(e,r)..
 sum(y$(YearVal(y+1)-YearVal(y) > 0), AnnualEmissions(y,e,r)*(YearVal(y+1)-YearVal(y)))
 + sum(y$(YearVal(y)=smax(yy,YearVal(yy))),  AnnualEmissions(y,e,r))
-=e= ModelPeriodEmissions(e,r)- ModelPeriodExogenousEmission(r,e);
+=e= ModelPeriodEmissions(r,e)- ModelPeriodExogenousEmission(r,e);
 $endif
 
 equation E8_RegionalAnnualEmissionsLimit(YEAR_FULL,EMISSION,REGION_FULL);
@@ -594,9 +594,9 @@ E8_RegionalAnnualEmissionsLimit(y,e,r).. AnnualEmissions(y,e,r)+AnnualExogenousE
 equation E9_AnnualEmissionsLimit(YEAR_FULL,EMISSION);
 E9_AnnualEmissionsLimit(y,e).. sum(r,AnnualEmissions(y,e,r)+AnnualExogenousEmission(r,e,y)) =l= AnnualEmissionLimit(e,y);
 equation E10_ModelPeriodEmissionsLimit(EMISSION);
-E10_ModelPeriodEmissionsLimit(e).. sum(r,ModelPeriodEmissions(e,r)) =l= ModelPeriodEmissionLimit(e);
-equation E11_RegionalModelPeriodEmissionsLimit(EMISSION,REGION_FULL);
-E11_RegionalModelPeriodEmissionsLimit(e,r)$(RegionalModelPeriodEmissionLimit(e,r) < 999999).. ModelPeriodEmissions(e,r) =l= RegionalModelPeriodEmissionLimit(e,r);
+E10_ModelPeriodEmissionsLimit(e).. sum(r,ModelPeriodEmissions(r,e)) =l= ModelPeriodEmissionLimit(e);
+equation E11_RegionalModelPeriodEmissionsLimit(REGION_FULL,EMISSION);
+E11_RegionalModelPeriodEmissionsLimit(r,e)$(RegionalModelPeriodEmissionLimit(r,e) < 999999).. ModelPeriodEmissions(r,e) =l= RegionalModelPeriodEmissionLimit(r,e);
 
 equation E12_AnnualSectorEmissions(YEAR_FULL,EMISSION,SECTOR,REGION_FULL);
 E12_AnnualSectorEmissions(y,e,se,r).. sum(t$(TagTechnologyToSector(t,se) <> 0), AnnualTechnologyEmission(y,t,e,r)) =e= AnnualSectoralEmissions(y,e,se,r);
