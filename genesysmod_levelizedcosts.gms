@@ -132,8 +132,8 @@ SectorEmissions(y,r,TierFive,e) = sum((m,t),TechnologyEmissionsByMode(y,t,e,m,r)
 Parameter test(YEAR_FULL,FUEL,REGION_FULL);
 test(y,f,r) = sum(t,ProductionByTechnologyAnnual.l(y,t,'Power',r)$(not TagTechnologyToSector(t,'Storages')));
 
-EmissionIntensity(y,r,'Power',e) = SectorEmissions(y,r,'Power',e)/sum(t,ProductionByTechnologyAnnual.l(y,t,'Power',r)$(not TagTechnologyToSector(t,'Storages')));
-EmissionIntensity(y,r,TierFive,e) = SectorEmissions(y,r,TierFive,e)/AnnualProduction(y,TierFive,r);
+EmissionIntensity(y,r,'Power',e)$(sum(t,ProductionByTechnologyAnnual.l(y,t,'Power',r)$(not TagTechnologyToSector(t,'Storages')))) = SectorEmissions(y,r,'Power',e)/sum(t,ProductionByTechnologyAnnual.l(y,t,'Power',r)$(not TagTechnologyToSector(t,'Storages')));
+EmissionIntensity(y,r,TierFive,e)$(AnnualProduction(y,TierFive,r)) = SectorEmissions(y,r,TierFive,e)/AnnualProduction(y,TierFive,r);
 
 
 RegionalEmissionContentPerFuel(y,r,f,e) = EmissionContentPerFuel(f,e);
