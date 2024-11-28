@@ -188,6 +188,8 @@ ReserveMarginTagTechnology(r_full,t,y)$(ReserveMarginTagTechnology(r_full,t,y)=0
 MinStorageCharge(r_full,s,y)$(MinStorageCharge(r_full,s,y)=0) = MinStorageCharge('World',s,y);
 CapitalCostStorage(r_full,s,y)$(CapitalCostStorage(r_full,s,y)=0) = CapitalCostStorage('World',s,y);
 
+RegionalAnnualEmissionLimit(r_full,e,y)$(RegionalAnnualEmissionLimit(r_full,e,y) = 0) = RegionalAnnualEmissionLimit('World',e,y);
+RegionalModelPeriodEmissionLimit(r_full,e)$(RegionalModelPeriodEmissionLimit(r_full,e) = 0) = RegionalModelPeriodEmissionLimit('World',e);
 
 *
 * ####### Including Subsets #############
