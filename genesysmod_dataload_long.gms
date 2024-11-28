@@ -190,6 +190,8 @@ CapitalCostStorage(r_full,s,y)$(CapitalCostStorage(r_full,s,y)=0) = CapitalCostS
 
 RegionalAnnualEmissionLimit(r_full,e,y)$(RegionalAnnualEmissionLimit(r_full,e,y) = 0) = RegionalAnnualEmissionLimit('World',e,y);
 RegionalModelPeriodEmissionLimit(r_full,e)$(RegionalModelPeriodEmissionLimit(r_full,e) = 0) = RegionalModelPeriodEmissionLimit('World',e);
+TotalAnnualMaxCapacity(r_full,t,y)$(TotalAnnualMaxCapacity(r_full,t,y) = 0) = TotalAnnualMaxCapacity('World',t,y);
+
 
 *
 * ####### Including Subsets #############
@@ -238,6 +240,7 @@ $endif
 *
 
 ModalSplitByFuelAndModalType(r,f,mt,y) = Readin_ModalSplitByFuelAndModalType(r,f,y,mt);
+ModalSplitByFuelAndModalType(r_full,f,mt,y)$(ModalSplitByFuelAndModalType(r_full,f,mt,y) = 0) = ModalSplitByFuelAndModalType(r_full,f,mt,y);   
 
 TradeRoute(r,f,y,rr) = Readin_TradeRoute(r,rr,f);
 TradeCapacity(r,f,y,rr) = Readin_TradeCapacity(r,rr,f,y);
