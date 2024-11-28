@@ -30,7 +30,7 @@ $if not set elmod_starthour              $setglobal elmod_starthour 8
 $if not set year                         $setglobal year 2018
 $if not set data_base_region             $setglobal data_base_region DE
 $if not set timeseries                   $setglobal timeseries elmod
-$if not set solver                       $setglobal solver gurobi
+$if not set solver                       $setglobal solver cplex
 
 
 $if not set switch_test_data_load        $setglobal switch_test_data_load 0
