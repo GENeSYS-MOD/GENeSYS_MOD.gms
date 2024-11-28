@@ -105,8 +105,8 @@ ReserveMargin(r,y)$(not ReserveMargin(r,y)) = 0;
 *
 StorageLevelTSStart.fx('S_Battery_Li-Ion',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(24/hour_steps)) = 0) = 0;
 StorageLevelTSStart.fx('S_Battery_Redox',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(24/hour_steps)) = 0) = 0;
-StorageLevelTSStart.fx('S_Heat_HB',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(24/hour_steps)) = 0) = 0;
-StorageLevelTSStart.fx('S_Heat_HLI',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(24/hour_steps)) = 0) = 0;
+StorageLevelTSStart.fx('S_HLI_Tank_Large',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(24/hour_steps)) = 0) = 0;
+StorageLevelTSStart.fx('S_HB_Tank_Small',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(24/hour_steps)) = 0) = 0;
 *StorageLevelTSStart.fx('S_CAES',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(48/hour_steps)) = 0) = 0;
 
 
