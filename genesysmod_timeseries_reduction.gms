@@ -380,7 +380,8 @@ SpecifiedDemandProfile(r,'Mobility_Passenger',l,y) = ScaledCountryData(r,l,'mobi
 SpecifiedDemandProfile(r,'Mobility_Freight',l,y) = ScaledCountryData(r,l,'mobility_psng')/sum(ll,ScaledCountryData(r,ll,'mobility_psng'));
 SpecifiedDemandProfile(r,'Heat_Buildings',l,y) = ScaledCountryData(r,l,'heat_low')/sum(ll,ScaledCountryData(r,ll,'heat_low'));
 SpecifiedDemandProfile(r,'Heat_Low_Industrial',l,y) = ScaledCountryData(r,l,'heat_high')/sum(ll,ScaledCountryData(r,ll,'heat_high'));
-SpecifiedDemandProfile(r,'Heat_Medium_Industrial',l,y) = ScaledCountryData(r,l,'heat_high')/sum(ll,ScaledCountryData(r,ll,'heat_high'));
+SpecifiedDemandProfile(r,'Heat_MediumLow_Industrial',l,y) = ScaledCountryData(r,l,'heat_high')/sum(ll,ScaledCountryData(r,ll,'heat_high'));
+SpecifiedDemandProfile(r,'Heat_MediumHigh_Industrial',l,y) = ScaledCountryData(r,l,'heat_high')/sum(ll,ScaledCountryData(r,ll,'heat_high'));
 SpecifiedDemandProfile(r,'Heat_High_Industrial',l,y) = ScaledCountryData(r,l,'heat_high')/sum(ll,ScaledCountryData(r,ll,'heat_high'));
 
 CapacityFactor(r,t,l,y) = 1;

@@ -42,12 +42,13 @@ SelfSufficiency(y, f, r) = 0;
 * ####### Default Values #############
 *
 *needs to be removed, now in data
-RETagTechnology(t,y)$(TagTechnologyToSubsets(t,'Renewables')) = 1;
+RETagTechnology(t,y)$(TagTechnologyToSubsets(t,'EmergingTechnologies')) = 1;
 *needs to be removed, now in data
 RETagFuel('Power',y) = 1;
 RETagFuel('Heat_Buildings',y) = 1;
 RETagFuel('Heat_Low_Industrial',y) = 1;
-RETagFuel('Heat_Medium_Industrial',y) = 1;
+RETagFuel('Heat_MediumHigh_Industrial',y) = 1;
+RETagFuel('Heat_MediumLow_Industrial',y) = 1;
 RETagFuel('Heat_High_Industrial',y) = 1;
 
 
@@ -137,11 +138,13 @@ NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'Transformation')) = 0;
 NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'PowerSupply')) = 0;
 NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'SectorCoupling')) = 0;
 NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'StorageDummies')) = 0;
+NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'Transport')) = 0;
 
 NewCapacity.up('%year%',t,r)$(TagTechnologyToSubsets(t,'Biomass')) = +INF;
 NewCapacity.up('%year%','HB_Gas_Boiler',r) = +INF;
 NewCapacity.up('%year%','HLI_Gas_Boiler',r) = +INF;
 NewCapacity.up('%year%','HHI_BF_BOF',r) = +INF;
+NewCapacity.up('%year%','HMHI_Gas',r) = +INF;
 NewCapacity.up('%year%','HHI_Bio_BF_BOF',r) = +INF;
 NewCapacity.up('%year%','HHI_Scrap_EAF',r) = +INF;
 NewCapacity.up('%year%','HHI_DRI_EAF',r) = +INF;
@@ -181,9 +184,10 @@ AvailabilityFactor(r,DummyTechnology,y) = 0;
 *
 $ifthen %switch_infeasibility_tech% == 1
 OutputActivityRatio(REGION,'Infeasibility_HLI','Heat_Low_Industrial','1',y) = 1;
-OutputActivityRatio(REGION,'Infeasibility_HMI','Heat_Medium_Industrial','1',y) = 1;
+OutputActivityRatio(REGION,'Infeasibility_HMI','Heat_MediumHigh_Industrial','1',y) = 1;
+OutputActivityRatio(REGION,'Infeasibility_HMI','Heat_MediumLow_Industrial','1',y) = 1;
 OutputActivityRatio(REGION,'Infeasibility_HHI','Heat_High_Industrial','1',y) = 1;
-OutputActivityRatio(REGION,'Infeasibility_HRI','Heat_Low_Residential','1',y) = 1;
+OutputActivityRatio(REGION,'Infeasibility_HRI','Heat_Buildings','1',y) = 1;
 OutputActivityRatio(REGION,'Infeasibility_Power','Power','1',y) = 1;
 OutputActivityRatio(REGION,'Infeasibility_Mob_Passenger','Mobility_Passenger','1',y) = 1 ;
 OutputActivityRatio(REGION,'Infeasibility_Mob_Freight','Mobility_Freight','1',y) = 1 ;
