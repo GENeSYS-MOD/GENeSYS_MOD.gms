@@ -130,6 +130,7 @@ CapacityFactor(r,'P_PV_Rooftop_Residential',l,y) = CapacityFactor(r,'P_PV_Utilit
 CapacityFactor(r,'P_CSP',l,y) = CapacityFactor(r,'P_PV_Utility_Opt',l,y) ;
 CapacityFactor(r,'HB_Solar_Thermal',l,y) = CapacityFactor(r,'P_PV_Utility_Avg',l,y) ;
 CapacityFactor(r,'HLI_Solar_Thermal',l,y) = CapacityFactor(r,'P_PV_Utility_Avg',l,y) ;
+CapacityFactor(r,'HD_Solar_Thermal',l,y) = CapacityFactor(r,'P_PV_Utility_Avg',l,y) ;
 
 *
 * ####### No new capacity construction in 2015 #############
