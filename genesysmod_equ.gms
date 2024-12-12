@@ -234,7 +234,7 @@ CA5_CapacityAdequacy(y,t,r)$(AvailabilityFactor(r,t,y)<1 and TotalAnnualMaxCapac
 *
 
 equation EB1_TradeBalanceEachTS(YEAR_FULL,TIMESLICE_FULL,FUEL,r_full,rr_FULL);
-EB1_TradeBalanceEachTS(y,l,f,r,rr)$(TradeRoute(r,f,y,rr)).. Import(y,l,f,r,rr) =e= Export(y,l,f,rr,r);
+EB1_TradeBalanceEachTS(y,l,f,r,rr)$(TradeRoute(r,f,y,rr) and not TagTradeMonoDirectional(r)).. Import(y,l,f,r,rr) =e= Export(y,l,f,rr,r);
 Import.fx(y,l,f,r,rr)$(TradeRoute(r,f,y,rr) = 0) = 0;
 Export.fx(y,l,f,rr,r)$(TradeRoute(r,f,y,rr) = 0) = 0;
 NetTrade.fx(y,l,f,r)$(sum(rr,TradeRoute(r,f,y,rr)) = 0) = 0;

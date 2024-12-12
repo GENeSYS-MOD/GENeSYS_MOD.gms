@@ -19,6 +19,14 @@
 **_______________________________________SENSITIVITIES__________________________________________*
 *NewTradeCapacity.fx(y,'Power', 'DE_Nord','DE_NI')$(YearVal(y) > 2018) = 0.11;
 
+parameter TagTradeMonoDirectional(REGION_FULL);
+TagTradeMonoDirectional(r) = 0;
+TagTradeMonoDirectional('DE_Nord') = 1;
+TagTradeMonoDirectional('DE_Baltic') = 1;
+
+Import.fx(y,l,f,'DE_Nord',rr) = 0;
+Import.fx(y,l,f,'DE_Baltic',rr) = 0;
+
 
 $if not set h2_pricetarget $setglobal h2_pricetarget 1.82
 $ifthen %h2_pricetarget% == 0
