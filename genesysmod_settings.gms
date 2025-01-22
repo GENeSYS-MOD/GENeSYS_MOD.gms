@@ -43,11 +43,30 @@ SocialDiscountRate(r) = 0.05;
 scalar InvestmentLimit  Freedom for investment choices to spread across periods. A value of 1 would mean equal share for each period.
                       /1.9/;
 scalar NewRESCapacity /0.1/;
+
 ProductionGrowthLimit(y,'Power') = 0.05;
-ProductionGrowthLimit(y,f)$(TagFuelToSubsets(f,'HeatFuels')) = 0.05;
+ProductionGrowthLimit(y,f)$(TagFuelToSubsets(f,'HeatFuels')) = 0.04;
 ProductionGrowthLimit(y,f)$(TagFuelToSubsets(f,'TransportFuels')) = 0.05;
 ProductionGrowthLimit(y,'Air') = 0.025;
+$ifthen %emissionPathway% == REPowerEU
+ProductionGrowthLimit(y,'Heat_Buildings') = 0.03;
+
+$elseif %emissionPathway% == NECPEssentials
+ProductionGrowthLimit(y,'Heat_Buildings') = 0.03;
+
+$elseif %emissionPathway% == Green
+ProductionGrowthLimit(y,'Heat_Buildings') = 0.03;
+
+$elseif %emissionPathway% == Trinity
+ProductionGrowthLimit(y,'Heat_Buildings') = 0.01;
+
+$endif
+
+
+
+
 scalar StorageLimitOffset /0.015/;
 
 BaseYearSlack(f) = 0.035;
 BaseYearSlack('Power') = 0.035;
+
