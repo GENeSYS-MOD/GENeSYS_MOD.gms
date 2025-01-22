@@ -22,10 +22,10 @@ $onuelxref
 scalar starttime;
 starttime = jnow;
 
-$if not set data_file                    $setglobal data_file RegularParameters_Europe_EnVis_NECPEssentials
-$if not set hourly_data_file             $setglobal hourly_data_file Timeseries_Europe_EnVis_NECPEssentials
+$if not set data_file                    $setglobal data_file RegularParameters_None
+$if not set hourly_data_file             $setglobal hourly_data_file Timeseries_Europe_EnVis_REPowerEU++
 $if not set switch_read_data_long        $setglobal switch_read_data_long 1
-$if not set elmod_nthhour                $setglobal elmod_nthhour 244
+$if not set elmod_nthhour                $setglobal elmod_nthhour 484
 $if not set elmod_starthour              $setglobal elmod_starthour 8
 $if not set year                         $setglobal year 2018
 $if not set data_base_region             $setglobal data_base_region DE
@@ -77,7 +77,7 @@ $if not set elmod_dunkelflaute           $setglobal elmod_dunkelflaute 0
 $if not set hydrogen_growthcost_multiplier $setglobal hydrogen_growthcost_multiplier 1
 
 
-$if not set emissionPathway              $setglobal emissionPathway GradualDevelopment
+$if not set emissionPathway              $setglobal emissionPathway NECPEssentials
 $if not set emissionScenario             $setglobal emissionScenario globalLimit
 
 $ifthen %switch_unixPath% == 1
@@ -93,6 +93,20 @@ $if not set resultdir                    $setglobal resultdir Results\
 $endif
 
 option dnlp = ipopt;
+
+$ifthen %emissionPathway% == REPowerEU
+$setglobal data_file RegularParameters_Europe_EnVis_REPowerEU++
+$setglobal hourly_data_file Timeseries_Europe_EnVis_REPowerEU++
+$elseif %emissionPathway% == NECPEssentials
+$setglobal data_file RegularParameters_Europe_EnVis_NECPEssentials
+$setglobal hourly_data_file Timeseries_Europe_EnVis_NECPEssentials
+$elseif %emissionPathway% == Green
+$setglobal data_file RegularParameters_Europe_EnVis_Green
+$setglobal hourly_data_file Timeseries_Europe_EnVis_Green
+$elseif %emissionPathway% == Trinity
+$setglobal data_file RegularParameters_Europe_EnVis_Trinity
+$setglobal hourly_data_file Timeseries_Europe_EnVis_Trinity
+$endif
 
 *
 * ####### Declarations #############
@@ -174,8 +188,8 @@ threads %threads%
 parallelmode -1
 lpmethod 4
 names yes
-writemps mpsfile
-*solutiontype 2
+*writemps mpsfile
+solutiontype 2
 quality yes
 barobjrng 1e+075
 tilim 1000000
@@ -187,7 +201,8 @@ method 2
 names yes
 barhomogeneous 1
 timelimit 1000000
-writeprob mps_GAMS.mps
+*writeprob mps_GAMS.mps
+crossover 0
 $offecho
 
 
