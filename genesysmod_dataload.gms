@@ -191,25 +191,6 @@ TotalAnnualMaxCapacity(r_full,t,y)$(TotalAnnualMaxCapacity(r_full,t,y) = 0) = To
 ModalSplitByFuelAndModalType(r_full,f,mt,y)$(ModalSplitByFuelAndModalType(r_full,f,mt,y) = 0) = ModalSplitByFuelAndModalType(r_full,f,mt,y);   
 
 
-*
-* ####### Including Subsets #############
-*
-
-
-$onecho >%tempdir%temp_Tag_Subsets_par.tmp
-se=0
-        par=TagTechnologyToSubsets                Rng=Par_TagTechnologyToSubsets!A2                rdim=2        cdim=0
-        par=TagFuelToSubsets                      Rng=Par_TagFuelToSubsets!A2                      rdim=2        cdim=0
-
-
-$offecho
-
-$ifi %switch_only_load_gdx%==0 $call "gdxxrw %inputdir%Tag_Subsets.xlsx @%tempdir%temp_Tag_Subsets_par.tmp o=%gdxdir%Tag_Subsets_par.gdx MaxDupeErrors=99 CheckDate ";
-$GDXin %gdxdir%Tag_Subsets_par.gdx
-$onUNDF
-$loadm TagTechnologyToSubsets TagFuelToSubsets
-$offUNDF
-
 StartYear = %year% ;
 
 $ifthen %switch_all_regions% == 1
