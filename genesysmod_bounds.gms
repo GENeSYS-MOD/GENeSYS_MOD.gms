@@ -88,7 +88,7 @@ TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'Biomass')) = 999999;
 TotalAnnualMaxCapacity(r,'P_Biomass',y) = 999999;
 
 
-AvailabilityFactor(r,t,y)$(TagTechnologyToSubsets(t,'ImportTechnology')) = 1;
+*AvailabilityFactor(r,t,y)$(TagTechnologyToSubsets(t,'ImportTechnology')) = 1;
 CapacityFactor(r,t,l,y)$(TagTechnologyToSubsets(t,'ImportTechnology')) = 1 ;
 OperationalLife(t)$(TagTechnologyToSubsets(t,'ImportTechnology')) = 1 ;
 TotalTechnologyModelPeriodActivityUpperLimit(r,t)$(TagTechnologyToSubsets(t,'ImportTechnology')) = 999999;
@@ -151,6 +151,7 @@ NewCapacity.up('%year%','HHI_Scrap_EAF',r) = +INF;
 NewCapacity.up('%year%','HHI_DRI_EAF',r) = +INF;
 NewCapacity.up('%year%',t,r)$(TagTechnologyToSubsets(t,'CHP')) = +INF;
 NewCapacity.up('%year%','D_Gas_Methane',r) = +INF;
+NewCapacity.up('%year%','X_SMR',r) = +INF;
 
 
 *
@@ -169,6 +170,7 @@ CurtailmentCostFactor = 0.1;
 *
 * ####### Dummy-Technologies [enable for test purposes, if model runs infeasible] #############
 *
+DummyTechnology('Infeasibility_H2') = yes;
 DummyTechnology('Infeasibility_HLI') = yes;
 DummyTechnology('Infeasibility_HMI') = yes;
 DummyTechnology('Infeasibility_HHI') = yes;
@@ -176,6 +178,7 @@ DummyTechnology('Infeasibility_HRI') = yes;
 DummyTechnology('Infeasibility_Power') = yes;
 DummyTechnology('Infeasibility_Mob_Passenger') = yes;
 DummyTechnology('Infeasibility_Mob_Freight') = yes;
+DummyTechnology('Infeasibility_Natural_Gas') = yes; 
 TagTechnologyToSector(DummyTechnology,'Infeasibility') = 1;
 AvailabilityFactor(r,DummyTechnology,y) = 0;
 
@@ -184,6 +187,7 @@ AvailabilityFactor(r,DummyTechnology,y) = 0;
 * ####### infeasibility technologies default values #############
 *
 $ifthen %switch_infeasibility_tech% == 1
+OutputActivityRatio(REGION,'Infeasibility_H2','H2','1',y) = 1;
 OutputActivityRatio(REGION,'Infeasibility_HLI','Heat_Low_Industrial','1',y) = 1;
 OutputActivityRatio(REGION,'Infeasibility_HMI','Heat_MediumHigh_Industrial','1',y) = 1;
 OutputActivityRatio(REGION,'Infeasibility_HMI','Heat_MediumLow_Industrial','1',y) = 1;
@@ -192,6 +196,7 @@ OutputActivityRatio(REGION,'Infeasibility_HRI','Heat_Buildings','1',y) = 1;
 OutputActivityRatio(REGION,'Infeasibility_Power','Power','1',y) = 1;
 OutputActivityRatio(REGION,'Infeasibility_Mob_Passenger','Mobility_Passenger','1',y) = 1 ;
 OutputActivityRatio(REGION,'Infeasibility_Mob_Freight','Mobility_Freight','1',y) = 1 ;
+OutputActivityRatio(REGION,'Infeasibility_Natural_Gas','Gas_Natural','1',y) = 1;
 
 CapacityToActivityUnit(DummyTechnology) = 31.56;
 TotalAnnualMaxCapacity(r,DummyTechnology,y) = 999999;

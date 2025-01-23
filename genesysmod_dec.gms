@@ -37,12 +37,14 @@ alias (REGION,r,rr)
 
 set TECHNOLOGY List of all available technologies
                /Infeasibility_Power,
+                Infeasibility_H2,
                 Infeasibility_HLI,
                 Infeasibility_HMI,
                 Infeasibility_HHI,
                 Infeasibility_HRI,
                 Infeasibility_Mob_Passenger,
-                Infeasibility_Mob_Freight /;
+                Infeasibility_Mob_Freight,
+                Infeasibility_Natural_Gas /;
 alias (t,TECHNOLOGY);
 
 set DummyTechnology(TECHNOLOGY) Subset of technologies that serve as infeasibility helpers;
