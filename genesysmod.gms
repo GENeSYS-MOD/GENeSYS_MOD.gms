@@ -41,7 +41,7 @@ $if not set switch_base_year_bounds_debugging      $setglobal switch_base_year_b
 
 
 $if not set switch_unixPath              $setglobal switch_unixPath 0
-$if not set switch_ccs                   $setglobal switch_ccs 0
+$if not set switch_ccs                   $setglobal switch_ccs 1
 $if not set switch_ramping               $setglobal switch_ramping 0
 $if not set switch_short_term_storage    $setglobal switch_short_term_storage 1
 $if not set switch_all_regions           $setglobal switch_all_regions 1
