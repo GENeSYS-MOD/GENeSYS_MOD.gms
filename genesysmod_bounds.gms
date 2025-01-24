@@ -178,7 +178,7 @@ DummyTechnology('Infeasibility_HRI') = yes;
 DummyTechnology('Infeasibility_Power') = yes;
 DummyTechnology('Infeasibility_Mob_Passenger') = yes;
 DummyTechnology('Infeasibility_Mob_Freight') = yes;
-DummyTechnology('Infeasibility_Natural_Gas') = yes; 
+DummyTechnology('Infeasibility_Natural_Gas') = yes;
 TagTechnologyToSector(DummyTechnology,'Infeasibility') = 1;
 AvailabilityFactor(r,DummyTechnology,y) = 0;
 
