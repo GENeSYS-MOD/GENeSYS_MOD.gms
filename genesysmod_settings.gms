@@ -50,18 +50,22 @@ ProductionGrowthLimit(y,f)$(TagFuelToSubsets(f,'TransportFuels')) = 0.05;
 ProductionGrowthLimit(y,'Air') = 0.025;
 
 $ifthen %emissionPathway% == REPowerEU
+ProductionGrowthLimit(y,'Power') = 0.05;
 ProductionGrowthLimit(y,'Heat_Buildings') = 0.025;
 ProductionGrowthLimit(y,f)$(TagFuelToSubsets(f,'TransportFuels')) = 0.04;
 
 $elseif %emissionPathway% == NECPEssentials
+ProductionGrowthLimit(y,'Power') = 0.05;
 ProductionGrowthLimit(y,'Heat_Buildings') = 0.025;
 ProductionGrowthLimit(y,f)$(TagFuelToSubsets(f,'TransportFuels')) = 0.04;
 
 $elseif %emissionPathway% == Green
+ProductionGrowthLimit(y,'Power') = 0.06;
 ProductionGrowthLimit(y,'Heat_Buildings') = 0.04;
 ProductionGrowthLimit(y,f)$(TagFuelToSubsets(f,'TransportFuels')) = 0.05;
 
 $elseif %emissionPathway% == Trinity
+ProductionGrowthLimit(y,'Power') = 0.035;   
 ProductionGrowthLimit(y,'Heat_Buildings') = 0.01;
 ProductionGrowthLimit(y,f)$(TagFuelToSubsets(f,'TransportFuels')) = 0.03;
 
