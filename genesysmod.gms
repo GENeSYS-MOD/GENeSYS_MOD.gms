@@ -57,7 +57,7 @@ $if not set switch_only_write_results    $setglobal switch_only_write_results 0
 $if not set set_symmetric_transmission   $setglobal set_symmetric_transmission 0
 $if not set switch_hydrogen_blending_share      $setglobal switch_hydrogen_blending_share 1
 $if not set set_storagelevelstart_up     $setglobal set_storagelevelstart_up 0.75
-$if not set set_storagelevelstart_low    $setglobal set_storagelevelstart_low 0.75
+$if not set set_storagelevelstart_low    $setglobal set_storagelevelstart_low 0.25
 
 $if not set switch_peaking_capacity      $setglobal switch_peaking_capacity 1
 $if not set switch_peaking_with_trade    $setglobal switch_peaking_with_trade 0
