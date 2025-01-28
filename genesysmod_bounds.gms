@@ -78,13 +78,13 @@ CapitalCost(r,t,y)$(CapitalCost(r,t,y) = 0) = 0.01;
 *
 * ####### Bounds for non-supply technologies #############
 *
-TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'Transformation')) = 999999;
-TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'FossilPower')) = 999999;
-TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'FossilFuelGeneration')) = 999999;
-TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'CHP')) = 999999;
-TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'Transport')) = 999999;
-TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'ImportTechnology')) = 999999;
-TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'Biomass')) = 999999;
+TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'Transformation') and not TotalAnnualMaxCapacity(r,t,y)) = 999999;
+TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'FossilPower') and not TotalAnnualMaxCapacity(r,t,y)) = 999999;
+TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'FossilFuelGeneration') and not TotalAnnualMaxCapacity(r,t,y)) = 999999;
+TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'CHP') and not TotalAnnualMaxCapacity(r,t,y)) = 999999;
+TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'Transport') and not TotalAnnualMaxCapacity(r,t,y)) = 999999;
+TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'ImportTechnology') and not TotalAnnualMaxCapacity(r,t,y)) = 999999;
+TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'Biomass') and not TotalAnnualMaxCapacity(r,t,y)) = 999999;
 TotalAnnualMaxCapacity(r,'P_Biomass',y) = 999999;
 
 
