@@ -61,6 +61,7 @@ $onecho >%tempdir%temp_%data_file%_par.tmp
 se=0
 
         par=SpecifiedAnnualDemand    Rng=Par_SpecifiedAnnualDemand!A2                   rdim=3  cdim=0
+        par=SpecifiedDemandDevelopment    Rng=Par_SpecifiedDemandDevelopment!A2         rdim=3  cdim=0
 *        par=SpecifiedDemandProfile   Rng=Par_SpecifiedDemandProfile!A2                  rdim=4  cdim=0
         par=ReserveMarginTagFuel     Rng=Par_ReserveMarginTagFuel!A2                    rdim=3  cdim=0
 
@@ -140,7 +141,7 @@ $loadm AvailabilityFactor CapacityFactor EmissionActivityRatio OperationalLife T
 $loadm TotalTechnologyAnnualActivityLowerLimit TotalTechnologyAnnualActivityUpperLimit
 $loadm Readin_TotalTechnologyModelPeriodActivityUpperLimit
 $loadm TechnologyToStorage TechnologyFromStorage StorageLevelStart MinStorageCharge
-$loadm CapitalCostStorage OperationalLifeStorage
+$loadm CapitalCostStorage OperationalLifeStorage SpecifiedDemandDevelopment
 $loadm ResidualStorageCapacity CapacityToActivityUnit
 $loadm Readin_ModalSplitByFuelAndModalType TagTechnologyToModalType BaseYearProduction RegionalBaseYearProduction
 $loadm TagTechnologyToSector AnnualSectoralEmissionLimit
@@ -166,6 +167,7 @@ EmissionActivityRatio(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,EMISSION,YEAR)$(E
 
 EmissionsPenalty(REGION_FULL,e,y)$(EmissionsPenalty(REGION_FULL,e,y) <> EmissionsPenalty('%data_base_region%',e,y)) = EmissionsPenalty('%data_base_region%',e,y);
 
+SpecifiedDemandDevelopment(r_full,f,y)$(SpecifiedDemandDevelopment(r_full,f,y) = 0) = SpecifiedDemandDevelopment('%data_base_region%',f,y);
 
 *
 * ####### Step 4: Set values, if no regional data available #############
@@ -191,6 +193,8 @@ CapitalCostStorage(r_full,s,y)$(CapitalCostStorage(r_full,s,y)=0) = CapitalCostS
 RegionalAnnualEmissionLimit(r_full,e,y)$(RegionalAnnualEmissionLimit(r_full,e,y) = 0) = RegionalAnnualEmissionLimit('World',e,y);
 RegionalModelPeriodEmissionLimit(r_full,e)$(RegionalModelPeriodEmissionLimit(r_full,e) = 0) = RegionalModelPeriodEmissionLimit('World',e);
 TotalAnnualMaxCapacity(r_full,t,y)$(TotalAnnualMaxCapacity(r_full,t,y) = 0) = TotalAnnualMaxCapacity('World',t,y);
+
+SpecifiedDemandDevelopment(r_full,f,y)$(SpecifiedDemandDevelopment(r_full,f,y) = 0) = SpecifiedDemandDevelopment('World',f,y);
 
 StartYear = %year% ;
 
@@ -220,7 +224,7 @@ $endif
 *
 
 ModalSplitByFuelAndModalType(r,f,mt,y) = Readin_ModalSplitByFuelAndModalType(r,f,y,mt);
-ModalSplitByFuelAndModalType(r_full,f,mt,y)$(ModalSplitByFuelAndModalType(r_full,f,mt,y) = 0) = ModalSplitByFuelAndModalType(r_full,f,mt,y);   
+ModalSplitByFuelAndModalType(r_full,f,mt,y)$(ModalSplitByFuelAndModalType(r_full,f,mt,y) = 0) = ModalSplitByFuelAndModalType('World',f,mt,y);
 
 TradeRoute(r,f,y,rr) = Readin_TradeRoute(r,rr,f);
 TradeCapacity(r,f,y,rr) = Readin_TradeCapacity(r,rr,f,y);

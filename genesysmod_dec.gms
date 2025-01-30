@@ -81,6 +81,7 @@ parameter DepreciationMethod Defines the method to use for depreciation of asset
 * ####### Demands #############
 *
 parameter SpecifiedAnnualDemand(REGION_FULL,FUEL,y_full) Defines the total demand for a fuel (either in energy or a proxy) across the year. Unit: PJ or km;
+parameter SpecifiedDemandDevelopment(REGION_FULL,FUEL,y_full) Defines the change in energy demand per year between modeled years;
 parameter SpecifiedDemandProfile(REGION_FULL,FUEL,TIMESLICE_FULL,y_full) Defines the relative demand per timeslice as a fraction of the total annual demand. Unit: Percent;
 parameter RateOfDemand(y_full,TIMESLICE_FULL,FUEL,REGION_FULL) Rate of demand in given timeslice. Unit: GW;
 parameter Demand(y_full,TIMESLICE_FULL,FUEL,REGION_FULL) Fuel demand for each timeslice. Unit: PJ (except for transport);
