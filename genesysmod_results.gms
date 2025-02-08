@@ -42,13 +42,13 @@ z_fuelcosts('H2',y,r) = VariableCost(r,'Z_Import_H2','1',y);
 $include genesysmod_levelizedcosts.gms
 
 parameter output_energy_balance(*,*,*,*,*,*,*,*,*,*);
-output_energy_balance(r,se,t,m,f,l,'Production','PJ','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se) and not TagTechnologyToSector(t,'Transportation'))= RateOfProductionByTechnologyByMode(y,l,t,m,f,r) * YearSplit(l,y);
-output_energy_balance(r,'Transportation',t,m,f,l,'Production','billion km','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,'Transportation'))= RateOfProductionByTechnologyByMode(y,l,t,m,f,r) * YearSplit(l,y);
-output_energy_balance(r,se,t,m,f,l,'Use','PJ','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se)) = - RateOfUseByTechnologyByMode(y,l,t,m,f,r) * YearSplit(l,y);
-output_energy_balance(r,'Demand','Demand','1',f,l,'Use','PJ','%emissionPathway%_%emissionScenario%',y)$(Demand(y,l,f,r) > 0 and not TagDemandFuelToSector(f,'Transportation')) = - Demand(y,l,f,r) ;
-output_energy_balance(r,'Demand','Demand','1',f,l,'Use','billion km','%emissionPathway%_%emissionScenario%',y)$(Demand(y,l,f,r) > 0 and TagDemandFuelToSector(f,'Transportation')) = - Demand(y,l,f,r) ;
-output_energy_balance(r,'Trade','Trade','1',f,l,'Import','PJ','%emissionPathway%_%emissionScenario%',y) = sum(rr, Import.l(y,l,f,r,rr)) ;
-output_energy_balance(r,'Trade','Trade','1',f,l,'Export','PJ','%emissionPathway%_%emissionScenario%',y) = - sum(rr, Export.l(y,l,f,r,rr)) ;
+output_energy_balance(r,se,t,m,f,l,'Production','PJ','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se) and not TagTechnologyToSector(t,'Transportation'))= round(RateOfProductionByTechnologyByMode(y,l,t,m,f,r) * YearSplit(l,y),4);
+output_energy_balance(r,'Transportation',t,m,f,l,'Production','billion km','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,'Transportation'))= round(RateOfProductionByTechnologyByMode(y,l,t,m,f,r) * YearSplit(l,y),4);
+output_energy_balance(r,se,t,m,f,l,'Use','PJ','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se)) = round(- RateOfUseByTechnologyByMode(y,l,t,m,f,r) * YearSplit(l,y),4);
+output_energy_balance(r,'Demand','Demand','1',f,l,'Use','PJ','%emissionPathway%_%emissionScenario%',y)$(Demand(y,l,f,r) > 0 and not TagDemandFuelToSector(f,'Transportation')) = round(- Demand(y,l,f,r),4) ;
+output_energy_balance(r,'Demand','Demand','1',f,l,'Use','billion km','%emissionPathway%_%emissionScenario%',y)$(Demand(y,l,f,r) > 0 and TagDemandFuelToSector(f,'Transportation')) = round(- Demand(y,l,f,r),4) ;
+output_energy_balance(r,'Trade','Trade','1',f,l,'Import','PJ','%emissionPathway%_%emissionScenario%',y) = round(sum(rr, Import.l(y,l,f,r,rr)),4) ;
+output_energy_balance(r,'Trade','Trade','1',f,l,'Export','PJ','%emissionPathway%_%emissionScenario%',y) = round(- sum(rr, Export.l(y,l,f,r,rr)),4) ;
 $include genesysmod_baseyear_2020.gms
 
 parameter output_energy_balance_annual(*,*,*,*,*,*,*,*);
@@ -65,10 +65,10 @@ CapacityUsedByTechnologyEachTS(y,l,t,r)$(AvailabilityFactor(r,t,y) <> 0 and Capa
 PeakCapacityByTechnology(r,t,y)$(sum(l,CapacityUsedByTechnologyEachTS(y,l,t,r)) <> 0) = smax(l, CapacityUsedByTechnologyEachTS(y,l,t,r));
 
 parameter output_capacity(*,*,*,*,*,*);
-output_capacity(r,se,t,'PeakCapacity','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se)) = PeakCapacityByTechnology(y,t,r) ;
-output_capacity(r,se,t,'NewCapacity','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se)) = NewCapacity.l(y,t,r) ;
-output_capacity(r,se,t,'ResidualCapacity','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se)) = ResidualCapacity(r,t,y) ;
-output_capacity(r,se,t,'TotalCapacity','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se)) = TotalCapacityAnnual.l(y,t,r) ;
+output_capacity(r,se,t,'PeakCapacity','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se)) = round(PeakCapacityByTechnology(y,t,r),4) ;
+output_capacity(r,se,t,'NewCapacity','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se)) = round(NewCapacity.l(y,t,r),4) ;
+output_capacity(r,se,t,'ResidualCapacity','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se)) = round(ResidualCapacity(r,t,y),4) ;
+output_capacity(r,se,t,'TotalCapacity','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se)) = round(TotalCapacityAnnual.l(y,t,r),4) ;
 
 parameter output_emissions(*,*,*,*,*,*,*);
 output_emissions(r,se,e,t,'Emissions','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se))  = AnnualTechnologyEmission.l(y,t,e,r);
