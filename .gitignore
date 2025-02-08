@@ -1,5 +1,6 @@
 *.par
-*.opt
+cplex.opt
+gurobi.opt
 *.log
 *.lst
 *.lxi
