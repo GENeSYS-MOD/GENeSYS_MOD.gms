@@ -31,7 +31,7 @@ cost.. z =e= sum((y,r), TotalDiscountedCost(y,r))
 + sum((y,f,r,rr), DiscountedNewTradeCapacityCosts(y,f,r,rr))
 + sum((y,f,r), DiscountedAnnualCurtailmentCost(y,f,r))
 + sum((y,r,f,t),BaseYearBounds_TooHigh(y,r,t,f)*9999)
-+ sum((y,r,f,t),BaseYearBounds_TooLow(r,t,f,y)*9999)
++ sum((y,r,f,t),BaseYearBounds_TooLow(y,r,t,f)*9999)
 - sum((y,r),DiscountedSalvageValueTransmission(y,r))
 ;
 
@@ -731,7 +731,7 @@ equation BYB1_RegionalBaseYearProductionLowerBound(YEAR_FULL,REGION_FULL,t,f);
 BYB1_RegionalBaseYearProductionLowerBound(y,r,t,f)$(RegionalBaseYearProduction(r,t,f,y) <> 0).. ProductionByTechnologyAnnual(y,t,f,r) =g= RegionalBaseYearProduction(r,t,f,y)*(1-BaseYearSlack(f))  - BaseYearBounds_TooHigh(y,r,t,f);
 
 equation BYB2_RegionalBaseYearProductionUpperBound(YEAR_FULL,REGION_FULL,t,f);
-BYB2_RegionalBaseYearProductionUpperBound(y,r,t,f)$(RegionalBaseYearProduction(r,t,f,y) <> 0).. ProductionByTechnologyAnnual(y,t,f,r) =l= RegionalBaseYearProduction(r,t,f,y) + BaseYearBounds_TooLow(r,t,f,y);
+BYB2_RegionalBaseYearProductionUpperBound(y,r,t,f)$(RegionalBaseYearProduction(r,t,f,y) <> 0).. ProductionByTechnologyAnnual(y,t,f,r) =l= RegionalBaseYearProduction(r,t,f,y) + BaseYearBounds_TooLow(y,r,t,f);
 
 $endif
 

@@ -368,7 +368,7 @@ PhaseIn(YEAR_FULL) this is a lower bound for renewable integration based on the 
 
 
 Parameter BaseYearSlack(f);
-positive Variable BaseYearBounds_TooLow(r_full,t,f,y_full);
+positive Variable BaseYearBounds_TooLow(y_full,r_full,t,f);
 positive variable BaseYearBounds_TooHigh(y_full,r_full,t,f);
 
 $ifthen %switch_baseyear_bounds_debugging% == 0
