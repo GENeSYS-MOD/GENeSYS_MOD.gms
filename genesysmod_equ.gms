@@ -32,6 +32,7 @@ cost.. z =e= sum((y,r), TotalDiscountedCost(y,r))
 + sum((y,f,r), DiscountedAnnualCurtailmentCost(y,f,r))
 + sum((y,r,f,t),BaseYearBounds_TooHigh(y,r,t,f)*9999)
 + sum((y,r,f,t),BaseYearBounds_TooLow(y,r,t,f)*9999)
++ sum((r,y),heatingslack(y,r)*9999)
 - sum((y,r),DiscountedSalvageValueTransmission(y,r))
 ;
 

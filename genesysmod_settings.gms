@@ -53,21 +53,25 @@ $ifthen %emissionPathway% == REPowerEU
 ProductionGrowthLimit(y,'Power') = 0.05;
 ProductionGrowthLimit(y,'Heat_Buildings') = 0.025;
 ProductionGrowthLimit(y,f)$(TagFuelToSubsets(f,'TransportFuels')) = 0.04;
+ProductionByTechnologyAnnual.up(y,'HHI_Scrap_EAF','Heat_High_Industrial',r) = SpecifiedAnnualDemand(r,'Heat_High_Industrial',y)*0.65;
 
 $elseif %emissionPathway% == NECPEssentials
 ProductionGrowthLimit(y,'Power') = 0.05;
 ProductionGrowthLimit(y,'Heat_Buildings') = 0.025;
 ProductionGrowthLimit(y,f)$(TagFuelToSubsets(f,'TransportFuels')) = 0.04;
+ProductionByTechnologyAnnual.up(y,'HHI_Scrap_EAF','Heat_High_Industrial',r) = SpecifiedAnnualDemand(r,'Heat_High_Industrial',y)*0.6;
 
 $elseif %emissionPathway% == Green
 ProductionGrowthLimit(y,'Power') = 0.06;
 ProductionGrowthLimit(y,'Heat_Buildings') = 0.04;
 ProductionGrowthLimit(y,f)$(TagFuelToSubsets(f,'TransportFuels')) = 0.05;
+ProductionByTechnologyAnnual.up(y,'HHI_Scrap_EAF','Heat_High_Industrial',r) = SpecifiedAnnualDemand(r,'Heat_High_Industrial',y)*0.75;
 
 $elseif %emissionPathway% == Trinity
-ProductionGrowthLimit(y,'Power') = 0.035;   
+ProductionGrowthLimit(y,'Power') = 0.035;
 ProductionGrowthLimit(y,'Heat_Buildings') = 0.01;
 ProductionGrowthLimit(y,f)$(TagFuelToSubsets(f,'TransportFuels')) = 0.03;
+ProductionByTechnologyAnnual.up(y,'HHI_Scrap_EAF','Heat_High_Industrial',r) = SpecifiedAnnualDemand(r,'Heat_High_Industrial',y)*0.5;
 
 $endif
 ProductionGrowthLimit(y,f)$(YearVal(y)<2030 and ProductionGrowthLimit(y,f)) = 0.005;
