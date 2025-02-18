@@ -121,6 +121,7 @@ se=0
         par=TagElectricTechnology       Rng=Par_TagElectricTechnology!A2                       rdim=1        cdim=0
 
         par=TagTechnologyToSubsets                Rng=Par_TagTechnologyToSubsets!A2                rdim=2        cdim=0
+        par=TagModalTypeToModalGroups                Rng=Par_TagModalTypeToModalGroups!A2          rdim=2        cdim=0
         par=TagFuelToSubsets                      Rng=Par_TagFuelToSubsets!A2                      rdim=2        cdim=0
         par=StorageE2PRatio                      Rng=Par_StorageE2PRatio!A2                      rdim=1          cdim=0
 
@@ -145,7 +146,7 @@ $loadm CapitalCostStorage OperationalLifeStorage SpecifiedDemandDevelopment
 $loadm ResidualStorageCapacity CapacityToActivityUnit
 $loadm Readin_ModalSplitByFuelAndModalType TagTechnologyToModalType BaseYearProduction RegionalBaseYearProduction
 $loadm TagTechnologyToSector AnnualSectoralEmissionLimit
-$loadm RegionalCCSLimit TagDemandFuelToSector TagElectricTechnology
+$loadm RegionalCCSLimit TagDemandFuelToSector TagElectricTechnology  TagModalTypeToModalGroups
 $loadm TagTechnologyToSubsets TagFuelToSubsets StorageE2PRatio  ModelPeriodEmissionLimit  RegionalModelPeriodEmissionLimit
 $offUNDF
 
