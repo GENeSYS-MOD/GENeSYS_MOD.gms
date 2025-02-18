@@ -61,3 +61,4 @@ ModalSplitByFuelAndModalType(r,'Mobility_Passenger','MT_PSNG_ROAD_RE',y) = Modal
 
 AvailabilityFactor(r,'HB_Lignite','2018') = 0;
 AvailabilityFactor(r,'HB_H2_Boiler',y)$(YearVal(y)<2035) = 0;
+AvailabilityFactor(r,'HB_Hardcoal','2018') = 0;
