@@ -96,9 +96,16 @@ if %errorlevel% neq 0 (
     exit /b %errorlevel%
 )
 
-REM Copy output files
+REM Copy RegularParameters files (always needed)
 for %%F in (Europe_EnVis_NECPEssentials Europe_EnVis_REPowerEU++ Europe_EnVis_Trinity Europe_EnVis_Green) do (
     xcopy "%OUTPUT_DIR%\RegularParameters_%%F.xlsx" "%DEST_DIR%\" /Y
+)
+
+REM If "both" was selected, also copy Timeseries files
+if "%PROCESSING_OPTION%"=="both" (
+    for %%F in (Europe_EnVis_NECPEssentials Europe_EnVis_REPowerEU++ Europe_EnVis_Trinity Europe_EnVis_Green) do (
+        xcopy "%OUTPUT_DIR%\Timeseries_%%F.xlsx" "%DEST_DIR%\" /Y
+    )
 )
 
 REM Show exit menu
