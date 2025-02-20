@@ -24,6 +24,7 @@ Parameter
 Readin_TradeCosts
 Readin_TradeRoute(r_full,f,rr_full)
 Readin_TradeCapacity(r_full,f,y_full,rr_full)
+Readin_CommissionedTradeCapacity(r_full,f,y_full,rr_full)
 Readin_TotalTechnologyModelPeriodActivityUpperLimit(REGION_FULL,TECHNOLOGY)
 ;
 
@@ -70,6 +71,9 @@ se=0
         par=Readin_TradeRoute    Rng=Par_TradeRoute!A1                          rdim=2  cdim=1
         par=Readin_TradeCosts               Rng=Par_TradeCosts!A1                           rdim=2  cdim=1
         par=Readin_TradeCapacity  Rng=Par_TradeCapacity!A1            rdim=3  cdim=1
+        par=Readin_CommissionedTradeCapacity  Rng=Par_CommissionedTradeCapacity!A1            rdim=3  cdim=1
+        par=REMinProductionTarget         Rng=Par_REMinProductionTarget!A1               rdim=2 cdim=1
+        par=SelfSufficiency         Rng=Par_SelfSufficiency!A1                           rdim=2 cdim=1
 
         par=GrowthRateTradeCapacity         Rng=Par_GrowthRateTradeCapacity!A1  rdim=3 cdim=1
         par=TradeCapacityGrowthCosts        Rng=Par_TradeCapacityGrowthCosts!A1  rdim=2 cdim=1
@@ -120,9 +124,11 @@ se=0
         par=TagFuelToSubsets                      Rng=Par_TagFuelToSubsets!A2                      rdim=2        cdim=0
         par=TagModalTypeToModalGroups                Rng=Par_TagModalTypeToModalGroups!A2          rdim=2        cdim=0
         par=StorageE2PRatio                      Rng=Par_StorageE2PRatio!A2                      rdim=1          cdim=0
+        par=TagCanFuelBeTraded                      Rng=Par_TagCanFuelBeTraded!A2                      rdim=1          cdim=0
 
         par=ModelPeriodEmissionLimit       Rng=Par_ModelPeriodEmissionLimit!A2                    rdim=1        cdim=0
         par=RegionalModelPeriodEmissionLimit       Rng=Par_RegionalModelPeriodEmission!A2         rdim=2        cdim=0
+        par=ModelPeriodExogenousEmission       Rng=Par_ModelPeriodExogenousEmissio!A2            rdim=2        cdim=0
 
 $offecho
 
@@ -131,15 +137,15 @@ $GDXin %gdxdir%%data_file%_par.gdx
 $onUNDF
 $loadm
 $loadm SpecifiedAnnualDemand ReserveMarginTagFuel
-$loadm EmissionsPenalty ReserveMargin AnnualExogenousEmission  AnnualEmissionLimit RegionalAnnualEmissionLimit ReserveMarginTagTechnology
-$loadm ReserveMarginTagFuel Readin_TradeRoute Readin_TradeCapacity GrowthRateTradeCapacity TradeCapacityGrowthCosts Readin_TradeCosts
+$loadm EmissionsPenalty ReserveMargin AnnualExogenousEmission AnnualEmissionLimit RegionalAnnualEmissionLimit ReserveMarginTagTechnology
+$loadm ReserveMarginTagFuel Readin_TradeRoute Readin_TradeCapacity GrowthRateTradeCapacity TradeCapacityGrowthCosts Readin_TradeCosts Readin_CommissionedTradeCapacity
 $loadm InputActivityRatio OutputActivityRatio FixedCost CapitalCost VariableCost ResidualCapacity   EmissionsPenaltyTagTechnology
 $loadm AvailabilityFactor CapacityFactor EmissionActivityRatio OperationalLife TotalAnnualMaxCapacity TotalAnnualMinCapacity EmissionContentPerFuel
-$loadm TotalTechnologyAnnualActivityLowerLimit TotalTechnologyAnnualActivityUpperLimit
+$loadm TotalTechnologyAnnualActivityLowerLimit TotalTechnologyAnnualActivityUpperLimit ModelPeriodExogenousEmission AnnualExogenousEmission
 $loadm Readin_TotalTechnologyModelPeriodActivityUpperLimit SpecifiedDemandDevelopment
-$loadm TechnologyToStorage TechnologyFromStorage StorageLevelStart MinStorageCharge
-$loadm CapitalCostStorage OperationalLifeStorage
-$loadm ResidualStorageCapacity CapacityToActivityUnit
+$loadm TechnologyToStorage TechnologyFromStorage StorageLevelStart MinStorageCharge REMinProductionTarget
+$loadm CapitalCostStorage OperationalLifeStorage SelfSufficiency
+$loadm ResidualStorageCapacity CapacityToActivityUnit TagCanFuelBeTraded
 $loadm ModalSplitByFuelAndModalType TagTechnologyToModalType BaseYearProduction RegionalBaseYearProduction
 $loadm TagTechnologyToSector AnnualSectoralEmissionLimit
 $loadm RegionalCCSLimit TagDemandFuelToSector TagElectricTechnology TagModalTypeToModalGroups
@@ -164,6 +170,8 @@ EmissionActivityRatio(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,EMISSION,YEAR)$(E
 EmissionsPenalty(REGION_FULL,e,y)$(EmissionsPenalty(REGION_FULL,e,y) <> EmissionsPenalty('%data_base_region%',e,y)) = EmissionsPenalty('%data_base_region%',e,y);
 
 SpecifiedDemandDevelopment(r_full,f,y)$(SpecifiedDemandDevelopment(r_full,f,y) = 0) = SpecifiedDemandDevelopment('%data_base_region%',f,y);
+RegionalModelPeriodEmissionLimit(r,e)$(RegionalModelPeriodEmissionLimit(r,e) = 0) = RegionalModelPeriodEmissionLimit('%data_base_region%',e);
+ModelPeriodExogenousEmission(r,e)$(ModelPeriodExogenousEmission(r,e) = 0) = ModelPeriodExogenousEmission('%data_base_region%',e);
 
 
 *
@@ -189,6 +197,7 @@ CapitalCostStorage(r_full,s,y)$(CapitalCostStorage(r_full,s,y)=0) = CapitalCostS
 
 RegionalAnnualEmissionLimit(r,e,y)$(RegionalAnnualEmissionLimit(r,e,y) = 0) = RegionalAnnualEmissionLimit('World',e,y);
 RegionalModelPeriodEmissionLimit(r,e)$(RegionalModelPeriodEmissionLimit(r,e) = 0) = RegionalModelPeriodEmissionLimit('World',e);
+ModelPeriodExogenousEmission(r,e)$(ModelPeriodExogenousEmission(r,e) = 0) = ModelPeriodExogenousEmission('World',e);
 TotalAnnualMaxCapacity(r_full,t,y)$(TotalAnnualMaxCapacity(r_full,t,y) = 0) = TotalAnnualMaxCapacity('World',t,y);
 ModalSplitByFuelAndModalType(r_full,f,mt,y)$(ModalSplitByFuelAndModalType(r_full,f,mt,y) = 0) = ModalSplitByFuelAndModalType('World',f,mt,y);
 
@@ -223,6 +232,7 @@ $endif
 *
 TradeRoute(r,f,y,rr) = Readin_TradeRoute(r,f,rr);
 TradeCapacity(r,f,y,rr) = Readin_TradeCapacity(r,f,y,rr);
+CommissionedTradeCapacity(r,f,y,rr) = Readin_CommissionedTradeCapacity(r,f,y,rr);
 
 TradeCosts(f,r,rr) = Readin_TradeCosts(f,r,rr);
 GrowthRateTradeCapacity(r,'Power',y,rr) = GrowthRateTradeCapacity(r,'Power','%year%',rr);

@@ -19,21 +19,10 @@
 *
 * ###### Eventually move to input data file ######
 *
-* Adds (negligible) variable costs to transport technologies, since they only had fuel costs before
-* This is to combat strange "curtailment" effects of some transportation technologies
-VariableCost(r,t,m,y)$(TagTechnologyToSubsets(t,'Transport')) = 0.09;
-
-* Relevant for Europe due to unimplemented data
-CommissionedTradeCapacity(y,f,r,rr) = 0;
 
 TradeCosts('ETS',r,rr)$(not TradeCosts('ETS',r,rr)) = 0.01;
 VariableCost(r,t,m,y)$(not VariableCost(r,t,m,y)) = 0.01;
 
-
-ModelPeriodExogenousEmission(REGION,EMISSION) = 0;
-REMinProductionTarget(r,f,y) = 0;
-
-SelfSufficiency(y, f, r) = 0;
 *
 * ##############################################################
 

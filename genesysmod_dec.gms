@@ -189,6 +189,7 @@ parameter CurtailmentCostFactor;
 * ######### Trade #############
 *
 parameter TradeRoute(REGION_FULL,FUEL,y_full,rr_full);
+parameter TagCanFuelBeTraded(FUEL);
 parameter TradeCosts(FUEL,REGION_FULL,rr_full);
 parameter TradeLossFactor(FUEL, YEAR_FULL);
 parameter TradeRouteInstalledCapacity(y_full,f,r_full,rr_full);
