@@ -268,7 +268,7 @@ TrC1_TradeCapacityPowerLinesImport(y,l,'Power',r,rr)$(TradeRoute(r,'Power',y,rr)
 equation TrC2a_TotalTradeCapacityStartYear(YEAR_FULL,FUEL,REGION_FULL,rr_full);
 TrC2a_TotalTradeCapacityStartYear(y,f,r,rr)$(TradeRoute(r,f,y,rr) > 0 and YearVal(y) = %year%).. TotalTradeCapacity(y,f,r,rr) =e= TradeCapacity(r,f,y,rr);
 equation TrC2b_TotalTradeCapacity(YEAR_FULL,FUEL,REGION_FULL,rr_full);
-TrC2b_TotalTradeCapacity(y,f,r,rr)$(TradeRoute(r,f,y,rr) > 0 and YearVal(y) > %year%).. TotalTradeCapacity(y,f,r,rr) =e= TotalTradeCapacity(y-1,f,r,rr) + NewTradeCapacity(y,f,r,rr) + CommissionedTradeCapacity(y,f,r,rr);
+TrC2b_TotalTradeCapacity(y,f,r,rr)$(TradeRoute(r,f,y,rr) > 0 and YearVal(y) > %year%).. TotalTradeCapacity(y,f,r,rr) =e= TotalTradeCapacity(y-1,f,r,rr) + NewTradeCapacity(y,f,r,rr) + CommissionedTradeCapacity(r,f,y,rr);
 
 equation TrC3_NewTradeCapacityLimitPowerLines(YEAR_FULL,FUEL,REGION_FULL,rr_full);
 TrC3_NewTradeCapacityLimitPowerLines(y,'Power',r,rr)$(TradeRoute(r,'Power',y,rr) > 0 and GrowthRateTradeCapacity(r,'Power',y,rr) > 0 and YearVal(y) > %year%).. (GrowthRateTradeCapacity(r,'Power',y,rr)*YearlyDifferenceMultiplier(y))*TotalTradeCapacity(y-1,'Power',r,rr) =g= NewTradeCapacity(y,'Power',r,rr);
