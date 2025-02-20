@@ -27,7 +27,7 @@ if(sum(t,error_TechMissingFromSectorList(t)),abort "Technology missing from Sect
 
 * Check if TradeCosts are missing from a defined TradeRoute -> if yes, then exit
 parameter error_TradeCostsMissingFromTradeRoute(r_full,f,rr_full);
-error_TradeCostsMissingFromTradeRoute(r,f,rr)$(sum(y,TradeRoute(r,f,y,rr)) and TagCanFuelBeTraded(f) and not TradeCosts(f,r,rr)) = 1;
+error_TradeCostsMissingFromTradeRoute(r,f,rr)$(sum(y,TradeRoute(r,f,y,rr)) and TagCanFuelBeTraded(f) and not sum(y,TradeCosts(r,f,y,rr))) = 1;
 if(sum((f,r,rr),error_TradeCostsMissingFromTradeRoute(r,f,rr)),abort "TradeCosts are missing from a defined TradeRoute. Please check your TradeCosts to include all defined TradeRoutes. Missing TradeCosts are listed in the parameter error_TradeCostsMissingFromTradeRoute.");
 
 * Check for errors in ModalSplit definitions -> if yes, then exit

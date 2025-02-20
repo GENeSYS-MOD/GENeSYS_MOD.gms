@@ -21,7 +21,6 @@
 $offorder
 
 Parameter
-Readin_TradeCosts
 Readin_TradeRoute(r_full,rr_full,f)
 Readin_TradeCapacity(r_full,rr_full,f,y_full)
 Readin_CommissionedTradeCapacity(r_full,rr_full,f,y_full)
@@ -73,7 +72,7 @@ se=0
         par=RegionalAnnualEmissionLimit      Rng=Par_RegionalAnnualEmissionLimit!A2                      rdim=3  cdim=0
         par=AnnualEmissionLimit      Rng=Par_AnnualEmissionLimit!A2                      rdim=2  cdim=0
         par=Readin_TradeRoute    Rng=Par_TradeRoute!A2                          rdim=3  cdim=0
-        par=Readin_TradeCosts               Rng=Par_TradeCosts!A2                           rdim=3  cdim=0
+        par=TradeCostFactor               Rng=Par_TradeCostFactor!A2                     rdim=2  cdim=0
         par=Readin_TradeCapacity  Rng=Par_TradeCapacity!A2            rdim=4  cdim=0
         par=Readin_CommissionedTradeCapacity  Rng=Par_CommissionedTradeCapacity!A2            rdim=4  cdim=0
         par=REMinProductionTarget  Rng=Par_REMinProductionTarget!A2                      rdim=3  cdim=0
@@ -142,7 +141,7 @@ $onUNDF
 $loadm
 $loadm SpecifiedAnnualDemand ReserveMarginTagFuel
 $loadm EmissionsPenalty ReserveMargin AnnualExogenousEmission AnnualEmissionLimit RegionalAnnualEmissionLimit ReserveMarginTagTechnology
-$loadm ReserveMarginTagFuel Readin_TradeRoute Readin_TradeCapacity Readin_GrowthRateTradeCapacity Readin_TradeCapacityGrowthCosts Readin_TradeCosts Readin_CommissionedTradeCapacity
+$loadm ReserveMarginTagFuel Readin_TradeRoute Readin_TradeCapacity Readin_GrowthRateTradeCapacity Readin_TradeCapacityGrowthCosts TradeCostFactor Readin_CommissionedTradeCapacity
 $loadm InputActivityRatio OutputActivityRatio FixedCost CapitalCost VariableCost ResidualCapacity   EmissionsPenaltyTagTechnology
 $loadm AvailabilityFactor CapacityFactor EmissionActivityRatio OperationalLife TotalAnnualMaxCapacity TotalAnnualMinCapacity EmissionContentPerFuel
 $loadm TotalTechnologyAnnualActivityLowerLimit TotalTechnologyAnnualActivityUpperLimit ModelPeriodExogenousEmission
@@ -238,7 +237,7 @@ ModalSplitByFuelAndModalType(r_full,f,mt,y)$(ModalSplitByFuelAndModalType(r_full
 
 TradeRoute(r,f,y,rr) = Readin_TradeRoute(r,rr,f);
 TradeCapacity(r,f,y,rr) = Readin_TradeCapacity(r,rr,f,y);
-TradeCosts(f,r,rr) = Readin_TradeCosts(f,r,rr);
+TradeCosts(r,f,y,rr) = TradeCostFactor(f,y)*TradeRoute(r,f,y,rr);
 CommissionedTradeCapacity(r,f,y,rr) = Readin_CommissionedTradeCapacity(r,rr,f,y);
 
 GrowthRateTradeCapacity(r,f,y,rr) = Readin_GrowthRateTradeCapacity(r,rr,f,y);

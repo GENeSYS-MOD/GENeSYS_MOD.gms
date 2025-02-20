@@ -21,7 +21,6 @@
 $offorder
 
 Parameter
-Readin_TradeCosts
 Readin_TradeRoute(r_full,f,rr_full)
 Readin_TradeCapacity(r_full,f,y_full,rr_full)
 Readin_CommissionedTradeCapacity(r_full,f,y_full,rr_full)
@@ -69,7 +68,7 @@ se=0
         par=RegionalAnnualEmissionLimit      Rng=Par_RegionalAnnualEmissionLimit!A1                      rdim=2  cdim=1
         par=AnnualEmissionLimit      Rng=Par_AnnualEmissionLimit!A1                      rdim=1  cdim=1
         par=Readin_TradeRoute    Rng=Par_TradeRoute!A1                          rdim=2  cdim=1
-        par=Readin_TradeCosts               Rng=Par_TradeCosts!A1                           rdim=2  cdim=1
+        par=TradeCostFactor               Rng=Par_TradeCostFactor!A1                           rdim=1  cdim=1
         par=Readin_TradeCapacity  Rng=Par_TradeCapacity!A1            rdim=3  cdim=1
         par=Readin_CommissionedTradeCapacity  Rng=Par_CommissionedTradeCapacity!A1            rdim=3  cdim=1
         par=REMinProductionTarget         Rng=Par_REMinProductionTarget!A1               rdim=2 cdim=1
@@ -138,7 +137,7 @@ $onUNDF
 $loadm
 $loadm SpecifiedAnnualDemand ReserveMarginTagFuel
 $loadm EmissionsPenalty ReserveMargin AnnualExogenousEmission AnnualEmissionLimit RegionalAnnualEmissionLimit ReserveMarginTagTechnology
-$loadm ReserveMarginTagFuel Readin_TradeRoute Readin_TradeCapacity GrowthRateTradeCapacity TradeCapacityGrowthCosts Readin_TradeCosts Readin_CommissionedTradeCapacity
+$loadm ReserveMarginTagFuel Readin_TradeRoute Readin_TradeCapacity GrowthRateTradeCapacity TradeCapacityGrowthCosts TradeCostFactor Readin_CommissionedTradeCapacity
 $loadm InputActivityRatio OutputActivityRatio FixedCost CapitalCost VariableCost ResidualCapacity   EmissionsPenaltyTagTechnology
 $loadm AvailabilityFactor CapacityFactor EmissionActivityRatio OperationalLife TotalAnnualMaxCapacity TotalAnnualMinCapacity EmissionContentPerFuel
 $loadm TotalTechnologyAnnualActivityLowerLimit TotalTechnologyAnnualActivityUpperLimit ModelPeriodExogenousEmission AnnualExogenousEmission
@@ -234,7 +233,7 @@ TradeRoute(r,f,y,rr) = Readin_TradeRoute(r,f,rr);
 TradeCapacity(r,f,y,rr) = Readin_TradeCapacity(r,f,y,rr);
 CommissionedTradeCapacity(r,f,y,rr) = Readin_CommissionedTradeCapacity(r,f,y,rr);
 
-TradeCosts(f,r,rr) = Readin_TradeCosts(f,r,rr);
+TradeCosts(r,f,y,rr) = TradeCostFactor(f,y)*TradeRoute(r,f,y,rr);
 GrowthRateTradeCapacity(r,'Power',y,rr) = GrowthRateTradeCapacity(r,'Power','%year%',rr);
 
 TradeLossFactor('Power',y) = 0.00003;

@@ -235,10 +235,10 @@ CA5_CapacityAdequacy(y,t,r)$(AvailabilityFactor(r,t,y)<1 and TotalAnnualMaxCapac
 *
 
 equation EB1_TradeBalanceEachTS(YEAR_FULL,TIMESLICE_FULL,FUEL,r_full,rr_FULL);
-EB1_TradeBalanceEachTS(y,l,f,r,rr)$(TradeRoute(r,f,y,rr)).. Import(y,l,f,r,rr) =e= Export(y,l,f,rr,r);
-Import.fx(y,l,f,r,rr)$(TradeRoute(r,f,y,rr) = 0) = 0;
-Export.fx(y,l,f,rr,r)$(TradeRoute(r,f,y,rr) = 0) = 0;
-NetTrade.fx(y,l,f,r)$(sum(rr,TradeRoute(r,f,y,rr)) = 0) = 0;
+EB1_TradeBalanceEachTS(y,l,f,r,rr)$(TradeRoute(r,f,y,rr) and TagCanFuelBeTraded(f)).. Import(y,l,f,r,rr) =e= Export(y,l,f,rr,r);
+Import.fx(y,l,f,r,rr)$(TradeRoute(r,f,y,rr) = 0 or TagCanFuelBeTraded(f) = 0) = 0;
+Export.fx(y,l,f,rr,r)$(TradeRoute(r,f,y,rr) = 0) = 0 or TagCanFuelBeTraded(f) = 0;
+NetTrade.fx(y,l,f,r)$(sum(rr,TradeRoute(r,f,y,rr)) = 0 or TagCanFuelBeTraded(f) = 0) = 0;
 
 equation EB2_EnergyBalanceEachTS(YEAR_FULL,TIMESLICE_FULL,FUEL,REGION_FULL);
 EB2_EnergyBalanceEachTS(y,l,f,r)$(TagTimeIndependentFuel(y,f,r) = 0).. sum((t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y))*YearSplit(l,y) =e= Demand(y,l,f,r) + sum((t,m)$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*InputActivityRatio(r,t,f,m,y)*TimeDepEfficiency(r,t,l,y))*YearSplit(l,y) + NetTrade(y,l,f,r);
@@ -247,11 +247,11 @@ equation EB3_EnergyBalanceEachYear(YEAR_FULL,FUEL,REGION_FULL);
 EB3_EnergyBalanceEachYear(y,f,r)$(TagTimeIndependentFuel(y,f,r)).. sum((l,t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y)) =g= sum((l,t,m)$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*InputActivityRatio(r,t,f,m,y)*YearSplit(l,y)*TimeDepEfficiency(r,t,l,y)) + NetTradeAnnual(y,f,r);
 
 equation EB4_NetTradeBalance(YEAR_FULL,TIMESLICE_FULL,FUEL,REGION_FULL);
-EB4_NetTradeBalance(y,l,f,r)$(sum(rr,TradeRoute(r,f,y,rr)) > 0).. sum(rr$(TradeRoute(r,f,y,rr)), Export(y,l,f,r,rr)*(1+TradeLossBetweenRegions(r,f,y,rr)) - Import(y,l,f,r,rr)) =e= NetTrade(y,l,f,r);
+EB4_NetTradeBalance(y,l,f,r)$(sum(rr,TradeRoute(r,f,y,rr)) and TagCanFuelBeTraded(f)).. sum(rr$(TradeRoute(r,f,y,rr)), Export(y,l,f,r,rr)*(1+TradeLossBetweenRegions(r,f,y,rr)) - Import(y,l,f,r,rr)) =e= NetTrade(y,l,f,r);
 
 equation EB5_AnnualNetTradeBalance(YEAR_FULL,FUEL,REGION_FULL);
-EB5_AnnualNetTradeBalance(y,f,r)$(sum(rr,TradeRoute(r,f,y,rr)) > 0).. sum(l, (NetTrade(y,l,f,r))) =e= NetTradeAnnual(y,f,r);
-NetTradeAnnual.fx(y,f,r)$(sum(rr,TradeRoute(r,f,y,rr)) = 0) = 0;
+EB5_AnnualNetTradeBalance(y,f,r)$(sum(rr,TradeRoute(r,f,y,rr)) and TagCanFuelBeTraded(f)).. sum(l, (NetTrade(y,l,f,r))) =e= NetTradeAnnual(y,f,r);
+NetTradeAnnual.fx(y,f,r)$(sum(rr,TradeRoute(r,f,y,rr)) = 0 or TagCanFuelBeTraded(f) = 0) = 0;
 
 equation EB6_AnnualEnergyCurtailment(YEAR_FULL,FUEL,REGION_FULL);
 EB6_AnnualEnergyCurtailment(y,f,r).. CurtailedEnergyAnnual(y,f,r) =e= sum((l,t,m),CurtailedCapacity(r,l,t,y)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y)*CapacityToActivityUnit(t));
@@ -266,9 +266,9 @@ equation TrC1_TradeCapacityPowerLinesImport(YEAR_FULL,TIMESLICE_FULL,FUEL,REGION
 TrC1_TradeCapacityPowerLinesImport(y,l,'Power',r,rr)$(TradeRoute(r,'Power',y,rr) > 0).. (Import(y,l,'Power',r,rr)) =l= TotalTradeCapacity(y,'Power',rr,r)*YearSplit(l,y)*31.536;
 
 equation TrC2a_TotalTradeCapacityStartYear(YEAR_FULL,FUEL,REGION_FULL,rr_full);
-TrC2a_TotalTradeCapacityStartYear(y,f,r,rr)$(TradeRoute(r,f,y,rr) > 0 and YearVal(y) = %year%).. TotalTradeCapacity(y,f,r,rr) =e= TradeCapacity(r,f,y,rr);
+TrC2a_TotalTradeCapacityStartYear(y,f,r,rr)$(TradeRoute(r,f,y,rr) and TagCanFuelBeTraded(f) and YearVal(y) = %year%).. TotalTradeCapacity(y,f,r,rr) =e= TradeCapacity(r,f,y,rr);
 equation TrC2b_TotalTradeCapacity(YEAR_FULL,FUEL,REGION_FULL,rr_full);
-TrC2b_TotalTradeCapacity(y,f,r,rr)$(TradeRoute(r,f,y,rr) > 0 and YearVal(y) > %year%).. TotalTradeCapacity(y,f,r,rr) =e= TotalTradeCapacity(y-1,f,r,rr) + NewTradeCapacity(y,f,r,rr) + CommissionedTradeCapacity(r,f,y,rr);
+TrC2b_TotalTradeCapacity(y,f,r,rr)$(TradeRoute(r,f,y,rr) and TagCanFuelBeTraded(f) and YearVal(y) > %year%).. TotalTradeCapacity(y,f,r,rr) =e= TotalTradeCapacity(y-1,f,r,rr) + NewTradeCapacity(y,f,r,rr) + CommissionedTradeCapacity(r,f,y,rr);
 
 equation TrC3_NewTradeCapacityLimitPowerLines(YEAR_FULL,FUEL,REGION_FULL,rr_full);
 TrC3_NewTradeCapacityLimitPowerLines(y,'Power',r,rr)$(TradeRoute(r,'Power',y,rr) > 0 and GrowthRateTradeCapacity(r,'Power',y,rr) > 0 and YearVal(y) > %year%).. (GrowthRateTradeCapacity(r,'Power',y,rr)*YearlyDifferenceMultiplier(y))*TotalTradeCapacity(y-1,'Power',r,rr) =g= NewTradeCapacity(y,'Power',r,rr);
@@ -287,9 +287,9 @@ NewTradeCapacity.fx(y,f,r,rr)$(not TradeRoute(r,f,y,rr)) = 0;
 
 
 equation TrC4_NewTradeCapacityCosts(YEAR_FULL,FUEL,REGION_FULL,rr_full);
-TrC4_NewTradeCapacityCosts(y,f,r,rr)$(TradeRoute(r,f,y,rr) > 0 and TradeCapacityGrowthCosts(r,f,rr))..  NewTradeCapacity(y,f,r,rr)*TradeCapacityGrowthCosts(r,f,rr)*TradeRoute(r,f,y,rr) =e= NewTradeCapacityCosts(y,f,r,rr);
+TrC4_NewTradeCapacityCosts(y,f,r,rr)$(TradeRoute(r,f,y,rr) and TradeCapacityGrowthCosts(r,f,rr))..  NewTradeCapacity(y,f,r,rr)*TradeCapacityGrowthCosts(r,f,rr)*TradeRoute(r,f,y,rr) =e= NewTradeCapacityCosts(y,f,r,rr);
 equation TrC5_DiscountedNewTradeCapacityCosts(YEAR_FULL,FUEL,REGION_FULL,rr_full);
-TrC5_DiscountedNewTradeCapacityCosts(y,f,r,rr)$(TradeRoute(r,f,y,rr) > 0 and TradeCapacityGrowthCosts(r,f,rr)).. NewTradeCapacityCosts(y,f,r,rr)/((1+GeneralDiscountRate(r))**(YearVal(y)-smin(yy, YearVal(yy))+0.5)) =e= DiscountedNewTradeCapacityCosts(y,f,r,rr);
+TrC5_DiscountedNewTradeCapacityCosts(y,f,r,rr)$(TradeRoute(r,f,y,rr) and TradeCapacityGrowthCosts(r,f,rr)).. NewTradeCapacityCosts(y,f,r,rr)/((1+GeneralDiscountRate(r))**(YearVal(y)-smin(yy, YearVal(yy))+0.5)) =e= DiscountedNewTradeCapacityCosts(y,f,r,rr);
 DiscountedNewTradeCapacityCosts.fx(y,f,r,rr)$(TradeRoute(r,f,y,rr) = 0 or not TradeCapacityGrowthCosts(r,f,rr)) = 0;
 
 $ifthen set set_symmetric_transmission
@@ -351,7 +351,7 @@ $endif.equ_hydrogen_tradecapacity
 * ############## Trading Costs #############
 *
 equation TC1_AnnualTradeCosts(y_full,REGION_FULL);
-TC1_AnnualTradeCosts(y,r)$(sum((f,rr),TradeRoute(r,f,y,rr)) > 0).. sum((l,f,rr)$(TradeRoute(r,f,y,rr)),Import(y,l,f,r,rr) * TradeCosts(f,r,rr)) =e= AnnualTotalTradeCosts(y,r);
+TC1_AnnualTradeCosts(y,r)$(sum((f,rr),TradeRoute(r,f,y,rr))).. sum((l,f,rr)$(TradeRoute(r,f,y,rr)),Import(y,l,f,r,rr) * TradeCosts(r,f,y,rr)) =e= AnnualTotalTradeCosts(y,r);
 AnnualTotalTradeCosts.fx(y,r)$(sum((f,rr),TradeRoute(r,f,y,rr)) = 0) = 0;
 
 equation TC2_DiscountedAnnualTradeCosts(y_full,REGION_FULL);
