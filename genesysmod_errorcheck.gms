@@ -56,6 +56,12 @@ parameter error_CapacityToActivityUnitDataMissing(r_full,t);
 error_CapacityToActivityUnitDataMissing(r,t)$(sum(y,AvailabilityFactor(r,t,y)) and not CapacityToActivityUnit(t)) = 1;
 if(sum((r,t),error_CapacityToActivityUnitDataMissing(r,t)),abort "CapacityToActivityUnit is missing from a Technology. Please check your CapacityToActivityUnit data in Excel to account for all technologies. Technologies where values are missing are listed in the parameter error_CapacityToActivityUnitDataMissing.");
 
+* Check for errors in TradeRoutes, if they have a capacity given
+parameter error_TradeCapacityMismatch(*,r_full,f,y_full,rr_full);
+error_TradeCapacityMismatch('TradeCapacity',r,f,y,rr)$(TradeCapacity(r,f,y,rr) and not TradeRoute(r,f,y,rr))  = 1;
+error_TradeCapacityMismatch('CommissionedTradeCapacity',r,f,y,rr)$(CommissionedTradeCapacity(r,f,y,rr) and not TradeRoute(r,f,y,rr))  = 1;
+if(sum((r,f,y,rr),error_TradeCapacityMismatch('TradeCapacity',r,f,y,rr)+error_TradeCapacityMismatch('CommissionedTradeCapacity',r,f,y,rr)),abort "TradeRoute is missing for some trade connections where a TradeCapacity has been set. Please check your TradeRoute and TradeCapacity data in Excel. Technologies where values are missing are listed in the parameter error_TradeCapacityMismatch.");
+
 
 
 **************************************************************
