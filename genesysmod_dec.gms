@@ -358,15 +358,19 @@ Parameter PhaseOut(YEAR_FULL) this is an upper limit for fossil generation based
          2040    2.5
          2045    2
          2050    2
+         2055    1.5
+         2060    1.25
 /
 PhaseIn(YEAR_FULL) this is a lower bound for renewable integration based on the previous year - to remove choose 0
 /        2020    1
          2025    0.8
-         2030    0.7
-         2035    0.7
-         2040    0.7
-         2045    0.6
-         2050    0.5
+         2030    0.8
+         2035    0.8
+         2040    0.8
+         2045    0.8
+         2050    0.6
+         2055    0.5
+         2060    0.5
 /;
 
 
