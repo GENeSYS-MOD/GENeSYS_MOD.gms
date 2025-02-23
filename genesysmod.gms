@@ -67,7 +67,7 @@ $if not set set_peaking_slack            $setglobal set_peaking_slack 1.0
 *consider vRES only partially (1.0 consider vRES fully, 0.0 ignore vRES in peaking equation)
 $if not set set_peaking_res_cf           $setglobal set_peaking_res_cf 0.5
 $if not set set_peaking_min_thermal      $setglobal set_peaking_min_thermal 0.5
-$if not set set_peaking_startyear        $setglobal set_peaking_startyear 2025
+$if not set set_peaking_startyear        $setglobal set_peaking_startyear 2030
 $if not set set_peaking_minrun_share     $setglobal set_peaking_minrun_share 0.15
 
 $if not set model_region                 $setglobal model_region europe
