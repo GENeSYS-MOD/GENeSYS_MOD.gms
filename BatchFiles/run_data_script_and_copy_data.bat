@@ -7,127 +7,139 @@ set "BASE_DIR=%~dp0"
 REM Define settings file location
 set "SETTINGS_FILE=%BASE_DIR%settings.conf"
 
-REM Check if settings file exists
+REM Read settings from file or ask user for input
 if exist "%SETTINGS_FILE%" (
-    echo Reading settings from existing settings.conf...
+    echo Reading settings from settings.conf...
     for /f "tokens=1,* delims==" %%A in (%SETTINGS_FILE%) do set "%%A=%%B"
 ) else (
-    echo settings.conf not found. Please provide the required directories.
-
-    REM Ask user for input
+    echo settings.conf not found. Asking for directories...
     set /p "SCRIPT_DIR=Enter the path to the Conversion Script directory: "
     set /p "OUTPUT_DIR=Enter the path to the Output directory: "
     set /p "DEST_DIR=Enter the path to the Inputdata directory: "
-
-    REM Save to settings.conf properly using delayed expansion
-    (
-        echo SCRIPT_DIR=!SCRIPT_DIR!
-        echo OUTPUT_DIR=!OUTPUT_DIR!
-        echo DEST_DIR=!DEST_DIR!
-    ) > "%SETTINGS_FILE%"
-
-    echo Settings saved in settings.conf.
+    echo SCRIPT_DIR=%SCRIPT_DIR% > "%SETTINGS_FILE%"
+    echo OUTPUT_DIR=%OUTPUT_DIR% >> "%SETTINGS_FILE%"
+    echo DEST_DIR=%DEST_DIR% >> "%SETTINGS_FILE%"
 )
 
-REM Read settings from file again to ensure values are set
-for /f "tokens=1,* delims==" %%A in (%SETTINGS_FILE%) do set "%%A=%%B"
-
-REM Verify that variables were loaded correctly
+REM Verify directories
 if "%SCRIPT_DIR%"=="" (
-    echo ERROR: SCRIPT_DIR not set properly.
+    echo ERROR: SCRIPT_DIR is empty!
     pause
     exit /b 1
 )
 if "%OUTPUT_DIR%"=="" (
-    echo ERROR: OUTPUT_DIR not set properly.
+    echo ERROR: OUTPUT_DIR is empty!
     pause
     exit /b 1
 )
 if "%DEST_DIR%"=="" (
-    echo ERROR: DEST_DIR not set properly.
+    echo ERROR: DEST_DIR is empty!
     pause
     exit /b 1
 )
 
-REM Show selection screen
-echo.
-echo Please choose a processing option:
-echo [1] Parameters only (default)
-echo [2] Both parameters and timeseries
-echo.
-set /p "PROCESSING_OPTION=Enter your choice (1/2): "
+echo SCRIPT_DIR=%SCRIPT_DIR%
+echo OUTPUT_DIR=%OUTPUT_DIR%
+echo DEST_DIR=%DEST_DIR%
 
-REM Set processing option based on user input
-if "%PROCESSING_OPTION%"=="2" (
-    set "PROCESSING_OPTION=both"
-) else (
-    set "PROCESSING_OPTION=parameters_only"
+REM Ensure SCRIPT_DIR exists
+if not exist "%SCRIPT_DIR%" (
+    echo ERROR: SCRIPT_DIR does not exist! Falling back to BASE_DIR.
+    set "SCRIPT_DIR=%BASE_DIR%"
 )
 
 REM Define Python script path
 set "PYTHON_SCRIPT=%SCRIPT_DIR%\temp_script.py"
 
-REM Write Python script
-(
-echo # -*- coding: utf-8 -*- 
-echo settings_file = 'Set_filter_file.xlsx' 
-echo output_file_format = 'excel' 
-echo output_format = 'long' 
-echo processing_option = '%PROCESSING_OPTION%' 
-echo scenario_option = 'Europe_EnVis_NECPEssentials' 
-echo debugging_output = False 
-echo from functions.function_import import master_function 
-echo scenarios = ["Europe_EnVis_Green","Europe_EnVis_Trinity","Europe_EnVis_REPowerEU++","Europe_EnVis_NECPEssentials"] 
-echo for s in scenarios: 
-echo     print("Currently performing operation for scenario: ", s) 
-echo     master_function(settings_file, output_file_format, output_format, processing_option, s, debugging_output) 
-) > "%PYTHON_SCRIPT%"
+REM Delete old script if it exists
+if exist "%PYTHON_SCRIPT%" del "%PYTHON_SCRIPT%"
+
+REM Prompt user for processing option
+echo.
+echo Please choose a processing option:
+echo [1] Parameters only (default)
+echo [2] Both parameters and timeseries
+echo [3] Only timeseries
+echo.
+set /p "PROCESSING_OPTION=Enter your choice (1/2/3): "
+
+REM Set processing option based on user input
+if "%PROCESSING_OPTION%"=="2" (
+    set "PROCESSING_OPTION=both"
+) else if "%PROCESSING_OPTION%"=="3" (
+    set "PROCESSING_OPTION=timeseries_only"
+) else (
+    set "PROCESSING_OPTION=parameters_only"
+)
+
+REM Writing Python script line by line
+echo Writing temp_script.py...
+echo # -*- coding: utf-8 -*- > "%PYTHON_SCRIPT%"
+echo settings_file = 'Set_filter_file.xlsx' >> "%PYTHON_SCRIPT%"
+echo output_file_format = 'excel' >> "%PYTHON_SCRIPT%"
+echo output_format = 'long' >> "%PYTHON_SCRIPT%"
+echo processing_option = '%PROCESSING_OPTION%' >> "%PYTHON_SCRIPT%"
+echo scenario_option = 'Europe_EnVis_NECPEssentials' >> "%PYTHON_SCRIPT%"
+echo debugging_output = False >> "%PYTHON_SCRIPT%"
+echo from functions.function_import import master_function >> "%PYTHON_SCRIPT%"
+echo scenarios = ["Europe_EnVis_Green","Europe_EnVis_Trinity","Europe_EnVis_REPowerEU++","Europe_EnVis_NECPEssentials"] >> "%PYTHON_SCRIPT%"
+echo for s in scenarios: >> "%PYTHON_SCRIPT%"
+echo     print("Currently performing operation for scenario: ", s) >> "%PYTHON_SCRIPT%"
+echo     master_function(settings_file, output_file_format, output_format, processing_option, s, debugging_output) >> "%PYTHON_SCRIPT%"
+
+REM Check if Python script was created
+if not exist "%PYTHON_SCRIPT%" (
+    echo ERROR: Failed to create temp_script.py!
+    pause
+    exit /b 1
+)
+
 
 REM Change to script directory
 cd /d "%SCRIPT_DIR%"
 
-REM Run Python script
+REM Run the Python script
+echo Running Python script...
 python "%PYTHON_SCRIPT%"
-
-REM Check for errors
 if %errorlevel% neq 0 (
-    echo Error executing Python script!
+    echo ERROR: Python script failed!
     pause
-    exit /b %errorlevel%
+    exit /b 1
 )
 
-REM Copy RegularParameters files (always needed)
-for %%F in (Europe_EnVis_NECPEssentials Europe_EnVis_REPowerEU++ Europe_EnVis_Trinity Europe_EnVis_Green) do (
-    xcopy "%OUTPUT_DIR%\RegularParameters_%%F.xlsx" "%DEST_DIR%\" /Y
-)
-
-REM If "both" was selected, also copy Timeseries files
+REM Define file lists based on processing option
+set "FILES_TO_COPY=RegularParameters_Europe_EnVis_NECPEssentials.xlsx RegularParameters_Europe_EnVis_REPowerEU++.xlsx RegularParameters_Europe_EnVis_Trinity.xlsx RegularParameters_Europe_EnVis_Green.xlsx"
 if "%PROCESSING_OPTION%"=="both" (
-    for %%F in (Europe_EnVis_NECPEssentials Europe_EnVis_REPowerEU++ Europe_EnVis_Trinity Europe_EnVis_Green) do (
-        xcopy "%OUTPUT_DIR%\Timeseries_%%F.xlsx" "%DEST_DIR%\" /Y
-    )
+    set "FILES_TO_COPY=%FILES_TO_COPY% Timeseries_Europe_EnVis_NECPEssentials.xlsx Timeseries_Europe_EnVis_REPowerEU++.xlsx Timeseries_Europe_EnVis_Trinity.xlsx Timeseries_Europe_EnVis_Green.xlsx"
+)
+if "%PROCESSING_OPTION%"=="timeseries_only" (
+    set "FILES_TO_COPY=Timeseries_Europe_EnVis_NECPEssentials.xlsx Timeseries_Europe_EnVis_REPowerEU++.xlsx Timeseries_Europe_EnVis_Trinity.xlsx Timeseries_Europe_EnVis_Green.xlsx"
 )
 
-REM Show exit menu
-echo.
-echo Process completed! What would you like to do next?
-echo [1] Exit (default)
-echo [2] Run "all_pathways_combined_dataload.bat"
-echo.
-set /p "EXIT_OPTION=Enter your choice (1/2): "
-
-REM Run additional batch file if option 2 is selected
-if "%EXIT_OPTION%"=="2" (
-    if exist "%BASE_DIR%all_pathways_combined_dataload.bat" (
-        echo Changing directory to %BASE_DIR%...
-        cd /d "%BASE_DIR%"
-        echo Running all_pathways_combined_dataload.bat...
-        call "all_pathways_combined_dataload.bat"
+REM Copy output files
+echo Copying output files...
+for %%F in (%FILES_TO_COPY%) do (
+    if exist "%OUTPUT_DIR%\%%F" (
+        copy "%OUTPUT_DIR%\%%F" "%DEST_DIR%\"
     ) else (
-        echo ERROR: all_pathways_combined_dataload.bat not found in %BASE_DIR%!
-        pause
+        echo WARNING: File %%F not found!
     )
 )
 
-echo Exiting script...
+REM Prompt user to exit or run all_pathways_combined_dataload.bat
+echo.
+echo What would you like to do next?
+echo [1] Exit (default)
+echo [2] Run all_pathways_combined_dataload.bat
+echo.
+set /p "NEXT_ACTION=Enter your choice (1/2): "
+
+if "%NEXT_ACTION%"=="2" (
+    echo Running all_pathways_combined_dataload.bat...
+    cd /d "%BASE_DIR%"
+    call all_pathways_combined_dataload.bat
+)
+
+echo Done.
+pause
 exit /b 0
