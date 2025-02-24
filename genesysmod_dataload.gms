@@ -90,6 +90,7 @@ se=0
         par=EmissionContentPerFuel   Rng=Par_EmissionContentPerFuel!A2                   rdim=2        cdim=0
         par=OperationalLife          Rng=Par_OperationalLife!A2                          rdim=1        cdim=0
         par=TotalAnnualMaxCapacity   Rng=Par_TotalAnnualMaxCapacity!A1                   rdim=2        cdim=1
+        par=NewCapacityExpansionStop   Rng=Par_NewCapacityExpansionStop!A1                   rdim=2        cdim=0
         par=TotalAnnualMinCapacity   Rng=Par_TotalAnnualMinCapacity!A1                   rdim=2        cdim=1
         par=Readin_TotalTechnologyModelPeriodActivityUpperLimit   Rng=Par_ModelPeriodActivityMaxLimit!A2         rdim=2        cdim=0
 
@@ -143,7 +144,7 @@ $loadm AvailabilityFactor CapacityFactor EmissionActivityRatio OperationalLife T
 $loadm TotalTechnologyAnnualActivityLowerLimit TotalTechnologyAnnualActivityUpperLimit ModelPeriodExogenousEmission AnnualExogenousEmission
 $loadm Readin_TotalTechnologyModelPeriodActivityUpperLimit SpecifiedDemandDevelopment
 $loadm TechnologyToStorage TechnologyFromStorage StorageLevelStart MinStorageCharge REMinProductionTarget
-$loadm CapitalCostStorage OperationalLifeStorage SelfSufficiency
+$loadm CapitalCostStorage OperationalLifeStorage SelfSufficiency NewCapacityExpansionStop
 $loadm ResidualStorageCapacity CapacityToActivityUnit TagCanFuelBeTraded
 $loadm ModalSplitByFuelAndModalType TagTechnologyToModalType BaseYearProduction RegionalBaseYearProduction
 $loadm TagTechnologyToSector AnnualSectoralEmissionLimit
@@ -245,6 +246,7 @@ TradeLossBetweenRegions(r,f,y,rr) = TradeLossFactor(f,y)*TradeRoute(r,f,y,rr);
 parameter YearVal(y_full);
 YearVal(y) = y.val ;
 
+NewCapacity.fx(y,t,r)$(YearVal(y)>NewCapacityExpansionStop(r,t) and NewCapacityExpansionStop(r,t) and not TotalAnnualMinCapacity(r,t,y)) = 0;   
 
 *
 * ####### Load from hourly Data #############

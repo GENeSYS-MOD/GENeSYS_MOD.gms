@@ -134,6 +134,7 @@ parameter StorageE2PRatio(STORAGE);
 *
 parameter TotalAnnualMaxCapacity(REGION_FULL,TECHNOLOGY,YEAR_FULL);
 parameter TotalAnnualMinCapacity(REGION_FULL,TECHNOLOGY,YEAR_FULL);
+parameter NewCapacityExpansionStop(REGION_FULL,TECHNOLOGY);
 
 *
 * ######### SectoralEmissions #############

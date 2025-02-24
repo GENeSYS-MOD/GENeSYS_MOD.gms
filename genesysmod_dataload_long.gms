@@ -95,6 +95,7 @@ se=0
         par=OperationalLife          Rng=Par_OperationalLife!A2                          rdim=1        cdim=0
         par=TotalAnnualMaxCapacity   Rng=Par_TotalAnnualMaxCapacity!A2                   rdim=3        cdim=0
         par=TotalAnnualMinCapacity   Rng=Par_TotalAnnualMinCapacity!A2                   rdim=3        cdim=0
+        par=NewCapacityExpansionStop   Rng=Par_NewCapacityExpansionStop!A2               rdim=2        cdim=0
         par=Readin_TotalTechnologyModelPeriodActivityUpperLimit   Rng=Par_ModelPeriodActivityMaxLimit!A2         rdim=2        cdim=0
 
         par=TotalTechnologyAnnualActivityUpperLimit   Rng=Par_TotalAnnualMaxActivity!A2                   rdim=3        cdim=0
@@ -148,7 +149,7 @@ $loadm TotalTechnologyAnnualActivityLowerLimit TotalTechnologyAnnualActivityUppe
 $loadm Readin_TotalTechnologyModelPeriodActivityUpperLimit REMinProductionTarget
 $loadm TechnologyToStorage TechnologyFromStorage StorageLevelStart MinStorageCharge
 $loadm CapitalCostStorage OperationalLifeStorage SpecifiedDemandDevelopment
-$loadm ResidualStorageCapacity CapacityToActivityUnit SelfSufficiency
+$loadm ResidualStorageCapacity CapacityToActivityUnit SelfSufficiency NewCapacityExpansionStop
 $loadm Readin_ModalSplitByFuelAndModalType TagTechnologyToModalType BaseYearProduction RegionalBaseYearProduction
 $loadm TagTechnologyToSector AnnualSectoralEmissionLimit TagCanFuelBeTraded
 $loadm RegionalCCSLimit TagDemandFuelToSector TagElectricTechnology  TagModalTypeToModalGroups
@@ -257,6 +258,7 @@ TradeLossBetweenRegions(r,f,y,rr) = TradeLossFactor(f,y)*TradeRoute(r,f,y,rr);
 parameter YearVal(y_full);
 YearVal(y) = y.val ;
 
+NewCapacity.fx(y,t,r)$(YearVal(y)>NewCapacityExpansionStop(r,t) and NewCapacityExpansionStop(r,t) and not TotalAnnualMinCapacity(r,t,y)) = 0;
 
 *
 * ####### Load from hourly Data #############
