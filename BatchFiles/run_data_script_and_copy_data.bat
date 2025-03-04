@@ -16,12 +16,32 @@ if exist "%SETTINGS_FILE%" (
     set /p "SCRIPT_DIR=Enter the path to the Conversion Script directory: "
     set /p "OUTPUT_DIR=Enter the path to the Output directory: "
     set /p "DEST_DIR=Enter the path to the Inputdata directory: "
-    
-    REM Save to settings.conf properly using delayed expansion
+
+    REM Ask user if Anaconda should be used (accepts yes/y or no/n)
+    :ask_anaconda
+    set /p "USE_ANACONDA=Do you want to use an Anaconda environment? (yes/y or no/n): "
+    set "USE_ANACONDA=!USE_ANACONDA:~0,1!"  REM Extract first character (case insensitive)
+    if /I "!USE_ANACONDA!"=="y" (
+        set "USE_ANACONDA=yes"
+        set /p "ANACONDA_PATH=Enter the path to the Anaconda installation folder (usually C:\\Users\username\anaconda3): "
+        set /p "ENV_NAME=Enter the name of the Conda environment: "
+    ) else if /I "!USE_ANACONDA!"=="n" (
+        set "USE_ANACONDA=no"
+    ) else (
+        echo Invalid input! Please enter yes, y, no, or n.
+        goto ask_anaconda
+    )
+
+    REM Save to settings.conf
     (
         echo SCRIPT_DIR=!SCRIPT_DIR!
         echo OUTPUT_DIR=!OUTPUT_DIR!
         echo DEST_DIR=!DEST_DIR!
+        echo USE_ANACONDA=!USE_ANACONDA!
+        if /I "!USE_ANACONDA!"=="yes" (
+            echo ANACONDA_PATH=!ANACONDA_PATH!
+            echo ENV_NAME=!ENV_NAME!
+        )
     ) > "%SETTINGS_FILE%"
 
     echo Settings saved in settings.conf.
@@ -100,6 +120,23 @@ if not exist "%PYTHON_SCRIPT%" (
     exit /b 1
 )
 
+REM Activate Anaconda environment if needed
+if /I "%USE_ANACONDA%"=="yes" (
+    if "%ANACONDA_PATH%"=="" (
+        echo ERROR: ANACONDA_PATH is empty!
+        pause
+        exit /b 1
+    )
+    if "%ENV_NAME%"=="" (
+        echo ERROR: ENV_NAME is empty!
+        pause
+        exit /b 1
+    )
+
+    echo Activating Anaconda environment: %ENV_NAME%
+    call "%ANACONDA_PATH%\Scripts\activate.bat" "%ANACONDA_PATH%"
+    call conda activate "%ENV_NAME%"
+)
 
 REM Change to script directory
 cd /d "%SCRIPT_DIR%"
@@ -126,7 +163,7 @@ REM Copy output files
 echo Copying output files...
 for %%F in (%FILES_TO_COPY%) do (
     if exist "%OUTPUT_DIR%\%%F" (
-        copy "%OUTPUT_DIR%\%%F" "%DEST_DIR%\"
+        copy "%OUTPUT_DIR%\%%F" "%DEST_DIR%\" /Y
     ) else (
         echo WARNING: File %%F not found!
     )
