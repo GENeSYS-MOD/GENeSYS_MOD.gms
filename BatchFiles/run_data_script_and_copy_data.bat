@@ -16,9 +16,15 @@ if exist "%SETTINGS_FILE%" (
     set /p "SCRIPT_DIR=Enter the path to the Conversion Script directory: "
     set /p "OUTPUT_DIR=Enter the path to the Output directory: "
     set /p "DEST_DIR=Enter the path to the Inputdata directory: "
-    echo SCRIPT_DIR=%SCRIPT_DIR% > "%SETTINGS_FILE%"
-    echo OUTPUT_DIR=%OUTPUT_DIR% >> "%SETTINGS_FILE%"
-    echo DEST_DIR=%DEST_DIR% >> "%SETTINGS_FILE%"
+    
+    REM Save to settings.conf properly using delayed expansion
+    (
+        echo SCRIPT_DIR=!SCRIPT_DIR!
+        echo OUTPUT_DIR=!OUTPUT_DIR!
+        echo DEST_DIR=!DEST_DIR!
+    ) > "%SETTINGS_FILE%"
+
+    echo Settings saved in settings.conf.
 )
 
 REM Verify directories
