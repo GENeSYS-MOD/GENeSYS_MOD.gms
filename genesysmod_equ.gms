@@ -408,16 +408,16 @@ equation SC3_SmoothingFossilPhaseOuts(YEAR_FULL,REGION_FULL,TECHNOLOGY,FUEL);
 SC3_SmoothingFossilPhaseOuts(y,r,t,f)$(Yearval(y) > %year% and TagTechnologyToSubsets(t,'PhaseOutSet') and SpecifiedAnnualDemand(r,f,y-1)).. ProductionByTechnologyAnnual(y,t,f,r) =l= ProductionByTechnologyAnnual(y-1,t,f,r)*PhaseOut(y)*((SpecifiedAnnualDemand(r,f,y)/SpecifiedAnnualDemand(r,f,y-1))$(SpecifiedAnnualDemand(r,f,y))+1$(not SpecifiedAnnualDemand(r,f,y)));
 
 equation SC4a_RelativeTechnologyPhaseInLimit(YEAR_FULL,REGION_FULL,FUEL);
-SC4a_RelativeTechnologyPhaseInLimit(y,r,f)$(Yearval(y) > %year% and ProductionGrowthLimit(y,f)>0 and not TagFuelToSubsets(f,'TransportFuels')).. sum((t)$(RETagTechnology(t,y)=1),ProductionByTechnologyAnnual(y,t,f,r)-ProductionByTechnologyAnnual(y-1,t,f,r)) =l= YearlyDifferenceMultiplier(y-1)*ProductionGrowthLimit(y,f)*sum((t),ProductionByTechnologyAnnual(y-1,t,f,r))-sum((t)$(TagTechnologyToSubsets(t,'StorageDummies')),ProductionByTechnologyAnnual(y-1,t,f,r));
+SC4a_RelativeTechnologyPhaseInLimit(y,r,f)$(Yearval(y) > %year% and ProductionGrowthLimit(f,y)>0 and not TagFuelToSubsets(f,'TransportFuels')).. sum((t)$(RETagTechnology(t,y)=1),ProductionByTechnologyAnnual(y,t,f,r)-ProductionByTechnologyAnnual(y-1,t,f,r)) =l= YearlyDifferenceMultiplier(y-1)*ProductionGrowthLimit(f,y)*sum((t),ProductionByTechnologyAnnual(y-1,t,f,r))-sum((t)$(TagTechnologyToSubsets(t,'StorageDummies')),ProductionByTechnologyAnnual(y-1,t,f,r));
 
 equation SC4b_RelativeTechnologyPhaseInLimit_Transport(YEAR_FULL,REGION_FULL,FUEL,MODALTYPE);
-SC4b_RelativeTechnologyPhaseInLimit_Transport(y,r,f,mt)$(Yearval(y) > %year% and ProductionGrowthLimit(y,f)>0 and TagFuelToSubsets(f,'TransportFuels') and TagModalTypeToModalGroups(mt,'TransportModes'))..
+SC4b_RelativeTechnologyPhaseInLimit_Transport(y,r,f,mt)$(Yearval(y) > %year% and ProductionGrowthLimit(f,y)>0 and TagFuelToSubsets(f,'TransportFuels') and TagModalTypeToModalGroups(mt,'TransportModes'))..
 sum((t)$(RETagTechnology(t,y)=1 and TagTechnologyToModalType(t,'1',mt)),ProductionByTechnologyAnnual(y,t,f,r)-ProductionByTechnologyAnnual(y-1,t,f,r)) =l=
-YearlyDifferenceMultiplier(y-1)*ProductionGrowthLimit(y,f)*sum((t)$(TagTechnologyToModalType(t,'1',mt)),ProductionByTechnologyAnnual(y-1,t,f,r));
+YearlyDifferenceMultiplier(y-1)*ProductionGrowthLimit(f,y)*sum((t)$(TagTechnologyToModalType(t,'1',mt)),ProductionByTechnologyAnnual(y-1,t,f,r));
 
 
 equation SC5_AnnualStorageChangeLimit(YEAR_FULL,REGION_FULL,FUEL);
-SC5_AnnualStorageChangeLimit(y,r,f)$(Yearval(y) > %year% and ProductionGrowthLimit(y,f)>0).. sum(t$(TagTechnologyToSubsets(t,'StorageDummies')),ProductionByTechnologyAnnual(y,t,f,r)-ProductionByTechnologyAnnual(y-1,t,f,r)) =l= YearlyDifferenceMultiplier(y-1)*(ProductionGrowthLimit(y,f)+StorageLimitOffset)*sum((t),ProductionByTechnologyAnnual(y-1,t,f,r))
+SC5_AnnualStorageChangeLimit(y,r,f)$(Yearval(y) > %year% and ProductionGrowthLimit(f,y)>0).. sum(t$(TagTechnologyToSubsets(t,'StorageDummies')),ProductionByTechnologyAnnual(y,t,f,r)-ProductionByTechnologyAnnual(y-1,t,f,r)) =l= YearlyDifferenceMultiplier(y-1)*(ProductionGrowthLimit(f,y)+StorageLimitOffset)*sum((t),ProductionByTechnologyAnnual(y-1,t,f,r))
 
 $endif
 
@@ -427,7 +427,7 @@ $endif
 *
 $ifthen %switch_ccs% == 1
 equation CCS1_CCSAdditionLimit(YEAR_FULL,REGION_FULL,FUEL);
-CCS1_CCSAdditionLimit(y,r,f)$(Yearval(y) > %year% and not sameas(f,'DAC_Dummy')).. sum(t$(TagTechnologyToSubsets(t,'CCS')),ProductionByTechnologyAnnual(y,t,f,r)-ProductionByTechnologyAnnual(y-1,t,f,r)) =l= YearlyDifferenceMultiplier(y-1)*(ProductionGrowthLimit(y,'Air'))*sum((t),ProductionByTechnologyAnnual(y-1,t,f,r));
+CCS1_CCSAdditionLimit(y,r,f)$(Yearval(y) > %year% and not sameas(f,'DAC_Dummy')).. sum(t$(TagTechnologyToSubsets(t,'CCS')),ProductionByTechnologyAnnual(y,t,f,r)-ProductionByTechnologyAnnual(y-1,t,f,r)) =l= YearlyDifferenceMultiplier(y-1)*(ProductionGrowthLimit('Air',y))*sum((t),ProductionByTechnologyAnnual(y-1,t,f,r));
 
 equation CCS2_MaximumCCStorageLimit(REGION_FULL);
 CCS2_MaximumCCStorageLimit(r)$(sum(rr,RegionalCCSLimit(rr)) > 0)..

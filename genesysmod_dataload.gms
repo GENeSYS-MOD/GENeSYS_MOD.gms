@@ -73,6 +73,7 @@ se=0
         par=Readin_CommissionedTradeCapacity  Rng=Par_CommissionedTradeCapacity!A1            rdim=3  cdim=1
         par=REMinProductionTarget         Rng=Par_REMinProductionTarget!A1               rdim=2 cdim=1
         par=SelfSufficiency         Rng=Par_SelfSufficiency!A1                           rdim=2 cdim=1
+        par=ProductionGrowthLimit         Rng=Par_ProductionGrowthLimit!A1                           rdim=1 cdim=1
 
         par=GrowthRateTradeCapacity         Rng=Par_GrowthRateTradeCapacity!A1  rdim=3 cdim=1
         par=TradeCapacityGrowthCosts        Rng=Par_TradeCapacityGrowthCosts!A1  rdim=2 cdim=1
@@ -142,7 +143,7 @@ $loadm ReserveMarginTagFuel Readin_TradeRoute Readin_TradeCapacity GrowthRateTra
 $loadm InputActivityRatio OutputActivityRatio FixedCost CapitalCost VariableCost ResidualCapacity   EmissionsPenaltyTagTechnology
 $loadm AvailabilityFactor CapacityFactor EmissionActivityRatio OperationalLife TotalAnnualMaxCapacity TotalAnnualMinCapacity EmissionContentPerFuel
 $loadm TotalTechnologyAnnualActivityLowerLimit TotalTechnologyAnnualActivityUpperLimit ModelPeriodExogenousEmission AnnualExogenousEmission
-$loadm Readin_TotalTechnologyModelPeriodActivityUpperLimit SpecifiedDemandDevelopment
+$loadm Readin_TotalTechnologyModelPeriodActivityUpperLimit SpecifiedDemandDevelopment ProductionGrowthLimit
 $loadm TechnologyToStorage TechnologyFromStorage StorageLevelStart MinStorageCharge REMinProductionTarget
 $loadm CapitalCostStorage OperationalLifeStorage SelfSufficiency NewCapacityExpansionStop
 $loadm ResidualStorageCapacity CapacityToActivityUnit TagCanFuelBeTraded
@@ -246,7 +247,7 @@ TradeLossBetweenRegions(r,f,y,rr) = TradeLossFactor(f,y)*TradeRoute(r,f,y,rr);
 parameter YearVal(y_full);
 YearVal(y) = y.val ;
 
-NewCapacity.fx(y,t,r)$(YearVal(y)>NewCapacityExpansionStop(r,t) and NewCapacityExpansionStop(r,t) and not TotalAnnualMinCapacity(r,t,y)) = 0;   
+NewCapacity.fx(y,t,r)$(YearVal(y)>NewCapacityExpansionStop(r,t) and NewCapacityExpansionStop(r,t) and not TotalAnnualMinCapacity(r,t,y)) = 0;
 
 *
 * ####### Load from hourly Data #############

@@ -212,7 +212,7 @@ parameter ModalSplitByFuelAndModalType(REGION_FULL,FUEL,MODALTYPE,YEAR_FULL);
 parameter TagTechnologyToModalType(TECHNOLOGY,MODE_OF_OPERATION,MODALTYPE);
 parameter TagModalTypeToModalGroups(MODALTYPE,*);
 
-parameter ProductionGrowthLimit(YEAR_FULL,FUEL);
+parameter ProductionGrowthLimit(FUEL,YEAR_FULL);
 
 * #####################
 * # Model Variables #

@@ -44,16 +44,6 @@ scalar InvestmentLimit  Freedom for investment choices to spread across periods.
                       /1.9/;
 scalar NewRESCapacity /0.1/;
 
-ProductionGrowthLimit(y,'Power') = 0.05;
-ProductionGrowthLimit(y,f)$(TagFuelToSubsets(f,'HeatFuels')) = 0.04;
-ProductionGrowthLimit(y,f)$(TagFuelToSubsets(f,'TransportFuels')) = 0.05;
-ProductionGrowthLimit(y,'Air') = 0.025;
-
-ProductionGrowthLimit(y,f)$(YearVal(y)<2030 and ProductionGrowthLimit(y,f)) = 0.005;
-
-
-
-
 scalar StorageLimitOffset /0.015/;
 
 BaseYearSlack(f) = 0.035;

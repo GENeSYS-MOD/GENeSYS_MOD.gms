@@ -77,6 +77,7 @@ se=0
         par=Readin_CommissionedTradeCapacity  Rng=Par_CommissionedTradeCapacity!A2            rdim=4  cdim=0
         par=REMinProductionTarget  Rng=Par_REMinProductionTarget!A2                      rdim=3  cdim=0
         par=SelfSufficiency  Rng=Par_SelfSufficiency!A2                                  rdim=3  cdim=0
+        par=ProductionGrowthLimit  Rng=Par_ProductionGrowthLimit!A2                                  rdim=2  cdim=0 
 
         par=Readin_GrowthRateTradeCapacity         Rng=Par_GrowthRateTradeCapacity!A2  rdim=4 cdim=0
         par=Readin_TradeCapacityGrowthCosts        Rng=Par_TradeCapacityGrowthCosts!A2  rdim=3 cdim=0
@@ -146,7 +147,7 @@ $loadm ReserveMarginTagFuel Readin_TradeRoute Readin_TradeCapacity Readin_Growth
 $loadm InputActivityRatio OutputActivityRatio FixedCost CapitalCost VariableCost ResidualCapacity   EmissionsPenaltyTagTechnology
 $loadm AvailabilityFactor CapacityFactor EmissionActivityRatio OperationalLife TotalAnnualMaxCapacity TotalAnnualMinCapacity EmissionContentPerFuel
 $loadm TotalTechnologyAnnualActivityLowerLimit TotalTechnologyAnnualActivityUpperLimit ModelPeriodExogenousEmission
-$loadm Readin_TotalTechnologyModelPeriodActivityUpperLimit REMinProductionTarget
+$loadm Readin_TotalTechnologyModelPeriodActivityUpperLimit REMinProductionTarget ProductionGrowthLimit
 $loadm TechnologyToStorage TechnologyFromStorage StorageLevelStart MinStorageCharge
 $loadm CapitalCostStorage OperationalLifeStorage SpecifiedDemandDevelopment
 $loadm ResidualStorageCapacity CapacityToActivityUnit SelfSufficiency NewCapacityExpansionStop
