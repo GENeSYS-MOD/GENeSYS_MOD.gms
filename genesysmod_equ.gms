@@ -344,7 +344,15 @@ TrPA1d_TradeCapacityPipelineAccountingCombined(y,l,r,rr)$(%switch_hydrogen_blend
 
 $endif.equ_hydrogen_tradecapacity
 
+*
+* ######## Gas-specific import restrictions over the year
+*
 
+equation TrPA2a_FlatH2Imports(y_full,l_full,r_full);
+TrPA2a_FlatH2Imports(y,l,r)..   RateOfActivity(y,l,'Z_Import_H2','1',r)  =l= sum(ll,RateOfActivity(y,ll,'Z_Import_H2','1',r))*YearSplit(l,y)*1.05;
+
+equation TrPA2b_FlatGasImports(y_full,l_full,r_full);
+TrPA2b_FlatGasImports(y,l,r)..   RateOfActivity(y,l,'Z_Import_Gas','1',r)  =l= sum(ll,RateOfActivity(y,ll,'Z_Import_Gas','1',r))*YearSplit(l,y)*1.05;
 
 
 *
