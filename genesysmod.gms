@@ -35,7 +35,7 @@ $if not set solver                       $setglobal solver cplex
 
 $if not set switch_test_data_load        $setglobal switch_test_data_load 0
 $if not set switch_investLimit           $setglobal switch_investLimit 1
-$if not set switch_infeasibility_tech    $setglobal switch_infeasibility_tech 0
+$if not set switch_infeasibility_tech    $setglobal switch_infeasibility_tech 1
 $if not set switch_base_year_bounds      $setglobal switch_base_year_bounds 1
 $if not set switch_base_year_bounds_debugging      $setglobal switch_base_year_bounds_debugging 1
 
