@@ -19,7 +19,7 @@ if exist "%SETTINGS_FILE%" (
 
     REM Ask user if Anaconda should be used (accepts yes/y or no/n)
     :ask_anaconda
-    set /p "USE_ANACONDA=Do you want to use an Anaconda environment? (yes/y or no/n): "
+    set /p "USE_ANACONDA=Do you want to use a specific Anaconda/Python environment (otherwise the base environment will be used)? (yes/y or no/n): "
     set "USE_ANACONDA=!USE_ANACONDA:~0,1!"  REM Extract first character (case insensitive)
     if /I "!USE_ANACONDA!"=="y" (
         set "USE_ANACONDA=yes"
