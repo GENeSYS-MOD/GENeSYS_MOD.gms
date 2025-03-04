@@ -37,7 +37,7 @@ OutputActivityRatio(r,t,f,m,y)$(OutputActivityRatio(r,t,f,m,y) = 0) = OutputActi
 FixedCost(r,t,y)$(FixedCost(r,t,y) = 0) = FixedCost(r,t,y-1);
 CapitalCost(r,t,y)$(CapitalCost(r,t,y) = 0) = (CapitalCost(r,t,y-1)+CapitalCost(r,t,y+1))/2;
 VariableCost(r,t,m,y)$(VariableCost(r,t,m,y) = 0) = (VariableCost(r,t,m,y-1)+VariableCost(r,t,m,y+1))/2;
-AvailabilityFactor(r,t,y)$(AvailabilityFactor(r,t,y) = 0) = AvailabilityFactor(r,t,y-1);
+*AvailabilityFactor(r,t,y)$(AvailabilityFactor(r,t,y) = 0) = AvailabilityFactor(r,t,y-1);
 EmissionActivityRatio(r,t,m,e,y)$(EmissionActivityRatio(r,t,m,e,y) = 0) = EmissionActivityRatio(r,t,m,e,y-1);
 
 PhaseIn(y)$(PhaseIn(y) = 0 and PhaseIn(y+1)>0) = PhaseIn(y+1);
