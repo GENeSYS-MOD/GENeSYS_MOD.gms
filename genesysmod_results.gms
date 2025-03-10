@@ -120,10 +120,12 @@ output_exogenous_costs(r,t,'Fixed Costs',y) = FixedCost(r,t,y);
 output_exogenous_costs(r,t,'Variable Costs',y) = VariableCost(r,t,'1',y) + sum((f),InputActivityRatio(r,t,f,'1',y)*z_fuelcosts(f,y,r));
 output_exogenous_costs(r,'Carbon','Carbon Price',y) = EmissionsPenalty(r,'CO2',y);
 
-parameter output_trade_capacity;
-output_trade_capacity(r,rr,'Power Transmissions Capacity',y) = TotalTradeCapacity.l(y, 'power', r, rr);
-output_trade_capacity(r,rr,'Transmission Expansion Costs in MEUR/GW',y) = TradeCapacityGrowthCosts(r,'Power',rr)*TradeRoute(r,'Power',y,rr);
-output_trade_capacity('General','General','Transmission Expansion Costs in MEUR/GW/km',y) = TradeCapacityGrowthCosts('AT','Power','DE');
+parameter output_trade;
+output_trade(r,rr,f,'Transmissions Capacity',y) = TotalTradeCapacity.l(y, f, r, rr);
+output_trade(r,rr,f,'Transmission Expansion Costs in MEUR/GW',y) = TradeCapacityGrowthCosts(r,f,rr)*TradeRoute(r,f,y,rr);
+output_trade('General','General',f,'Transmission Expansion Costs in MEUR/GW/km',y) = TradeCapacityGrowthCosts('AT',f,'DE');
+output_trade(r,rr,f,'Export',y) = sum(l,Export.l(y,l,f,r,rr));
+output_trade(r,rr,f,'Import',y) = sum(l,Import.l(y,l,f,r,rr));
 
 parameters SelfSufficiencyRate,ElectrificationRate,output_other;
 SelfSufficiencyRate(r,y) = ProductionAnnual(y,'Power',r)/(SpecifiedAnnualDemand(r,'Power',y)+UseAnnual(y,'Power',r));
@@ -221,7 +223,7 @@ output_emissions
 output_model
 output_technology_costs_detailed
 output_exogenous_costs
-output_trade_capacity
+output_trade
 output_other
 output_energydemandstatistics
 output_fuelcosts

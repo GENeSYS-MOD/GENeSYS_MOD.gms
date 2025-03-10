@@ -1,5 +1,5 @@
 echo Step 1: merge gdx files
-gdxmerge *.gdx id=output_energy_balance,output_emissions,output_capacity,output_trade_capacity,output_energy_balance_annual,output_other,output_energydemandstatistics,output_technology_costs_detailed,output_fuelcosts,StorageLevelTSStart
+gdxmerge *.gdx id=output_energy_balance,output_emissions,output_capacity,output_trade,output_energy_balance_annual,output_other,output_energydemandstatistics,output_technology_costs_detailed,output_fuelcosts,StorageLevelTSStart
 
 echo Step 2: create energy balance csv
 echo Model Version,Region,Sector,Technology,Mode,Fuel,Timeslice,Type,Unit,PathwayScenario,Year,Value > output_production.csv
@@ -13,9 +13,9 @@ echo Step 4: create capacity csv
 echo Model Version,Region,Sector,Technology,Type,PathwayScenario,Year,Value > output_capacity.csv
 gdxdump merged.gdx symb=output_capacity format=csv noHeader >> output_capacity.csv
 
-echo Step 4: create transmission_capacity csv
-echo Model Version,Region,Region,Type,Year,Value > output_transmission_capacity.csv
-gdxdump merged.gdx symb=output_trade_capacity format=csv noHeader >> output_transmission_capacity.csv
+echo Step 4: create trade csv
+echo Model Version,Region,Region,Fuel,Type,Year,Value > output_trade.csv
+gdxdump merged.gdx symb=output_trade format=csv noHeader >> output_trade.csv
 
 echo Step 5: create simplified annual energy balance csv
 echo Model Version,Region,Sector,Technology,Fuel,Type,Unit,PathwayScenario,Year,Value > output_annual_energy_balance.csv
