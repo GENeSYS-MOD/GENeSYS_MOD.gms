@@ -16,6 +16,12 @@
 *
 * #############################################################
 
+
+
+
+
+
+
 *
 * ###### Eventually move to input data file ######
 *
@@ -222,6 +228,26 @@ AvailabilityFactor(r,t,y)$(TagTechnologyToSubsets(t,'CCS')) = 0;
 TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'CCS')) = 0;
 ProductionByTechnologyAnnual.fx(y,t,f,r)$(TagTechnologyToSubsets(t,'CCS')) = 0;
 $endif
+
+
+
+
+*
+*##### Employment Addition #####
+*
+*ResidualCapacity(r,t,y)$(RETagTechnology(t,y)=1) = 0;
+*ResidualCapacity(r,t,y)$(TagTechnologyToSubsets(t,'Solar')) = 0;
+*ResidualCapacity(r,t,y)$(TagTechnologyToSubsets(t,'Wind')) = 0;
+*ResidualCapacity(r,t,y)$(TagTechnologyToSubsets(t,'FossilPower')) = 0;
+*ResidualCapacity(r,t,y) = 0;
+
+ConstructionTime(t,y)$(ConstructionTime(t,y)=0) = 1;
+
+
+*
+*
+*
+
 
 
 

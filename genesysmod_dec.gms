@@ -387,6 +387,7 @@ parameter EFactorOM;
 parameter EFactorManufacturing;
 parameter EFactorFuelSupply;
 parameter EFactorCoalJobs;
+parameter EFactorElGrid;
 parameter CoalSupply;
 parameter CoalDigging;
 parameter RegionalAdjustmentFactor;
@@ -399,6 +400,7 @@ parameter OMJobs;
 parameter SupplyJobs;
 parameter CoalJobs;
 parameter output_energyjobs;
+parameter ConstructionTime(TECHNOLOGY,y_full);; 
 $endif
 
 *$ifthen %switch_employment_constraints% == 1

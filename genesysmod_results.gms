@@ -208,9 +208,25 @@ output_energydemandstatistics('Import Share of Primary Energy [%]','Total','Tota
 output_energydemandstatistics('Import Share of Primary Energy [%]','Total','EU27',f,y)$(sum((t,m,EU27)$(TagTechnologyToSubsets(t,'ImportTechnology')),OutputActivityRatio(EU27,t,f,m,y))) = (sum((t,EU27),ProductionByTechnologyAnnual.l(y,t,f,EU27))/3.6)/sum(ff,output_energydemandstatistics('Primary Energy [TWh]','Total','EU27',ff,y));
 
 
-
+$ifthen %switch_employment_calculation%==1 
 parameter output_jobstatistics;
-output_jobstatistics('Total Jobs',r,y) = TotalJobs.l(r,y);
+*output_jobstatistics(r,'All Technologies','Total Jobs','%emissionPathway%_%emissionScenario%',y) = TotalJobs.l(r,y);
+*output_jobstatistics(r,t,'ConstructionJobs','%emissionPathway%_%emissionScenario%',y) =  sum((se),output_capacity(r,se,t,'NewCapacity','%emissionPathway%_%emissionScenario%',y)*EFactorConstruction(t,y)*RegionalAdjustmentFactor('%model_region%',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y));
+*output_jobstatistics(r,t,'OMJobs','%emissionPathway%_%emissionScenario%',y) =  sum((se),output_capacity(r,se,t,'TotalCapacity','%emissionPathway%_%emissionScenario%',y)*EFactorOM(t,y)*RegionalAdjustmentFactor('%model_region%',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y));
+*output_jobstatistics(r,t,'SupplyJobs','%emissionPathway%_%emissionScenario%',y) = (sum((se),sum((f,m,l),output_energy_balance(r,se,t,m,f,l,'Use','PJ','%emissionPathway%_%emissionScenario%',y))*EFactorFuelSupply(t,y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)))*(-1);
+*output_jobstatistics(r,t,'ManufacturingJobs','%emissionPathway%_%emissionScenario%',y) = sum((se),output_capacity(r,se,t,'NewCapacity','%emissionPathway%_%emissionScenario%',y)*EFactorManufacturing(t,y)*LocalManufacturingFactor('%model_region%',t,y)*RegionalAdjustmentFactor('%model_region%',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y));
+*with construction time
+*output_jobstatistics(r,t,'ConstructionJobs','%emissionPathway%_%emissionScenario%',y) =  NewCapacity.l(y,t,r)*EFactorConstruction(t,y)*RegionalAdjustmentFactor('%model_region%',y)/ConstructionTime(t,y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y);
+*without construction time
+output_jobstatistics(r,t,'ConstructionJobs','%emissionPathway%_%emissionScenario%',y) =  NewCapacity.l(y,t,r)*EFactorConstruction(t,y)*RegionalAdjustmentFactor('%model_region%',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y);
+output_jobstatistics(r,t,'OMJobs','%emissionPathway%_%emissionScenario%',y) =  TotalCapacityAnnual.l(y,t,r)*EFactorOM(t,y)*RegionalAdjustmentFactor('%model_region%',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y);
+*output_jobstatistics(r,t,'SupplyJobs','%emissionPathway%_%emissionScenario%',y) = (sum((se),sum((f,m,l),output_energy_balance(r,se,t,m,f,l,'Use','PJ','%emissionPathway%_%emissionScenario%',y))*EFactorFuelSupply(t,y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)))*(-1);
+*output_jobstatistics(r,'Fuels','SupplyJobs','%emissionPathway%_%emissionScenario%',y) = sum(f,(UseAnnual(y,f,r)*EFactorFuelSupply(f,y)))*(-1);
+output_jobstatistics(r,'Fuels','SupplyJobs','%emissionPathway%_%emissionScenario%',y) = sum((f,t),((UseByTechnologyAnnual.l(y,t,f,r)*EFactorFuelSupply(f,y)))*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y));
+output_jobstatistics(r,t,'ManufacturingJobs','%emissionPathway%_%emissionScenario%',y) = NewCapacity.l(y,t,r)*EFactorManufacturing(t,y)*RegionalAdjustmentFactor('%model_region%',y)*LocalManufacturingFactor('%model_region%',t,y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y);
+output_jobstatistics(r,'ElectricityGrid','ElectricyGridJobs','%emissionPathway%_%emissionScenario%',y) = sum(t$(TagTechnologyToSubsets(t,'PowerSupply')),(TotalCapacityAnnual.l(y,t,r)*EFactorElGrid(r,y)));
+$endif
+
 
 
 $ifthen set Info
@@ -228,7 +244,9 @@ output_exogenous_costs
 output_trade_capacity
 output_other
 output_energydemandstatistics
+$ifthen %switch_employment_calculation%==1 
 output_jobstatistics
+$endIf
 *output_fuelcosts
 *output_emissionintensity
 ;
@@ -252,8 +270,10 @@ execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenar
 execute "echo 'File','Name','Region','Sector/Technology','Fuel','Year','Value' > %resultdir%Output_Other_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
 execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%.gdx symb=output_other format=csv noHeader >> %resultdir%Output_Other_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
 
+$ifthen %switch_employment_calculation%==1 
 execute "echo 'File','Name','Region','Year','Value' > %resultdir%Output_Jobstatistics_%model_region%_%emissionPathway%_%emissionScenario%.csv"
 execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%.gdx symb=output_jobstatistics format=csv noHeader >> %resultdir%Output_Jobstatistics_%model_region%_%emissionPathway%_%emissionScenario%.csv"
+$endIf
 
 $else
 execute "echo 'Region','Sector','Technology','Mode','Fuel','Timeslice','Type','Unit','PathwayScenario','Year','Value' > %resultdir%Output_Prodcution_%model_region%_%emissionPathway%_%emissionScenario%.csv"
@@ -271,8 +291,11 @@ execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenar
 execute "echo 'File','Name','Region','Sector/Technology','Fuel','Year','Value' > %resultdir%Output_Other_%model_region%_%emissionPathway%_%emissionScenario%.csv"
 execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%.gdx symb=output_other format=csv noHeader >> %resultdir%Output_Other_%model_region%_%emissionPathway%_%emissionScenario%.csv"
 
+$ifthen %switch_employment_calculation%==1 
 execute "echo 'File','Name','Region','Year','Value' > %resultdir%Output_Jobstatistics_%model_region%_%emissionPathway%_%emissionScenario%.csv"
 execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%.gdx symb=output_jobstatistics format=csv noHeader >> %resultdir%Output_Jobstatistics_%model_region%_%emissionPathway%_%emissionScenario%.csv"
+$endIf
+
 $endif
 $endif
 

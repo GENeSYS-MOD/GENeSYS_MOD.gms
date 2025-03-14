@@ -305,7 +305,7 @@ se=0
         par=RegionalAdjustmentFactor          Rng=Par_RegionalAdjustmentFactor!A5                    rdim=1        cdim=1
         par=LocalManufacturingFactor          Rng=Par_LocalManufacturingFactor!A5                    rdim=2        cdim=1
         par=DeclineRate                       Rng=Par_DeclineRate!A5                                 rdim=1        cdim=1
-
+        par=ConstructionTime         Rng=Par_ConstructionTime!A5                                     rdim=1        cdim=1
 
 
 
@@ -325,6 +325,7 @@ $loadm CoalDigging
 $loadm RegionalAdjustmentFactor
 $loadm LocalManufacturingFactor
 $loadm DeclineRate
+$loadm CounstructionTime
 
 $offUNDF
 $endif

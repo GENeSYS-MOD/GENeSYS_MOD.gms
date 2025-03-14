@@ -774,7 +774,22 @@ $endif.equ_peaking_capacity
 $ifthen %switch_endogenous_employment% == 1
 positive variable TotalJobs(r_full,y_full);
 
+
 $include genesysmod_employment.gms
+
+*alte Job Gleichungen
+*Jobs1_TotalJobs(r,y)..
+*                 sum((t),((NewCapacity(y,t,r)*EFactorManufacturing(t,y)*RegionalAdjustmentFactor('%model_region%',y)*LocalManufacturingFactor('%model_region%',y))
+*                 +(NewCapacity(y,t,r)*EFactorConstruction(t,y)*RegionalAdjustmentFactor('%model_region%',y))
+*                 +(TotalCapacityAnnual(y,t,r)*EFactorOM(t,y)*RegionalAdjustmentFactor('%model_region%',y))
+*                 +sum(f,(UseByTechnologyAnnual(y,t,f,r))*EFactorFuelSupply(t,y)))
+*                  *(1-DeclineRate(t,y-1))**YearlyDifferenceMultiplier(y-1))
+*                 +sum(rr,(UseByTechnologyAnnual(y,'HLI_Hardcoal','Hardcoal',rr)+UseByTechnologyAnnual(y,'HMI_HardCoal','Hardcoal',rr)
+*                 +UseByTechnologyAnnual(y,'HHI_BF_BOF','Hardcoal',rr)))*EFactorCoalJobs('Coal_Heat',y)*CoalSupply(r,y)
+*                +CoalSupply(r,y)*CoalDigging('%model_region%','Coal_Export','%emissionPathway%_%emissionScenario%',y)*EFactorCoalJobs('Coal_Export',y)
+*                 =e= TotalJobs(r,y);
+*
+
 
 equation ADD_Employment(r_full,y_full);
 ADD_Employment(r,y)..  sum((t,f),((NewCapacity(y,t,r)*EFactorManufacturing(t,y)*RegionalAdjustmentFactor('%model_region%',y)*LocalManufacturingFactor('%model_region%',t,y))
@@ -782,6 +797,48 @@ ADD_Employment(r,y)..  sum((t,f),((NewCapacity(y,t,r)*EFactorManufacturing(t,y)*
                  +(TotalCapacityAnnual(y,t,r)*EFactorOM(t,y)*RegionalAdjustmentFactor('%model_region%',y))
                  +(UseByTechnologyAnnual(y,t,f,r)*EFactorFuelSupply(t,y)))*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y))
                  =e= TotalJobs(r,y);
+
+
+*##### only for testing #####
+variable Test_OMJobs(r_full,y_full);
+equation Test_OMJobs_annual(r_full,y_full);
+Test_OMJobs_annual(r,y).. sum(t,(TotalCapacityAnnual(y,t,r)*EFactorOM(t,y)*RegionalAdjustmentFactor('%model_region%',y))*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)) =e= Test_OMJobs(r,y);
+
+
+variable Test_ConstructionJobs(r_full,y_full);
+equation Test_ConstructionJobs_annual(r_full,y_full);
+*with construction time
+*Test_ConstructionJobs_annual(r,y).. sum(t,(NewCapacity(y,t,r)*EFactorConstruction(t,y)*RegionalAdjustmentFactor('%model_region%',y))/ConstructionTime(t,y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)) =e= Test_ConstructionJobs(r,y);
+*without construction time
+Test_ConstructionJobs_annual(r,y).. sum(t,(NewCapacity(y,t,r)*EFactorConstruction(t,y)*RegionalAdjustmentFactor('%model_region%',y))*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)) =e= Test_ConstructionJobs(r,y);
+
+
+variable Test_ManufacturingJobs(r_full,y_full);
+equation Test_ManufacturingJobs_annual(r_full,y_full);
+Test_ManufacturingJobs_annual(r,y).. sum(t,(NewCapacity(y,t,r)*EFactorManufacturing(t,y)*RegionalAdjustmentFactor('%model_region%',y)*LocalManufacturingFactor('%model_region%',t,y))*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)) =e= Test_ManufacturingJobs(r,y);
+
+
+*equation Test_SupplyJobs_annual(r_full,y_full);
+*variable Test_SupplyJobs(r_full,y_full);
+*Test_SupplyJobs_annual(r,y).. sum((t,f),((UseByTechnologyAnnual(y,t,f,r)*EFactorFuelSupply(t,y)))*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)) =e= Test_SupplyJobs(r,y);
+
+equation Test_SupplyJobs_annual(r_full,y_full);                                                                                                                                 
+variable Test_SupplyJobs(r_full,y_full);                                                                                                                                        
+Test_SupplyJobs_annual(r,y).. sum((f,t),((UseByTechnologyAnnual(y,t,f,r)*EFactorFuelSupply(f,y)))*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)) =e= Test_SupplyJobs(r,y);
+
+variable Test_ElGridJobs(r_full,y_full);
+equation Test_ElGridJobs_annual(r_full,y_full);
+Test_ElGridJobs_annual(r,y).. sum(t$(TagTechnologyToSubsets(t,'PowerSupply')),(TotalCapacityAnnual(y,t,r)*EFactorElGrid(r,y))) =e= Test_ElGridJobs(r,y);
+
+
+variable Test_TotalJobs(r_full,y_full);
+equation Test_TotalJobs_annual(r_full,y_full);
+Test_TotalJobs_annual(r,y).. Test_OMJobs(r,y) + Test_ConstructionJobs(r,y) + Test_ManufacturingJobs(r,y) + Test_SupplyJobs(r,y) + Test_ElGridJobs(r,y) =e= Test_TotalJobs(r,y);
+
+
+
+*##### only for testing #####
+
 $endif
 
 
@@ -790,8 +847,13 @@ $ifthen %switch_employment_constraints% == 1
 parameter MaximumJobAvailability(r_full,y_full);
 
 *currently no distinction between job types in this equation --> maximum job availability can be connected to the type of education and hence ability to install e.g. heat pumps
+*equation Employment_Constraint_EC1(r_full,y_full);
+*Employment_Constraint_EC1(r,y).. TotalJobs(r,y) =l= MaximumJobAvailability(r,y)
+
 equation Employment_Constraint_EC1(r_full,y_full);
-Employment_Constraint_EC1(r,y).. TotalJobs(r,y) =l= MaximumJobAvailability(r,y)
-
-
+*multiplied by yearly multiplier since capacity is accumulated for all the years between the calculated years. MaximumJobAvailability is annual based
+*Employment_Constraint_EC1(y).. sum(r, TotalJobs(r,y)) =l= sum(r, MaximumJobAvailability(r,y))*YearlyDifferenceMultiplier(y);
+*Employment_Constraint_EC1(y).. sum(r, Test_TotalJobs(r,y)) =l= sum(r, MaximumJobAvailability(r,y)*YearlyDifferenceMultiplier(y));
+*Employment_Constraint_EC1(y).. sum(r, Test_TotalJobs(r,y)) =l= sum(r, MaximumJobAvailability(r,y));
+Employment_Constraint_EC1(r,y).. Test_TotalJobs(r,y) =l= MaximumJobAvailability(r,y);
 $endif
