@@ -24,8 +24,8 @@ Add_DistrictHeatLimit(y,'Heat_District',r).. sum((l,t,m)$(OutputActivityRatio(r,
 
 ProductionByTechnologyAnnual.up(y,'HLI_Geothermal','Heat_Low_Industrial',r) = SpecifiedAnnualDemand(r,'Heat_Low_Industrial',y)*0.25;
 
-AvailabilityFactor(r,'HB_Lignite','2018') = 0;
-AvailabilityFactor(r,'HB_Hardcoal','2018') = 0;
+*AvailabilityFactor(r,'HB_Lignite','2018') = 0;
+*AvailabilityFactor(r,'HB_Hardcoal','2018') = 0;
 
 
 
@@ -66,12 +66,31 @@ ModalSplitByFuelAndModalType(r,'Mobility_Passenger','MT_PSNG_ROAD_RE',y) = Modal
 
 ProductionByTechnologyAnnual.lo('2018','P_Hydro_Reservoir','Power','NO') = 350;
 
+*** WICHTIG: Nur damit wird optimality ohne infeasbility_tech und baseyearboundsdebugging erreicht ***
+RegionalBaseYearProduction('UK','HLI_Biomass','Heat_Low_Industrial','2018') = 112-2;
+RegionalBaseYearProduction('UK','HLI_Direct_Electric','Heat_Low_Industrial','2018') = RegionalBaseYearProduction('UK','HLI_Direct_Electric','Heat_Low_Industrial','2018')-60;
+RegionalBaseYearProduction('SE','HLI_Direct_Electric','Heat_Low_Industrial','2018') = RegionalBaseYearProduction('SE','HLI_Direct_Electric','Heat_Low_Industrial','2018')-4.5;
+RegionalBaseYearProduction('NO','HB_Direct_Electric','Heat_Buildings','2018') = RegionalBaseYearProduction('NO','HB_Direct_Electric','Heat_Buildings','2018')-3;
 
-RegionalBaseYearProduction('UK','HLI_Biomass','Heat_Low_Industrial','2018') = 112;
+NewCapacity.up('%year%',t,r)$(TagTechnologyToSubsets(t,'Buildings')) = +INF;
+*NewCapacity.up('%year%','CHP_Coal_Hardcoal',r) = +INF;
+*NewCapacity.up('%year%','CHP_Gas_CCGT_Natural',r) = +INF;
+NewCapacity.up('%year%',t,r)$(TagTechnologyToSubsets(t,'PowerSupply')) = +INF;
+NewCapacity.up('%year%','HD_Heatpump_Air',r) = +INF;
+NewCapacity.up('%year%','HD_Electric_Boiler',r) = +INF;
+NewCapacity.up('%year%','HD_Geothermal',r) = +INF;
+NewCapacity.up('%year%','HLI_Hardcoal',r) = +INF;
+NewCapacity.up('%year%','HLI_Oil_Boiler',r) = +INF;
+NewCapacity.up('%year%','HMHI_Steam_Electric',r) = +INF;
+NewCapacity.up('%year%','HMHI_Biomass',r) = +INF;
+NewCapacity.up('%year%','HMHI_Hardcoal',r) = +INF;
+NewCapacity.up('%year%','HMHI_Oil',r) = +INF;
+NewCapacity.up('%year%','HMLI_Heatpump',r) = +INF;
+******************************************************************************************************
+
 RegionalBaseYearProduction(r,'HMHI_Gas',f,'2018') = 0;
 RegionalBaseYearProduction('SE','HB_Direct_Electric',f,y) = 0;
 RegionalBaseYearProduction('SE','HB_Biomass',f,y) = 0;
-
 
 NewCapacity.up('%year%',t,r)$(TagTechnologyToSubsets(t,'Transport')) = +INF;
 NewCapacity.up(y,'PSNG_Rail_Conv',r) = 0;
@@ -81,7 +100,7 @@ NewCapacity.up('%year%','HLI_Biomass',r) = +INF;
 NewCapacity.up('%year%','HLI_Direct_Electric',r) = +INF;
 NewCapacity.up(y,'HD_Heatpump_ExcessHeat',r) = 0;
 ResidualCapacity('SE','HD_Heatpump_ExcessHeat',y) = 4.75;
-ResidualCapacity(r,'HB_Hardcoal',y) = 0;
+*ResidualCapacity(r,'HB_Hardcoal',y) = 0;
 NewCapacity.up(y,'HB_Direct_Electric','SE') = +INF;
 NewCapacity.up(y,'HB_Biomass','SE') = 6;
 
