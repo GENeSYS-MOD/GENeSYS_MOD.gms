@@ -140,7 +140,6 @@ NewCapacity.up('%year%','HMHI_Gas',r) = +INF;
 NewCapacity.up('%year%','HHI_Bio_BF_BOF',r) = +INF;
 NewCapacity.up('%year%','HHI_Scrap_EAF',r) = +INF;
 NewCapacity.up('%year%','HHI_DRI_EAF',r) = +INF;
-*NewCapacity.up('%year%',t,r)$(TagTechnologyToSubsets(t,'CHP')) = +INF;
 NewCapacity.up('%year%','D_Gas_Methane',r) = +INF;
 NewCapacity.up('%year%','X_SMR',r) = +INF;
 

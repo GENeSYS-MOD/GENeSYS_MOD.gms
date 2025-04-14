@@ -35,9 +35,9 @@ $if not set solver                       $setglobal solver cplex
 
 $if not set switch_test_data_load        $setglobal switch_test_data_load 0
 $if not set switch_investLimit           $setglobal switch_investLimit 1
-$if not set switch_infeasibility_tech    $setglobal switch_infeasibility_tech 1
+$if not set switch_infeasibility_tech    $setglobal switch_infeasibility_tech 0
 $if not set switch_base_year_bounds      $setglobal switch_base_year_bounds 1
-$if not set switch_base_year_bounds_debugging      $setglobal switch_base_year_bounds_debugging 1
+$if not set switch_base_year_bounds_debugging      $setglobal switch_base_year_bounds_debugging 0
 
 
 $if not set switch_unixPath              $setglobal switch_unixPath 0
@@ -60,8 +60,8 @@ $if not set set_storagelevelstart_up     $setglobal set_storagelevelstart_up 0.7
 $if not set set_storagelevelstart_low    $setglobal set_storagelevelstart_low 0.25
 
 $if not set switch_peaking_capacity      $setglobal switch_peaking_capacity 1
-$if not set switch_peaking_with_trade    $setglobal switch_peaking_with_trade 0
-$if not set switch_peaking_with_storages $setglobal switch_peaking_with_storages 0
+$if not set switch_peaking_with_trade    $setglobal switch_peaking_with_trade 1
+$if not set switch_peaking_with_storages $setglobal switch_peaking_with_storages 1
 $if not set switch_peaking_minrun        $setglobal switch_peaking_minrun 0
 $if not set set_peaking_slack            $setglobal set_peaking_slack 1.0
 *consider vRES only partially (1.0 consider vRES fully, 0.0 ignore vRES in peaking equation)
@@ -98,7 +98,7 @@ $ifthen %emissionPathway% == REPowerEU
 $setglobal data_file RegularParameters_Europe_EnVis_REPowerEU++
 $setglobal hourly_data_file Timeseries_Europe_EnVis_REPowerEU++
 $elseif %emissionPathway% == NECPEssentials
-$setglobal data_file RegularParameters_Europe_EnVis_NECPEssentials
+$setglobal data_file RegularParameters_Europe_EnVis_NECPEssentials_test
 $setglobal hourly_data_file Timeseries_Europe_EnVis_NECPEssentials
 $elseif %emissionPathway% == Green
 $setglobal data_file RegularParameters_Europe_EnVis_Green

@@ -760,7 +760,7 @@ scalar GWh_to_PJ /0.0036/;
 scalar PeakingSlack /%set_peaking_slack%/;
 scalar MinRunShare /%set_peaking_minrun_share%/;
 scalar RenewableCapacityFactorReduction /%set_peaking_res_cf%/;
-scalar MinThermalShare /%set_peaking_min_thermal%/
+scalar MinThermalShare /%set_peaking_min_thermal%/;
 
 equation PC1_PowerPeakingDemand(YEAR_FULL,REGION_FULL);
 PC1_PowerPeakingDemand(y,r)..
@@ -787,15 +787,15 @@ $ifthen.equ_peaking_with_trade %switch_peaking_with_trade% == 1
 + sum(rr,TotalTradeCapacity(y,'Power',rr,r))
 $endif.equ_peaking_with_trade
 $ifthen.equ_peaking_with_storages %switch_peaking_with_storages% == 1
-+ sum(t$(sum(m,OutputActivityRatio(r,t,'power',m,y)) and sum((s,m),TechnologyToStorage(t,s,m,y)) = 0), TotalCapacityAnnual(y,t,r))
++ sum(t$(sum(m,OutputActivityRatio(r,t,'power',m,y)) and sum((s,m),TechnologyToStorage(t,s,m,y))), TotalCapacityAnnual(y,t,r))
 $endif.equ_peaking_with_storages
 =g= PeakingDemand(y,r)*PeakingSlack
 ;
 
-$ifthen.equ_peaking_minThermal %switch_peaking_with_storages% == 1
-equation PC3b_PeakingConstraint_Thermal(YEAR_FULL,REGION_FULL);
-PC3b_PeakingConstraint_Thermal(y,r).. PeakingCapacity(y,r) =g= MinThermalShare*PeakingDemand(y,r)*PeakingSlack;
-$endif.equ_peaking_minThermal
+*$ifthen.equ_peaking_minThermal %switch_peaking_with_storages% == 1
+*equation PC3b_PeakingConstraint_Thermal(YEAR_FULL,REGION_FULL);
+*PC3b_PeakingConstraint_Thermal(y,r).. PeakingCapacity(y,r) =g= MinThermalShare*PeakingDemand(y,r)*PeakingSlack;
+*$endif.equ_peaking_minThermal
 
 $ifthen.equ_peaking_minrun %switch_peaking_minrun% == 1
 equation PC4_MinRunConstraint(YEAR_FULL,TECHNOLOGY,REGION_FULL);
