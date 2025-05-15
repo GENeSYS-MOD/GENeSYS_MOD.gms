@@ -218,13 +218,18 @@ parameter output_jobstatistics;
 *with construction time
 *output_jobstatistics(r,t,'ConstructionJobs','%emissionPathway%_%emissionScenario%',y) =  NewCapacity.l(y,t,r)*EFactorConstruction(t,y)*RegionalAdjustmentFactor('%model_region%',y)/ConstructionTime(t,y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y);
 *without construction time
-output_jobstatistics(r,t,'ConstructionJobs','%emissionPathway%_%emissionScenario%',y) =  NewCapacity.l(y,t,r)*EFactorConstruction(t,y)*RegionalAdjustmentFactor('%model_region%',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y);
-output_jobstatistics(r,t,'OMJobs','%emissionPathway%_%emissionScenario%',y) =  TotalCapacityAnnual.l(y,t,r)*EFactorOM(t,y)*RegionalAdjustmentFactor('%model_region%',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y);
+*output_jobstatistics(r,t,'ConstructionJobs','%emissionPathway%_%emissionScenario%',y) =  NewCapacity.l(y,t,r)*EFactorConstruction(t,y)*RegionalAdjustmentFactor('%model_region%',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y);
+output_jobstatistics(r,t,'ConstructionJobs','%emissionPathway%_%emissionScenario%',y) =  Test_ConstructionJobs.l(r,y);
+*output_jobstatistics(r,t,'OMJobs','%emissionPathway%_%emissionScenario%',y) =  TotalCapacityAnnual.l(y,t,r)*EFactorOM(t,y)*RegionalAdjustmentFactor('%model_region%',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)*YearlyDifferenceMultiplier(y-1) ;
+output_jobstatistics(r,t,'OMJobs','%emissionPathway%_%emissionScenario%',y) =  Test_OMJobs.l(r,y);
 *output_jobstatistics(r,t,'SupplyJobs','%emissionPathway%_%emissionScenario%',y) = (sum((se),sum((f,m,l),output_energy_balance(r,se,t,m,f,l,'Use','PJ','%emissionPathway%_%emissionScenario%',y))*EFactorFuelSupply(t,y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)))*(-1);
 *output_jobstatistics(r,'Fuels','SupplyJobs','%emissionPathway%_%emissionScenario%',y) = sum(f,(UseAnnual(y,f,r)*EFactorFuelSupply(f,y)))*(-1);
-output_jobstatistics(r,'Fuels','SupplyJobs','%emissionPathway%_%emissionScenario%',y) = sum((f,t),((UseByTechnologyAnnual.l(y,t,f,r)*EFactorFuelSupply(f,y)))*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y));
-output_jobstatistics(r,t,'ManufacturingJobs','%emissionPathway%_%emissionScenario%',y) = NewCapacity.l(y,t,r)*EFactorManufacturing(t,y)*RegionalAdjustmentFactor('%model_region%',y)*LocalManufacturingFactor('%model_region%',t,y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y);
-output_jobstatistics(r,'ElectricityGrid','ElectricyGridJobs','%emissionPathway%_%emissionScenario%',y) = sum(t$(TagTechnologyToSubsets(t,'PowerSupply')),(TotalCapacityAnnual.l(y,t,r)*EFactorElGrid(r,y)));
+*output_jobstatistics(r,'Fuels','SupplyJobs','%emissionPathway%_%emissionScenario%',y) = sum((f,t),((UseByTechnologyAnnual.l(y,t,f,r)*EFactorFuelSupply(f,y)))*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y));
+*output_jobstatistics(r,f,'SupplyJobs','%emissionPathway%_%emissionScenario%',y) = sum(t,((UseByTechnologyAnnual.l(y,t,f,r)*EFactorFuelSupply(f,y)))*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y))*YearlyDifferenceMultiplier(y-1);
+output_jobstatistics(r,f,'SupplyJobs','%emissionPathway%_%emissionScenario%',y) = Test_SupplyJobs.l(r,y);
+*output_jobstatistics(r,t,'ManufacturingJobs','%emissionPathway%_%emissionScenario%',y) = NewCapacity.l(y,t,r)*EFactorManufacturing(t,y)*RegionalAdjustmentFactor('%model_region%',y)*LocalManufacturingFactor('%model_region%',t,y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y);
+output_jobstatistics(r,t,'ManufacturingJobs','%emissionPathway%_%emissionScenario%',y) = Test_ManufacturingJobs.l(r,y);
+output_jobstatistics(r,'Grids','GridJobs','%emissionPathway%_%emissionScenario%',y) = Test_GridJobs.l(r,y);
 $endif
 
 

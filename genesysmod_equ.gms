@@ -801,8 +801,12 @@ ADD_Employment(r,y)..  sum((t,f),((NewCapacity(y,t,r)*EFactorManufacturing(t,y)*
 
 *##### only for testing #####
 variable Test_OMJobs(r_full,y_full);
-equation Test_OMJobs_annual(r_full,y_full);
-Test_OMJobs_annual(r,y).. sum(t,(TotalCapacityAnnual(y,t,r)*EFactorOM(t,y)*RegionalAdjustmentFactor('%model_region%',y))*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)) =e= Test_OMJobs(r,y);
+equation Test_OMJobs_annual_A(r_full,y_full);
+Test_OMJobs_annual_A(r,y)$(YearVal(y) > %year%).. sum(t,(TotalCapacityAnnual(y,t,r)*EFactorOM(t,y)*RegionalAdjustmentFactor('%model_region%',y))*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)) * YearlyDifferenceMultiplier(y-1) =e= Test_OMJobs(r,y);
+
+equation Test_OMJobs_annual_B(r_full,y_full);
+Test_OMJobs_annual_B(r,y)$(YearVal(y) = %year%).. sum(t,(TotalCapacityAnnual(y,t,r)*EFactorOM(t,y)*RegionalAdjustmentFactor('%model_region%',y))*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)) * 1 =e= Test_OMJobs(r,y);
+
 
 
 variable Test_ConstructionJobs(r_full,y_full);
@@ -822,18 +826,26 @@ Test_ManufacturingJobs_annual(r,y).. sum(t,(NewCapacity(y,t,r)*EFactorManufactur
 *variable Test_SupplyJobs(r_full,y_full);
 *Test_SupplyJobs_annual(r,y).. sum((t,f),((UseByTechnologyAnnual(y,t,f,r)*EFactorFuelSupply(t,y)))*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)) =e= Test_SupplyJobs(r,y);
 
-equation Test_SupplyJobs_annual(r_full,y_full);                                                                                                                                 
-variable Test_SupplyJobs(r_full,y_full);                                                                                                                                        
-Test_SupplyJobs_annual(r,y).. sum((f,t),((UseByTechnologyAnnual(y,t,f,r)*EFactorFuelSupply(f,y)))*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)) =e= Test_SupplyJobs(r,y);
+variable Test_SupplyJobs(r_full,y_full); 
+equation Test_SupplyJobs_annual_A(r_full,y_full);                                                                                                                                                                                                                               
+Test_SupplyJobs_annual_A(r,y)$(YearVal(y) > %year%).. sum((f,t),((UseByTechnologyAnnual(y,t,f,r)*EFactorFuelSupply(f,y)))*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)) * YearlyDifferenceMultiplier(y-1) =e= Test_SupplyJobs(r,y);
 
-variable Test_ElGridJobs(r_full,y_full);
-equation Test_ElGridJobs_annual(r_full,y_full);
-Test_ElGridJobs_annual(r,y).. sum(t$(TagTechnologyToSubsets(t,'PowerSupply')),(TotalCapacityAnnual(y,t,r)*EFactorElGrid(r,y))) =e= Test_ElGridJobs(r,y);
+equation Test_SupplyJobs_annual_B(r_full,y_full);                                                                                                                                        
+Test_SupplyJobs_annual_B(r,y)$(YearVal(y) = %year%).. sum((f,t),((UseByTechnologyAnnual(y,t,f,r)*EFactorFuelSupply(f,y)))*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)) * 1 =e= Test_SupplyJobs(r,y);
+
+variable Test_GridJobs(r_full,y_full);
+equation Test_GridJobs_annual_A(r_full,y_full);
+*Test_ElGridJobs_annual(r,y).. sum(t$(TagTechnologyToSubsets(t,'PowerSupply')),(TotalCapacityAnnual(y,t,r)*EFactorElGrid(r,y))) * YearlyDifferenceMultiplier(y) =e= Test_ElGridJobs(r,y);
+Test_GridJobs_annual_A(r,y)$(YearVal(y) > %year%).. ElGrid_Jobs(r,y) * YearlyDifferenceMultiplier(y-1) =e= Test_GridJobs(r,y);
+
+equation Test_GridJobs_annual_B(r_full,y_full);
+*Test_ElGridJobs_annual(r,y).. sum(t$(TagTechnologyToSubsets(t,'PowerSupply')),(TotalCapacityAnnual(y,t,r)*EFactorElGrid(r,y))) * YearlyDifferenceMultiplier(y) =e= Test_ElGridJobs(r,y);
+Test_GridJobs_annual_B(r,y)$(YearVal(y) = %year%).. ElGrid_Jobs(r,y) * 1 =e= Test_GridJobs(r,y);
 
 
 variable Test_TotalJobs(r_full,y_full);
 equation Test_TotalJobs_annual(r_full,y_full);
-Test_TotalJobs_annual(r,y).. Test_OMJobs(r,y) + Test_ConstructionJobs(r,y) + Test_ManufacturingJobs(r,y) + Test_SupplyJobs(r,y) + Test_ElGridJobs(r,y) =e= Test_TotalJobs(r,y);
+Test_TotalJobs_annual(r,y).. Test_OMJobs(r,y) + Test_ConstructionJobs(r,y) + Test_ManufacturingJobs(r,y) + Test_SupplyJobs(r,y) + Test_GridJobs(r,y) =e= Test_TotalJobs(r,y);
 
 
 
@@ -855,5 +867,5 @@ equation Employment_Constraint_EC1(r_full,y_full);
 *Employment_Constraint_EC1(y).. sum(r, TotalJobs(r,y)) =l= sum(r, MaximumJobAvailability(r,y))*YearlyDifferenceMultiplier(y);
 *Employment_Constraint_EC1(y).. sum(r, Test_TotalJobs(r,y)) =l= sum(r, MaximumJobAvailability(r,y)*YearlyDifferenceMultiplier(y));
 *Employment_Constraint_EC1(y).. sum(r, Test_TotalJobs(r,y)) =l= sum(r, MaximumJobAvailability(r,y));
-Employment_Constraint_EC1(r,y).. Test_TotalJobs(r,y) =l= MaximumJobAvailability(r,y);
+Employment_Constraint_EC1(r,y)$(YearVal(y) > %year%).. Test_TotalJobs(r,y) =l= MaximumJobAvailability(r,y) * YearlyDifferenceMultiplier(y-1);
 $endif

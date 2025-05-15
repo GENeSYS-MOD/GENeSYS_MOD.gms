@@ -400,7 +400,8 @@ parameter OMJobs;
 parameter SupplyJobs;
 parameter CoalJobs;
 parameter output_energyjobs;
-parameter ConstructionTime(TECHNOLOGY,y_full);; 
+parameter ConstructionTime(TECHNOLOGY,y_full);
+parameter ElGrid_Jobs;
 $endif
 
 *$ifthen %switch_employment_constraints% == 1

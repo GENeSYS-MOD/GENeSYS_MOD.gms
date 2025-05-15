@@ -306,7 +306,9 @@ GermanAnnualEmissionsLimit('CO2','2030') = 438;
 GermanAnnualEmissionsLimit('CO2','2035') = 292;
 GermanAnnualEmissionsLimit('CO2','2040') = 146;
 GermanAnnualEmissionsLimit('CO2','2045') = 0;
+*GermanAnnualEmissionsLimit('CO2','2045') = 146;
 GermanAnnualEmissionsLimit('CO2','2050') = 0;
+*GermanAnnualEmissionsLimit('CO2','2050') = 75;
 
 equation E8a1_GermanAnnualEmissionsLimit(YEAR_FULL,EMISSION);
 E8a1_GermanAnnualEmissionsLimit(y,e).. sum(r,(AnnualEmissions(y,e,r)+AnnualExogenousEmission(r,e,y))) =l= GermanAnnualEmissionsLimit(e,y);

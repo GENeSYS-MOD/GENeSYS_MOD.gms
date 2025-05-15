@@ -68,6 +68,7 @@ TotalTechnologyModelPeriodActivityUpperLimit(r,t)$(TagTechnologyToSubsets(t,'Fos
 parameter YearlyDifferenceMultiplier(YEAR_FULL);
 YearlyDifferenceMultiplier(y) = max(1,YearVal(y+1)-YearVal(y));
 
+
 scalar hour_steps;
 hour_steps = mod(%elmod_nthhour%,24);
 scalar start_hour /%elmod_starthour%/;

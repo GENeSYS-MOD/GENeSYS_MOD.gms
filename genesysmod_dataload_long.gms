@@ -334,7 +334,7 @@ se=0
         par=DeclineRate                       Rng=Par_DeclineRate!A5                                 rdim=1        cdim=1
         par=ConstructionTime         Rng=Par_ConstructionTime!A5                                     rdim=1        cdim=1
         par=EFactorElGrid            Rng=Par_EFactorElGrid!A5                                     rdim=1        cdim=1
-
+        par=ElGrid_Jobs              Rng=PAR_ElGrid_Jobs!A5                rdim=1       cdim=1
 
 $offecho
 
@@ -353,7 +353,8 @@ $loadm RegionalAdjustmentFactor
 $loadm LocalManufacturingFactor
 $loadm DeclineRate
 $loadm ConstructionTime
-$loadm EFactorElGrid 
+$loadm EFactorElGrid
+$loadm ElGrid_Jobs           
 
 $offUNDF
 $endif
