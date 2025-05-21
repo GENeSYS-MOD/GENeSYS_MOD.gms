@@ -411,7 +411,7 @@ equation SC4a_RelativeTechnologyPhaseInLimit(YEAR_FULL,REGION_FULL,FUEL);
 SC4a_RelativeTechnologyPhaseInLimit(y,r,f)$(Yearval(y) > %year% and ProductionGrowthLimit(f,y)>0 and not TagFuelToSubsets(f,'TransportFuels')).. sum((t)$(RETagTechnology(t,y)=1),ProductionByTechnologyAnnual(y,t,f,r)-ProductionByTechnologyAnnual(y-1,t,f,r)) =l= YearlyDifferenceMultiplier(y-1)*ProductionGrowthLimit(f,y)*sum((t),ProductionByTechnologyAnnual(y-1,t,f,r))-sum((t)$(TagTechnologyToSubsets(t,'StorageDummies')),ProductionByTechnologyAnnual(y-1,t,f,r));
 
 equation SC4b_RelativeTechnologyPhaseInLimit_Transport(YEAR_FULL,REGION_FULL,FUEL,MODALTYPE);
-SC4b_RelativeTechnologyPhaseInLimit_Transport(y,r,f,mt)$(Yearval(y) > %year% and ProductionGrowthLimit(f,y)>0 and TagFuelToSubsets(f,'TransportFuels') and TagModalTypeToModalGroups(mt,'TransportModes'))..
+SC4b_RelativeTechnologyPhaseInLimit_Transport(y,r,f,mt)$(Yearval(y) > 2025 and ProductionGrowthLimit(f,y)>0 and TagFuelToSubsets(f,'TransportFuels') and TagModalTypeToModalGroups(mt,'TransportModes'))..
 sum((t)$(RETagTechnology(t,y)=1 and TagTechnologyToModalType(t,'1',mt)),ProductionByTechnologyAnnual(y,t,f,r)-ProductionByTechnologyAnnual(y-1,t,f,r)) =l=
 YearlyDifferenceMultiplier(y-1)*ProductionGrowthLimit(f,y)*sum((t)$(TagTechnologyToModalType(t,'1',mt)),ProductionByTechnologyAnnual(y-1,t,f,r));
 

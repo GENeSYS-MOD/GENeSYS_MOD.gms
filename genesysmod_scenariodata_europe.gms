@@ -62,7 +62,7 @@ $endif
 *Add_HeatpumpLimit(r,y).. sum(t$(sameas(t,'HB_Heatpump_Aerial') or sameas(t,'HB_Heatpump_Ground')),ProductionByTechnologyAnnual(y,t,'Heat_Buildings',r)) =l=  0.75*SpecifiedAnnualDemand(r,'Heat_Buildings',y);
 
 
-ModalSplitByFuelAndModalType(r,'Mobility_Passenger','MT_PSNG_ROAD_RE',y) = ModalSplitByFuelAndModalType(r,'Mobility_Passenger','MT_PSNG_ROAD_RE','2018');
+*ModalSplitByFuelAndModalType(r,'Mobility_Passenger','MT_PSNG_ROAD_RE',y) = ModalSplitByFuelAndModalType(r,'Mobility_Passenger','MT_PSNG_ROAD_RE','2018');
 
 
 ProductionByTechnologyAnnual.lo('2018','P_Hydro_Reservoir','Power','NO') = 350;
@@ -74,6 +74,7 @@ RegionalBaseYearProduction(r,'CHP_Biomass_Solid','Power',y) = 0;
 
 NewCapacity.up(y,'PSNG_Rail_Conv',r) = 0;
 NewCapacity.up(y,'FRT_Rail_Conv',r) = 0;
+*ResidualCapacity(r,t,y)$(TagTechnologyToSubsets(t,'Transport')) = 0;
 NewCapacity.up('%year%',t,r)$(TagTechnologyToSubsets(t,'Transport')) = +INF;
 NewCapacity.up('%year%','HMHI_Steam_Electric',r) = +INF;
 NewCapacity.up('%year%','HLI_Biomass',r) = +INF;
@@ -84,10 +85,6 @@ ResidualCapacity('SE','HD_Heatpump_ExcessHeat',y) = 4.75;
 NewCapacity.up(y,'HB_Direct_Electric','SE') = +INF;
 NewCapacity.up(y,'HB_Biomass','SE') = 6;
 
-*NewCapacity.up('%year%','HB_Convert_DH',r) = 0;
-*NewCapacity.up('%year%','HLI_Convert_DH',r) = 0;
-
-*ResidualCapacity(r,t,y)$(TagTechnologyToSubsets(t,'Transport')) = 0;
-*NewCapacity.up('%year%',t,r)$(TagTechnologyToSubsets(t,'Transport')) = +INF;
 
 
+*NewStorageCapacity.fx('S_HD_Pit','2018',r) = 0;
