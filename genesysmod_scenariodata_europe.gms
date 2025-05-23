@@ -65,7 +65,7 @@ $endif
 *ModalSplitByFuelAndModalType(r,'Mobility_Passenger','MT_PSNG_ROAD_RE',y) = ModalSplitByFuelAndModalType(r,'Mobility_Passenger','MT_PSNG_ROAD_RE','2018');
 
 
-ProductionByTechnologyAnnual.lo('2018','P_Hydro_Reservoir','Power','NO') = 350;
+*ProductionByTechnologyAnnual.lo('2018','P_Hydro_Reservoir','Power','NO') = 350;
 
 RegionalBaseYearProduction('SE','HB_Direct_Electric',f,y) = 0;
 RegionalBaseYearProduction('SE','HB_Biomass',f,y) = 0;
