@@ -37,7 +37,7 @@ $if not set switch_test_data_load        $setglobal switch_test_data_load 0
 $if not set switch_investLimit           $setglobal switch_investLimit 1
 $if not set switch_infeasibility_tech    $setglobal switch_infeasibility_tech 0
 $if not set switch_base_year_bounds      $setglobal switch_base_year_bounds 1
-$if not set switch_base_year_bounds_debugging      $setglobal switch_base_year_bounds_debugging 0
+$if not set switch_base_year_bounds_debugging      $setglobal switch_base_year_bounds_debugging 1
 
 
 $if not set switch_unixPath              $setglobal switch_unixPath 0
@@ -191,8 +191,10 @@ names yes
 *writemps mpsfile
 solutiontype 2
 quality yes
-barobjrng 1e+075
+*barobjrng 1e+075
 tilim 1000000
+datacheck 2
+eprhs 1e-09
 $offecho
 
 $onecho > gurobi.opt
