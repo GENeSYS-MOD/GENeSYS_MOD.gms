@@ -98,7 +98,7 @@ $ifthen %emissionPathway% == REPowerEU
 $setglobal data_file RegularParameters_Europe_EnVis_REPowerEU++
 $setglobal hourly_data_file Timeseries_Europe_EnVis_REPowerEU++
 $elseif %emissionPathway% == NECPEssentials
-$setglobal data_file RegularParameters_Europe_EnVis_NECPEssentials_test
+$setglobal data_file RegularParameters_Europe_EnVis_NECPEssentials
 $setglobal hourly_data_file Timeseries_Europe_EnVis_NECPEssentials
 $elseif %emissionPathway% == Green
 $setglobal data_file RegularParameters_Europe_EnVis_Green
