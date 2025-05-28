@@ -16,6 +16,17 @@
 *
 * #############################################################
 
+
+
+
+
+
+
+
+
+
+
+
 *_______________________________________SENSITIVITIES__________________________________________*
 
 
@@ -109,8 +120,7 @@ RegionalBaseYearProduction(r,'X_Alkaline_Electrolysis','H2','2018') = 0.01*Speci
 
 *___________________________________________________________________________________________________________*
 
-$ifthen %switch_FEP% == 1
-*###### Flächentwicklungsplan implementation #######
+
 set offshore_nordic(r_full);
 offshore_nordic(r_full) = no;
 offshore_nordic('DE_Nord') = yes;
@@ -128,6 +138,12 @@ offshore(t)= no;
 offshore('RES_Wind_Offshore_Deep') = yes;
 offshore('RES_Wind_Offshore_Shallow') = yes;
 offshore('RES_Wind_Offshore_Transitional') = yes;
+
+
+
+$ifthen %switch_FEP% == 1
+*###### Flächentwicklungsplan implementation #######
+
 
 
 equation TotalCapOffshoreNord2025(YEAR_FULL,TECHNOLOGY,REGION_FULL);
@@ -344,4 +360,31 @@ E13_SectoralEmissionReduction(y,e,se,r)$(YearVal(y)>2018).. AnnualSectoralEmissi
 
 
 
+
+
+*#########For Baseyear Labor market calibrations##############
+*Source: https://www.agora-energiewende.de/fileadmin/Projekte/2018/Jahresauswertung_2018/125_Agora-JAW-2018_WEB.pdf
+parameter BaseNewYearCapacity(YEAR_FULL,t,REGION_FULL);
+
+
+*Equally distributed over all regions --> might need to adjust - or potentially allow full migration only for base year
+BaseNewYearCapacity('2018','RES_Wind_Onshore_Opt',r)$((not offshore_nordic(r)) and (not offshore_baltic(r))) = (53.2 - 50.3)/16;
+
+*For offshore regions
+BaseNewYearCapacity('2018','RES_Wind_Offshore_Deep','DE_Nord') = (6.3 - 5.4);
+
+
+*Fix new capacities - equally for all regions regions
+NewCapacity.fx('2018','RES_Wind_Onshore_Opt',r)$((not offshore_nordic(r)) and (not offshore_baltic(r))) = BaseNewYearCapacity('2018','RES_Wind_Onshore_Opt',r);
+
+*For offshore regions
+NewCapacity.fx('2018','RES_Wind_Offshore_Deep','DE_Nord') = BaseNewYearCapacity('2018','RES_Wind_Offshore_Deep','DE_Nord');
+
+
+
+*Adjust residual capacities
+ResidualCapacity(r,'RES_Wind_Onshore_Opt','2018')$((not offshore_nordic(r)) and (not offshore_baltic(r))) = ResidualCapacity(r,'RES_Wind_Onshore_Opt','2018') - BaseNewYearCapacity('2018','RES_Wind_Onshore_Opt',r);
+
+*for Offshore regions
+ResidualCapacity('DE_Nord','RES_Wind_Offshore_Deep','2018') = ResidualCapacity('DE_Nord','RES_Wind_Offshore_Deep','2018') - BaseNewYearCapacity('2018','RES_Wind_Offshore_Deep','DE_Nord');
 

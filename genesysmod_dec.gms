@@ -394,11 +394,11 @@ parameter RegionalAdjustmentFactor;
 parameter LocalManufacturingFactor;
 parameter DeclineRate;
 
-parameter ConstructionJobs;
-parameter ManufacturingJobs;
-parameter OMJobs;
-parameter SupplyJobs;
-parameter CoalJobs;
+*parameter ConstructionJobs;
+*parameter ManufacturingJobs;
+*parameter OMJobs;
+*parameter SupplyJobs;
+*parameter CoalJobs;
 parameter output_energyjobs;
 parameter ConstructionTime(TECHNOLOGY,y_full);
 parameter ElGrid_Jobs;
