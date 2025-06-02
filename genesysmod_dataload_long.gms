@@ -162,50 +162,50 @@ $offUNDF
 * ####### Step 3: Set regional values, if only value given for base-region #############
 *
 
-CapitalCost(REGION_FULL,TECHNOLOGY,y)$(CapitalCost(REGION_FULL,TECHNOLOGY,y) = 0) = CapitalCost('%data_base_region%',TECHNOLOGY,y);
-VariableCost(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,y)$(VariableCost(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,y) = 0) = VariableCost('%data_base_region%',TECHNOLOGY,MODE_OF_OPERATION,y);
-FixedCost(REGION_FULL,TECHNOLOGY,y)$(FixedCost(REGION_FULL,TECHNOLOGY,y) = 0) = FixedCost('%data_base_region%',TECHNOLOGY,y);
-AvailabilityFactor(REGION_FULL,TECHNOLOGY,y)$(AvailabilityFactor(REGION_FULL,TECHNOLOGY,y) = 0) = AvailabilityFactor('%data_base_region%',TECHNOLOGY,y);
-InputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y)$(InputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y) = 0) = InputActivityRatio('%data_base_region%',TECHNOLOGY,FUEL,MODE_OF_OPERATION,y);
-OutputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y)$(OutputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y) = 0) = OutputActivityRatio('%data_base_region%',TECHNOLOGY,FUEL,MODE_OF_OPERATION,y);
-EmissionsPenaltyTagTechnology(REGION_FULL,t,e,y)$(EmissionsPenaltyTagTechnology(REGION_FULL,t,e,y) = 0) = EmissionsPenaltyTagTechnology('%data_base_region%',t,e,y);
-
-ReserveMarginTagTechnology(REGION_FULL,TECHNOLOGY,y)$(ReserveMarginTagTechnology(REGION_FULL,TECHNOLOGY,y) = 0) = ReserveMarginTagTechnology('%data_base_region%',TECHNOLOGY,y);
-EmissionActivityRatio(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,EMISSION,YEAR)$(EmissionActivityRatio(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,EMISSION,YEAR)=0) =  EmissionActivityRatio('%data_base_region%',TECHNOLOGY,MODE_OF_OPERATION,EMISSION,YEAR);
-
-EmissionsPenalty(REGION_FULL,e,y)$(EmissionsPenalty(REGION_FULL,e,y) <> EmissionsPenalty('%data_base_region%',e,y)) = EmissionsPenalty('%data_base_region%',e,y);
-
-SpecifiedDemandDevelopment(r_full,f,y)$(SpecifiedDemandDevelopment(r_full,f,y) = 0) = SpecifiedDemandDevelopment('%data_base_region%',f,y);
-RegionalModelPeriodEmissionLimit(r_full,e)$(RegionalModelPeriodEmissionLimit(r_full,e) = 0) = RegionalModelPeriodEmissionLimit('%data_base_region%',e);
-ModelPeriodExogenousEmission(r_full,e)$(ModelPeriodExogenousEmission(r_full,e) = 0) = ModelPeriodExogenousEmission('%data_base_region%',e);
-
+*CapitalCost(REGION_FULL,TECHNOLOGY,y)$(CapitalCost(REGION_FULL,TECHNOLOGY,y) = 0) = CapitalCost('%data_base_region%',TECHNOLOGY,y);
+*VariableCost(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,y)$(VariableCost(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,y) = 0) = VariableCost('%data_base_region%',TECHNOLOGY,MODE_OF_OPERATION,y);
+*FixedCost(REGION_FULL,TECHNOLOGY,y)$(FixedCost(REGION_FULL,TECHNOLOGY,y) = 0) = FixedCost('%data_base_region%',TECHNOLOGY,y);
+*AvailabilityFactor(REGION_FULL,TECHNOLOGY,y)$(AvailabilityFactor(REGION_FULL,TECHNOLOGY,y) = 0) = AvailabilityFactor('%data_base_region%',TECHNOLOGY,y);
+*InputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y)$(InputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y) = 0) = InputActivityRatio('%data_base_region%',TECHNOLOGY,FUEL,MODE_OF_OPERATION,y);
+*OutputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y)$(OutputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y) = 0) = OutputActivityRatio('%data_base_region%',TECHNOLOGY,FUEL,MODE_OF_OPERATION,y);
+*EmissionsPenaltyTagTechnology(REGION_FULL,t,e,y)$(EmissionsPenaltyTagTechnology(REGION_FULL,t,e,y) = 0) = EmissionsPenaltyTagTechnology('%data_base_region%',t,e,y);
 *
-* ####### Step 4: Set values, if no regional data available #############
+*ReserveMarginTagTechnology(REGION_FULL,TECHNOLOGY,y)$(ReserveMarginTagTechnology(REGION_FULL,TECHNOLOGY,y) = 0) = ReserveMarginTagTechnology('%data_base_region%',TECHNOLOGY,y);
+*EmissionActivityRatio(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,EMISSION,YEAR)$(EmissionActivityRatio(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,EMISSION,YEAR)=0) =  EmissionActivityRatio('%data_base_region%',TECHNOLOGY,MODE_OF_OPERATION,EMISSION,YEAR);
 *
-
-CapitalCost(REGION_FULL,TECHNOLOGY,y)$(CapitalCost(REGION_FULL,TECHNOLOGY,y) = 0) = CapitalCost('World',TECHNOLOGY,y);
-VariableCost(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,y)$(VariableCost(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,y) = 0) = VariableCost('World',TECHNOLOGY,MODE_OF_OPERATION,y);
-FixedCost(REGION_FULL,TECHNOLOGY,y)$(FixedCost(REGION_FULL,TECHNOLOGY,y) = 0) = FixedCost('World',TECHNOLOGY,y);
-AvailabilityFactor(REGION_FULL,TECHNOLOGY,y)$(AvailabilityFactor(REGION_FULL,TECHNOLOGY,y) = 0) = AvailabilityFactor('World',TECHNOLOGY,y);
-InputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y)$(InputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y) = 0) = InputActivityRatio('World',TECHNOLOGY,FUEL,MODE_OF_OPERATION,y);
-OutputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y)$(OutputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y) = 0) = OutputActivityRatio('World',TECHNOLOGY,FUEL,MODE_OF_OPERATION,y);
-EmissionsPenaltyTagTechnology(REGION_FULL,t,e,y)$(EmissionsPenaltyTagTechnology(REGION_FULL,t,e,y) = 0) = EmissionsPenaltyTagTechnology('World',t,e,y);
-
-ReserveMarginTagTechnology(REGION_FULL,TECHNOLOGY,y)$(ReserveMarginTagTechnology(REGION_FULL,TECHNOLOGY,y) = 0) = ReserveMarginTagTechnology('World',TECHNOLOGY,y);
-EmissionActivityRatio(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,EMISSION,YEAR)$(EmissionActivityRatio(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,EMISSION,YEAR)=0) =  EmissionActivityRatio('World',TECHNOLOGY,MODE_OF_OPERATION,EMISSION,YEAR);
-
-ReserveMarginTagFuel(r_full,f,y)$(ReserveMarginTagFuel(r_full,f,y)=0) =  ReserveMarginTagFuel('World',f,y);
-ReserveMargin(r_full,y)$(ReserveMargin(r_full,y)=0) = ReserveMargin('World',y);
-ReserveMarginTagTechnology(r_full,t,y)$(ReserveMarginTagTechnology(r_full,t,y)=0) = ReserveMarginTagTechnology('World',t,y);
-MinStorageCharge(r_full,s,y)$(MinStorageCharge(r_full,s,y)=0) = MinStorageCharge('World',s,y);
-CapitalCostStorage(r_full,s,y)$(CapitalCostStorage(r_full,s,y)=0) = CapitalCostStorage('World',s,y);
-
-RegionalAnnualEmissionLimit(r_full,e,y)$(RegionalAnnualEmissionLimit(r_full,e,y) = 0) = RegionalAnnualEmissionLimit('World',e,y);
-RegionalModelPeriodEmissionLimit(r_full,e)$(RegionalModelPeriodEmissionLimit(r_full,e) = 0) = RegionalModelPeriodEmissionLimit('World',e);
-ModelPeriodExogenousEmission(r_full,e)$(ModelPeriodExogenousEmission(r_full,e) = 0) = ModelPeriodExogenousEmission('World',e);
-TotalAnnualMaxCapacity(r_full,t,y)$(TotalAnnualMaxCapacity(r_full,t,y) = 0) = TotalAnnualMaxCapacity('World',t,y);
-
-SpecifiedDemandDevelopment(r_full,f,y)$(SpecifiedDemandDevelopment(r_full,f,y) = 0) = SpecifiedDemandDevelopment('World',f,y);
+*EmissionsPenalty(REGION_FULL,e,y)$(EmissionsPenalty(REGION_FULL,e,y) <> EmissionsPenalty('%data_base_region%',e,y)) = EmissionsPenalty('%data_base_region%',e,y);
+*
+*SpecifiedDemandDevelopment(r_full,f,y)$(SpecifiedDemandDevelopment(r_full,f,y) = 0) = SpecifiedDemandDevelopment('%data_base_region%',f,y);
+*RegionalModelPeriodEmissionLimit(r_full,e)$(RegionalModelPeriodEmissionLimit(r_full,e) = 0) = RegionalModelPeriodEmissionLimit('%data_base_region%',e);
+*ModelPeriodExogenousEmission(r_full,e)$(ModelPeriodExogenousEmission(r_full,e) = 0) = ModelPeriodExogenousEmission('%data_base_region%',e);
+*
+**
+** ####### Step 4: Set values, if no regional data available #############
+**
+*
+*CapitalCost(REGION_FULL,TECHNOLOGY,y)$(CapitalCost(REGION_FULL,TECHNOLOGY,y) = 0) = CapitalCost('World',TECHNOLOGY,y);
+*VariableCost(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,y)$(VariableCost(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,y) = 0) = VariableCost('World',TECHNOLOGY,MODE_OF_OPERATION,y);
+*FixedCost(REGION_FULL,TECHNOLOGY,y)$(FixedCost(REGION_FULL,TECHNOLOGY,y) = 0) = FixedCost('World',TECHNOLOGY,y);
+*AvailabilityFactor(REGION_FULL,TECHNOLOGY,y)$(AvailabilityFactor(REGION_FULL,TECHNOLOGY,y) = 0) = AvailabilityFactor('World',TECHNOLOGY,y);
+*InputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y)$(InputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y) = 0) = InputActivityRatio('World',TECHNOLOGY,FUEL,MODE_OF_OPERATION,y);
+*OutputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y)$(OutputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y) = 0) = OutputActivityRatio('World',TECHNOLOGY,FUEL,MODE_OF_OPERATION,y);
+*EmissionsPenaltyTagTechnology(REGION_FULL,t,e,y)$(EmissionsPenaltyTagTechnology(REGION_FULL,t,e,y) = 0) = EmissionsPenaltyTagTechnology('World',t,e,y);
+*
+*ReserveMarginTagTechnology(REGION_FULL,TECHNOLOGY,y)$(ReserveMarginTagTechnology(REGION_FULL,TECHNOLOGY,y) = 0) = ReserveMarginTagTechnology('World',TECHNOLOGY,y);
+*EmissionActivityRatio(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,EMISSION,YEAR)$(EmissionActivityRatio(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,EMISSION,YEAR)=0) =  EmissionActivityRatio('World',TECHNOLOGY,MODE_OF_OPERATION,EMISSION,YEAR);
+*
+*ReserveMarginTagFuel(r_full,f,y)$(ReserveMarginTagFuel(r_full,f,y)=0) =  ReserveMarginTagFuel('World',f,y);
+*ReserveMargin(r_full,y)$(ReserveMargin(r_full,y)=0) = ReserveMargin('World',y);
+*ReserveMarginTagTechnology(r_full,t,y)$(ReserveMarginTagTechnology(r_full,t,y)=0) = ReserveMarginTagTechnology('World',t,y);
+*MinStorageCharge(r_full,s,y)$(MinStorageCharge(r_full,s,y)=0) = MinStorageCharge('World',s,y);
+*CapitalCostStorage(r_full,s,y)$(CapitalCostStorage(r_full,s,y)=0) = CapitalCostStorage('World',s,y);
+*
+*RegionalAnnualEmissionLimit(r_full,e,y)$(RegionalAnnualEmissionLimit(r_full,e,y) = 0) = RegionalAnnualEmissionLimit('World',e,y);
+*RegionalModelPeriodEmissionLimit(r_full,e)$(RegionalModelPeriodEmissionLimit(r_full,e) = 0) = RegionalModelPeriodEmissionLimit('World',e);
+*ModelPeriodExogenousEmission(r_full,e)$(ModelPeriodExogenousEmission(r_full,e) = 0) = ModelPeriodExogenousEmission('World',e);
+*TotalAnnualMaxCapacity(r_full,t,y)$(TotalAnnualMaxCapacity(r_full,t,y) = 0) = TotalAnnualMaxCapacity('World',t,y);
+*
+*SpecifiedDemandDevelopment(r_full,f,y)$(SpecifiedDemandDevelopment(r_full,f,y) = 0) = SpecifiedDemandDevelopment('World',f,y);
 
 StartYear = %year% ;
 
