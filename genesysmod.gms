@@ -108,6 +108,13 @@ $setglobal data_file RegularParameters_Europe_EnVis_Trinity
 $setglobal hourly_data_file Timeseries_Europe_EnVis_Trinity
 $endif
 
+$ifthen %model_region% == middleearth
+$setglobal data_file RegularParameters_MiddleEarth
+$setglobal hourly_data_file Timeseries_MiddleEarth
+$setglobal data_base_region Gondor
+$setglobal emissionPathway middleearth
+$endif
+
 *
 * ####### Declarations #############
 *
@@ -193,8 +200,6 @@ solutiontype 2
 quality yes
 *barobjrng 1e+075
 tilim 1000000
-datacheck 2
-eprhs 1e-09
 $offecho
 
 $onecho > gurobi.opt
