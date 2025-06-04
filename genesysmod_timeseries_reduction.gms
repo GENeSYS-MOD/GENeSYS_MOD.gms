@@ -375,7 +375,7 @@ ScaledCountryData(r,l,cde)${(SmoothedCountryDataMax(r,cde) - SmoothedCountryData
 
 YearSplit(l,y) = 1/card(l);
 
-SpecifiedDemandProfile(r,f,l,y)$(SpecifiedAnnualDemand(r,f,y)) = ScaledCountryData(r,l,'load')/card(l);
+SpecifiedDemandProfile(r,f,l,y)$(SpecifiedAnnualDemand(r,f,y)) = ScaledCountryData(r,l,'load')/sum(ll,ScaledCountryData(r,ll,'load'));
 SpecifiedDemandProfile(r,'Mobility_Passenger',l,y) = ScaledCountryData(r,l,'mobility_psng')/sum(ll,ScaledCountryData(r,ll,'mobility_psng'));
 SpecifiedDemandProfile(r,'Mobility_Freight',l,y) = ScaledCountryData(r,l,'mobility_psng')/sum(ll,ScaledCountryData(r,ll,'mobility_psng'));
 SpecifiedDemandProfile(r,'Heat_Buildings',l,y) = ScaledCountryData(r,l,'heat_low')/sum(ll,ScaledCountryData(r,ll,'heat_low'));
