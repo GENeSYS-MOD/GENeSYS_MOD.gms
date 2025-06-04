@@ -363,28 +363,46 @@ E13_SectoralEmissionReduction(y,e,se,r)$(YearVal(y)>2018).. AnnualSectoralEmissi
 
 
 *#########For Baseyear Labor market calibrations##############
-*Source: https://www.agora-energiewende.de/fileadmin/Projekte/2018/Jahresauswertung_2018/125_Agora-JAW-2018_WEB.pdf
+*Source: https://www.agora-energiewende.de/fileadmin/Projekte/2018/Jahresauswertung_2018/125_Agora-JAW-2018_WEB.pdf p.16&18
+
+*Biomass erstmal nicht berücksichtigt --> Wird vom Modell selbst gebaut
 parameter BaseNewYearCapacity(YEAR_FULL,t,REGION_FULL);
 
 
-*Equally distributed over all regions --> might need to adjust - or potentially allow full migration only for base year
-BaseNewYearCapacity('2018','RES_Wind_Onshore_Opt',r)$((not offshore_nordic(r)) and (not offshore_baltic(r))) = (53.2 - 50.3)/16;
-
-*For offshore regions
-BaseNewYearCapacity('2018','RES_Wind_Offshore_Deep','DE_Nord') = (6.3 - 5.4);
-
-
-*Fix new capacities - equally for all regions regions
-NewCapacity.fx('2018','RES_Wind_Onshore_Opt',r)$((not offshore_nordic(r)) and (not offshore_baltic(r))) = BaseNewYearCapacity('2018','RES_Wind_Onshore_Opt',r);
-
-*For offshore regions
-NewCapacity.fx('2018','RES_Wind_Offshore_Deep','DE_Nord') = BaseNewYearCapacity('2018','RES_Wind_Offshore_Deep','DE_Nord');
+*Adjust pv installations in input data full capacity is attributed to pv utility
+*75% are rooftop installations
+ResidualCapacity(r,'RES_PV_Rooftop_Residential',y) = 0.75 * ResidualCapacity(r,'RES_PV_Utility_Opt',y);
+ResidualCapacity(r,'RES_PV_Utility_Opt',y) = 0.25 * ResidualCapacity(r,'RES_PV_Utility_Opt',y);
 
 
+
+*Set parameter for installed capacity in 2018
+BaseNewYearCapacity('2018','RES_Wind_Onshore_Opt',r) = (53.2 - 50.3)* (ResidualCapacity(r,'RES_Wind_Onshore_Opt','2018')/ sum(rr,ResidualCapacity(rr,'RES_Wind_Onshore_Opt','2018')));
+BaseNewYearCapacity('2018','RES_Wind_Offshore_Deep',r) = (6.3 - 5.4)* (ResidualCapacity(r,'RES_Wind_Offshore_Deep','2018')/ sum(rr,ResidualCapacity(rr,'RES_Wind_Offshore_Deep','2018')));
+*75% are rooftop installations
+BaseNewYearCapacity('2018','RES_PV_Rooftop_Residential',r) = (45.7 - 42.3)* (ResidualCapacity(r,'RES_PV_Rooftop_Residential','2018')/ sum(rr,ResidualCapacity(rr,'RES_PV_Rooftop_Residential','2018'))) *0.75;
+BaseNewYearCapacity('2018','RES_PV_Utility_Opt',r) = (45.7 - 42.3)* (ResidualCapacity(r,'RES_PV_Utility_Opt','2018')/ sum(rr,ResidualCapacity(rr,'RES_PV_Utility_Opt','2018')))*0.25;
+BaseNewYearCapacity('2018','P_Gas_CCGT',r) = (30.9 - 30.1)* (ResidualCapacity(r,'P_Gas_CCGT','2018')/ sum(rr,ResidualCapacity(rr,'P_Gas_CCGT','2018')));
+BaseNewYearCapacity('2018','RES_Hydro_Large',r) = (9.8 - 9.5)* (ResidualCapacity(r,'RES_Hydro_Large','2018')/ sum(rr,ResidualCapacity(rr,'RES_Hydro_Large','2018')));
+
+
+*Fix new capacities for 2018
+NewCapacity.fx('2018',t,r)$(BaseNewYearCapacity('2018',t,r) > 0) = BaseNewYearCapacity('2018',t,r);
 
 *Adjust residual capacities
-ResidualCapacity(r,'RES_Wind_Onshore_Opt','2018')$((not offshore_nordic(r)) and (not offshore_baltic(r))) = ResidualCapacity(r,'RES_Wind_Onshore_Opt','2018') - BaseNewYearCapacity('2018','RES_Wind_Onshore_Opt',r);
+ResidualCapacity(r,t,'2018')$(BaseNewYearCapacity('2018',t,r) > 0) = max(0,ResidualCapacity(r,t,'2018') - BaseNewYearCapacity('2018',t,r));
 
+*Residual capacity must be at least as high as TotalAnnualMaxCapacity for each year and region given the additional new capacity in 2018
+TotalAnnualMaxCapacity(r,t,y)$(((ResidualCapacity(r,t,y) + BaseNewYearCapacity('2018',t,r)) > TotalAnnualMaxCapacity(r,t,y)) and (BaseNewYearCapacity('2018',t,r) > 0)) =  (max((ResidualCapacity(r,t,y) + BaseNewYearCapacity('2018',t,r)),TotalAnnualMaxCapacity(r,t,y)));
+
+
+*ResidualCapacity(r,'RES_Wind_Onshore_Opt','2018') = ResidualCapacity(r,'RES_Wind_Onshore_Opt','2018') - BaseNewYearCapacity('2018','RES_Wind_Onshore_Opt',r);
+*ResidualCapacity(r,'RES_PV_Rooftop_Residential','2018')= ResidualCapacity(r,'RES_PV_Rooftop_Residential','2018') - BaseNewYearCapacity('2018','RES_PV_Rooftop_Residential',r);
+*ResidualCapacity(r,'RES_PV_Utility_Opt','2018') = ResidualCapacity(r,'RES_PV_Utility_Opt','2018') - BaseNewYearCapacity('2018','RES_PV_Utility_Opt',r);
+*ResidualCapacity(r,'P_Gas_CCGT','2018') = ResidualCapacity(r,'P_Gas_CCGT','2018') - BaseNewYearCapacity('2018','P_Gas_CCGT',r);
 *for Offshore regions
-ResidualCapacity('DE_Nord','RES_Wind_Offshore_Deep','2018') = ResidualCapacity('DE_Nord','RES_Wind_Offshore_Deep','2018') - BaseNewYearCapacity('2018','RES_Wind_Offshore_Deep','DE_Nord');
+*ResidualCapacity('DE_Nord','RES_Wind_Offshore_Deep','2018') = max(0,ResidualCapacity('DE_Nord','RES_Wind_Offshore_Deep','2018') - BaseNewYearCapacity('2018','RES_Wind_Offshore_Deep','DE_Nord'));
 
+
+
+ 
