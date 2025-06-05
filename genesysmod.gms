@@ -196,7 +196,7 @@ parallelmode -1
 lpmethod 4
 names yes
 *writemps mpsfile
-solutiontype 2
+*solutiontype 2
 quality yes
 *barobjrng 1e+075
 tilim 1000000
@@ -209,7 +209,7 @@ names yes
 barhomogeneous 1
 timelimit 1000000
 *writeprob mps_GAMS.mps
-crossover 0
+*crossover 0
 $offecho
 
 
