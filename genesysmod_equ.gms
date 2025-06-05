@@ -213,7 +213,7 @@ or (sum(f,OutputActivityRatio(r,t,f,m,y)) = 0 and sum(f,InputActivityRatio(r,t,f
 
 $ifthen  %switch_intertemporal% == 1
 equation CA3a_RateOfTotalActivity_Intertemporal(REGION_FULL,TIMESLICE_FULL,TECHNOLOGY,YEAR_FULL);
-CA3a_RateOfTotalActivity_Intertemporal(r,l,t,y)$(CapacityFactor(r,t,l,y) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. sum(m, RateOfActivity(y,l,t,m,r)) =e= TotalActivityPerYear(r,l,t,y)*AvailabilityFactor(r,t,y) - DispatchDummy(r,l,t,y)*TagDispatchableTechnology(t) - CurtailedCapacity(r,l,t,y)*CapacityToActivityUnit(t);
+CA3a_RateOfTotalActivity_Intertemporal(r,l,t,y)$(CapacityFactor(r,t,l,y) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. sum(m, RateOfActivity(y,l,t,m,r)) =e= TotalActivityPerYear(r,l,t,y) - DispatchDummy(r,l,t,y)*TagDispatchableTechnology(t) - CurtailedCapacity(r,l,t,y)*CapacityToActivityUnit(t);
 
 equation CA4_TotalActivityPerYear_Intertemporal(REGION_FULL,TIMESLICE_FULL,TECHNOLOGY,YEAR_FULL);
 CA4_TotalActivityPerYear_Intertemporal(r,l,t,y)$((sum(yy$((YearVal(y)-YearVal(yy) < OperationalLife(t)) AND (YearVal(y)-YearVal(yy) >= 0)),CapacityFactor(r,t,l,yy)) > 0 or CapacityFactor(r,t,l,'%year%') > 0) and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0).. TotalActivityPerYear(r,l,t,y) =e= sum(yy$((YearVal(y)-YearVal(yy) < OperationalLife(t)) AND (YearVal(y)-YearVal(yy) >= 0)),
@@ -221,7 +221,7 @@ CA4_TotalActivityPerYear_Intertemporal(r,l,t,y)$((sum(yy$((YearVal(y)-YearVal(yy
 $else
 
 equation CA3b_RateOfTotalActivity(REGION_FULL,TIMESLICE_FULL,TECHNOLOGY,YEAR_FULL);
-CA3b_RateOfTotalActivity(r,l,t,y)$(CapacityFactor(r,t,l,y) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. sum(m, RateOfActivity(y,l,t,m,r)) =e= TotalCapacityAnnual(y,t,r) * CapacityFactor(r,t,l,y) * CapacityToActivityUnit(t) *AvailabilityFactor(r,t,y) - DispatchDummy(r,l,t,y)*TagDispatchableTechnology(t) - CurtailedCapacity(r,l,t,y)*CapacityToActivityUnit(t);
+CA3b_RateOfTotalActivity(r,l,t,y)$(CapacityFactor(r,t,l,y) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. sum(m, RateOfActivity(y,l,t,m,r)) =e= TotalCapacityAnnual(y,t,r) * CapacityFactor(r,t,l,y) * CapacityToActivityUnit(t) - DispatchDummy(r,l,t,y)*TagDispatchableTechnology(t) - CurtailedCapacity(r,l,t,y)*CapacityToActivityUnit(t);
 $endif
 
 equation CA3c_CurtailedCapacity(REGION_FULL,TIMESLICE_FULL,TECHNOLOGY,YEAR_FULL) Ensures that there cannot be more curtailment than actual installed capacity;
