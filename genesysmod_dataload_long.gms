@@ -134,6 +134,9 @@ se=0
         par=ModelPeriodEmissionLimit       Rng=Par_ModelPeriodEmissionLimit!A2                    rdim=1        cdim=0
         par=RegionalModelPeriodEmissionLimit       Rng=Par_RegionalModelPeriodEmission!A2         rdim=2        cdim=0
         par=ModelPeriodExogenousEmission       Rng=Par_ModelPeriodExogenousEmissio!A2            rdim=2        cdim=0
+        
+        par=AnnualMinNewCapacity         Rng=Par_AnnualMinNewCapacity!A2                         rdim=3        cdim=0
+        par=AnnualMaxNewCapacity         Rng=Par_AnnualMaxNewCapacity!A2                         rdim=3        cdim=0
 
 $offecho
 
@@ -152,7 +155,7 @@ $loadm TechnologyToStorage TechnologyFromStorage StorageLevelStart MinStorageCha
 $loadm CapitalCostStorage OperationalLifeStorage SpecifiedDemandDevelopment
 $loadm ResidualStorageCapacity CapacityToActivityUnit SelfSufficiency NewCapacityExpansionStop
 $loadm Readin_ModalSplitByFuelAndModalType TagTechnologyToModalType BaseYearProduction RegionalBaseYearProduction
-$loadm TagTechnologyToSector AnnualSectoralEmissionLimit TagCanFuelBeTraded
+$loadm TagTechnologyToSector AnnualSectoralEmissionLimit TagCanFuelBeTraded AnnualMinNewCapacity AnnualMaxNewCapacity
 $loadm RegionalCCSLimit TagDemandFuelToSector TagElectricTechnology  TagModalTypeToModalGroups
 $loadm TagTechnologyToSubsets TagFuelToSubsets StorageE2PRatio  ModelPeriodEmissionLimit  RegionalModelPeriodEmissionLimit
 $offUNDF
@@ -258,8 +261,6 @@ TradeLossBetweenRegions(r,f,y,rr) = TradeLossFactor(f,y)*TradeRoute(r,f,y,rr);
 *
 parameter YearVal(y_full);
 YearVal(y) = y.val ;
-
-NewCapacity.fx(y,t,r)$(YearVal(y)>NewCapacityExpansionStop(r,t) and NewCapacityExpansionStop(r,t) and not TotalAnnualMinCapacity(r,t,y)) = 0;
 
 *
 * ####### Load from hourly Data #############

@@ -511,10 +511,17 @@ TCC2_TotalAnnualMinCapacityConstraint(y,t,r)$(TotalAnnualMinCapacity(r,t,y)>0)..
 *
 * ############### New Capacity Constraints ##############
 *
-equation NCC1_TotalAnnualMaxNewCapacityConstraint(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-NCC1_TotalAnnualMaxNewCapacityConstraint(y,t,r)$(TotalAnnualMaxCapacityInvestment(r,t,y) < 999999).. NewCapacity(y,t,r) =l= TotalAnnualMaxCapacityInvestment(r,t,y);
-equation NCC2_TotalAnnualMinNewCapacityConstraint(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-NCC2_TotalAnnualMinNewCapacityConstraint(y,t,r)$(TotalAnnualMinCapacityInvestment(r,t,y) > 0).. NewCapacity(y,t,r) =g= TotalAnnualMinCapacityInvestment(r,t,y);
+equation NCC1_AnnualMaxNewCapacityConstraint(YEAR_FULL,TECHNOLOGY,REGION_FULL);
+NCC1_AnnualMaxNewCapacityConstraint(y,t,r)$(AnnualMaxNewCapacity(r,t,y) < 999999).. NewCapacity(y,t,r) =l= AnnualMaxNewCapacity(r,t,y);
+equation NCC2_AnnualMinNewCapacityConstraint(YEAR_FULL,TECHNOLOGY,REGION_FULL);
+NCC2_AnnualMinNewCapacityConstraint(y,t,r)$(AnnualMinNewCapacity(r,t,y) > 0).. NewCapacity(y,t,r) =g= AnnualMinNewCapacity(r,t,y);
+
+NewCapacity.fx(y,t,r)$(YearVal(y)>NewCapacityExpansionStop(r,t) and NewCapacityExpansionStop(r,t) and not TotalAnnualMinCapacity(r,t,y) and not AnnualMinNewCapacity(r,t,y)) = 0;
+
+equation NCC3_TotalAnnualMaxInvestmentConstraint(YEAR_FULL,TECHNOLOGY,REGION_FULL);
+NCC3_TotalAnnualMaxInvestmentConstraint(y,t,r)$(TotalAnnualMaxCapacityInvestment(r,t,y) < 999999).. CapitalInvestment(y,t,r) =l= TotalAnnualMaxCapacityInvestment(r,t,y);
+equation NCC4_TotalAnnualMinInvestmentConstraint(YEAR_FULL,TECHNOLOGY,REGION_FULL);
+NCC4_TotalAnnualMinInvestmentConstraint(y,t,r)$(TotalAnnualMinCapacityInvestment(r,t,y) > 0).. CapitalInvestment(y,t,r) =g= TotalAnnualMinCapacityInvestment(r,t,y);
 
 *
 * ################ Annual Activity Constraints ##############

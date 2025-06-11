@@ -8,7 +8,7 @@ warning_TotalAnnualMinCapacityTooHigh(r,t,y)$(TotalAnnualMaxCapacity(r,t,y)<Tota
 TotalAnnualMaxCapacity(r,t,y)$(TotalAnnualMaxCapacity(r,t,y)<TotalAnnualMinCapacity(r,t,'2025')) = TotalAnnualMinCapacity(r,t,'2025');
 
 * Limit capacity expansion in 2025 to only actually (historically) installed capacities
-NewCapacity.up('2025',t,r)$(TagTechnologyToSubsets(t,'PowerSupply') and not TotalAnnualMinCapacity(r,t,'2025')) = TotalAnnualMinCapacity(r,t,'2025');
+NewCapacity.up('2025',t,r)$(TagTechnologyToSubsets(t,'PowerSupply') and not TotalAnnualMinCapacity(r,t,'2025') and not sameas(t,'P_Nuclear')) = TotalAnnualMinCapacity(r,t,'2025');
 
 
 parameter ProductionAnnualLowerLimit;
@@ -17,7 +17,6 @@ SpecifiedAnnualDemand(r,'Heat_Buildings',y) = SpecifiedAnnualDemand(r,'Heat_Dist
 SpecifiedAnnualDemand(r,'Heat_District',y) = 0;
 
 
-positive variable heatingslack(y_full,r_full);
 equation Add_DistrictHeatLimit(y_full,f,r_full);
 Add_DistrictHeatLimit(y,'Heat_District',r).. sum((l,t,m)$(OutputActivityRatio(r,t,'Heat_District',m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,'Heat_District',m,y)*YearSplit(l,y)) =g= ProductionAnnualLowerLimit(y,'Heat_District',r)-heatingslack(y,r);
 

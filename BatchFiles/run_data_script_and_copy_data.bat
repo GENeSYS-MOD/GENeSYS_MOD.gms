@@ -107,11 +107,12 @@ echo output_format = 'long' >> "%PYTHON_SCRIPT%"
 echo processing_option = '%PROCESSING_OPTION%' >> "%PYTHON_SCRIPT%"
 echo scenario_option = 'Europe_EnVis_NECPEssentials' >> "%PYTHON_SCRIPT%"
 echo debugging_output = False >> "%PYTHON_SCRIPT%"
+echo data_base_region = 'DE' >> "%PYTHON_SCRIPT%"
 echo from functions.function_import import master_function >> "%PYTHON_SCRIPT%"
 echo scenarios = ["Europe_EnVis_Green","Europe_EnVis_Trinity","Europe_EnVis_REPowerEU++","Europe_EnVis_NECPEssentials"] >> "%PYTHON_SCRIPT%"
 echo for s in scenarios: >> "%PYTHON_SCRIPT%"
 echo     print("Currently performing operation for scenario: ", s) >> "%PYTHON_SCRIPT%"
-echo     master_function(settings_file, output_file_format, output_format, processing_option, s, debugging_output) >> "%PYTHON_SCRIPT%"
+echo     master_function(settings_file, output_file_format, output_format, processing_option, s, debugging_output, data_base_region) >> "%PYTHON_SCRIPT%"
 
 REM Check if Python script was created
 if not exist "%PYTHON_SCRIPT%" (
