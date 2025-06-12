@@ -23,7 +23,15 @@ jobs:
             -v "${{ github.workspace }}:/workspace" \
             -w /workspace \
             gams/gams \
-            gams genesysmod.gms lo=2 action=C --switch_only_load_gdx=1
+            gams genesysmod.gms lo=4 action=C --switch_only_load_gdx=1
+
+      - name: Upload listing as artifact
+        if: failure()  # uploads even on failure
+        uses: actions/upload-artifact@v4
+        with:
+          name: gams-logs
+          path: genesysmod.lst
+          path: genesysmod.log   
 
       - name: Run GAMS Compilation of Dispatch Model
         run: |
@@ -31,5 +39,22 @@ jobs:
             -v "${{ github.workspace }}:/workspace" \
             -w /workspace \
             gams/gams \
-            gams genesysmod_dispatch.gms lo=2 action=C --switch_only_load_gdx=1
+            gams genesysmod_dispatch.gms lo=4 action=C --switch_only_load_gdx=1
 
+      - name: Upload listing as artifact
+        if: failure()  # uploads even on failure
+        uses: actions/upload-artifact@v4
+        with:
+          name: gams-logs-dispatch
+          path: genesysmod_dispatch.lst
+          path: genesysmod_dispatch.log          
+
+      - name: Upload listing as artifact
+        if: always()  # uploads even on failure
+        uses: actions/upload-artifact@v4
+        with:
+          name: gams-logs-combined
+          path: genesysmod.lst
+          path: genesysmod.log  
+          path: genesysmod_dispatch.lst
+          path: genesysmod_dispatch.log         
