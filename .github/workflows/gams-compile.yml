@@ -23,7 +23,7 @@ jobs:
             -v "${{ github.workspace }}:/workspace" \
             -w /workspace \
             gams/gams \
-            genesysmod.gms lo=2 c=compileonly
+            gams genesysmod.gms lo=2 c=compileonly
 
       - name: Run GAMS Compilation of Dispatch Model
         run: |
@@ -31,5 +31,5 @@ jobs:
             -v "${{ github.workspace }}:/workspace" \
             -w /workspace \
             gams/gams \
-            genesysmod_dispatch.gms lo=2 c=compileonly
+            gams genesysmod_dispatch.gms lo=2 c=compileonly
 
