@@ -26,39 +26,10 @@ jobs:
             gams genesysmod.gms lo=4 action=C --switch_only_load_gdx=1 --model_region=middleearth --switch_unixPath=1
 
       - name: Upload listing as artifact
-        if: failure()  # uploads even on failure
+        if: always()  # uploads even on failure
         uses: actions/upload-artifact@v4
         with:
           name: gams-logs
           path: | 
             genesysmod.lst
             genesysmod.log    
-
-      - name: Run GAMS Compilation of Dispatch Model
-        run: |
-          docker run --rm \
-            -v "${{ github.workspace }}:/workspace" \
-            -w /workspace \
-            gams/gams \
-            gams genesysmod_dispatch.gms lo=4 action=C --switch_only_load_gdx=1
-
-      - name: Upload listing as artifact
-        if: failure()  # uploads even on failure
-        uses: actions/upload-artifact@v4
-        with:
-          name: gams-logs-dispatch
-          path: |  
-            genesysmod_dispatch.lst
-            genesysmod_dispatch.log           
-
-      - name: Upload listing as artifact
-        if: success()  # uploads even on failure
-        uses: actions/upload-artifact@v4
-        with:
-          name: gams-logs-combined
-          path: | 
-            genesysmod.lst
-            genesysmod.log  
-            genesysmod_dispatch.lst
-            genesysmod_dispatch.log     
-              
