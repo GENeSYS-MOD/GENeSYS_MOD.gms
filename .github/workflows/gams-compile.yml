@@ -23,7 +23,7 @@ jobs:
             -v "${{ github.workspace }}:/workspace" \
             -w /workspace \
             gams/gams \
-            gams genesysmod.gms lo=4 action=C --switch_only_load_gdx=1
+            gams genesysmod.gms lo=4 action=C --switch_only_load_gdx=1 --model_region=middleearth --switch_unixPath=1
 
       - name: Upload listing as artifact
         if: failure()  # uploads even on failure
