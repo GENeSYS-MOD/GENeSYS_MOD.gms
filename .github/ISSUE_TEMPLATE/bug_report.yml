@@ -41,5 +41,5 @@ body:
   - type: textarea
     id: logs
     attributes:
-      label: Optional: Relevant Logs / Screenshots
+      label: Optional - Relevant Logs / Screenshots
       description: Please copy and paste any relevant log output or screenshots.
