@@ -30,8 +30,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: gams-logs
-          path: genesysmod.lst
-          path: genesysmod.log   
+          path: | 
+            genesysmod.lst
+            genesysmod.log    
 
       - name: Run GAMS Compilation of Dispatch Model
         run: |
@@ -46,15 +47,18 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: gams-logs-dispatch
-          path: genesysmod_dispatch.lst
-          path: genesysmod_dispatch.log          
+          path: |  
+            genesysmod_dispatch.lst
+            genesysmod_dispatch.log           
 
       - name: Upload listing as artifact
-        if: always()  # uploads even on failure
+        if: success()  # uploads even on failure
         uses: actions/upload-artifact@v4
         with:
           name: gams-logs-combined
-          path: genesysmod.lst
-          path: genesysmod.log  
-          path: genesysmod_dispatch.lst
-          path: genesysmod_dispatch.log         
+          path: | 
+            genesysmod.lst
+            genesysmod.log  
+            genesysmod_dispatch.lst
+            genesysmod_dispatch.log     
+              
