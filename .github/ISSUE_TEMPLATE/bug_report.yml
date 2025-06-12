@@ -1,5 +1,5 @@
 name: Bug Report
-description: File a report if something isn’t working as expected.
+description: File a report if something isn't working as expected.
 title: "[BUG] <your bug title here>"
 labels: ["bug"]
 body:
@@ -37,7 +37,6 @@ body:
         3. See error
     validations:
       required: true
-
 
   - type: textarea
     id: logs
