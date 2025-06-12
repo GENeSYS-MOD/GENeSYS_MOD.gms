@@ -1,0 +1,35 @@
+name: Compile GAMS Model
+
+on:
+  push:
+    paths:
+      - '**.gms'
+  pull_request:
+    paths:
+      - '**.gms'
+
+jobs:
+  compile-gams:
+    name: GAMS Syntax Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Run GAMS Compilation of Core Model (GENeSYS-MOD)
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/workspace" \
+            -w /workspace \
+            gams/gams \
+            genesysmod.gms lo=2 c=compileonly
+
+      - name: Run GAMS Compilation of Dispatch Model
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/workspace" \
+            -w /workspace \
+            gams/gams \
+            genesysmod_dispatch.gms lo=2 c=compileonly
+
