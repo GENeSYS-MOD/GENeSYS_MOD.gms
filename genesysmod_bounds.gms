@@ -104,13 +104,6 @@ StorageLevelTSStart.fx('S_CAES',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(48
 ** This scales the capital cost of storage according to the number of days in the model.
 CapitalCostStorage(r,s,y) = max(round(CapitalCostStorage(r,s,y)/365*8760/%elmod_nthhour%/(24/hour_steps),4),0.01);
 
-equation Add_E2PRatio_up(STORAGE,YEAR_FULL,REGION_FULL);
-Add_E2PRatio_up(s,y,r).. StorageUpperLimit(s,y,r) =l=  sum((t,m)$(TechnologyToStorage(t,s,m,y)),  TotalCapacityAnnual(y,t,r) * StorageE2PRatio(s) * 0.0036 * 3);
-
-equation Add_E2PRatio_low(STORAGE,YEAR_FULL,REGION_FULL);
-Add_E2PRatio_low(s,y,r).. StorageUpperLimit(s,y,r) =g=  sum((t,m)$(TechnologyToStorage(t,s,m,y)),  TotalCapacityAnnual(y,t,r) * StorageE2PRatio(s) * 0.0036 * 0.5);
-
-
 *
 * ####### Capacity factor for heat technologies #############
 *

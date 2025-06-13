@@ -25,7 +25,7 @@ starttime = jnow;
 $if not set data_file                    $setglobal data_file RegularParameters_None
 $if not set hourly_data_file             $setglobal hourly_data_file Timeseries_Europe_EnVis_REPowerEU++
 $if not set switch_read_data_long        $setglobal switch_read_data_long 1
-$if not set elmod_nthhour                $setglobal elmod_nthhour 484
+$if not set elmod_nthhour                $setglobal elmod_nthhour 1924
 $if not set elmod_starthour              $setglobal elmod_starthour 8
 $if not set year                         $setglobal year 2018
 $if not set data_base_region             $setglobal data_base_region DE
@@ -58,6 +58,7 @@ $if not set set_symmetric_transmission   $setglobal set_symmetric_transmission 0
 $if not set switch_hydrogen_blending_share      $setglobal switch_hydrogen_blending_share 1
 $if not set set_storagelevelstart_up     $setglobal set_storagelevelstart_up 0.75
 $if not set set_storagelevelstart_low    $setglobal set_storagelevelstart_low 0.25
+$if not set switch_e2pratio_deviationfactor    $setglobal switch_e2pratio_deviationfactor 2
 
 $if not set switch_peaking_capacity      $setglobal switch_peaking_capacity 1
 $if not set switch_peaking_with_trade    $setglobal switch_peaking_with_trade 1

@@ -668,6 +668,14 @@ equation S6_StorageActivityLimit(STORAGE,TECHNOLOGY,YEAR_FULL,TIMESLICE_FULL,REG
 S6_StorageActivityLimit(s,t,y,l,r,m)$(TechnologyFromStorage(t,s,m,y)>0)..
 RateOfActivity(y,l,t,m,r)/TechnologyFromStorage(t,s,m,y)*YearSplit(l,y) =l= StorageLevelTSStart(s,y,l,r);
 
+equation S7a_Add_E2PRatio_up(STORAGE,YEAR_FULL,REGION_FULL);
+S7a_Add_E2PRatio_up(s,y,r).. (sum((yy)$(OperationalLifeStorage(s) >= Yearval(y)-Yearval(yy) and Yearval(y)-Yearval(yy) >= 0), NewStorageCapacity(s,yy,r)) + ResidualStorageCapacity(r,s,y)) =l=  sum((t,m)$(TechnologyToStorage(t,s,m,y)),  TotalCapacityAnnual(y,t,r) * StorageE2PRatio(s)*%switch_e2pratio_deviationfactor%);
+
+equation S7b_Add_E2PRatio_low(STORAGE,YEAR_FULL,REGION_FULL);
+S7b_Add_E2PRatio_low(s,y,r).. (sum((yy)$(OperationalLifeStorage(s) >= Yearval(y)-Yearval(yy) and Yearval(y)-Yearval(yy) >= 0), NewStorageCapacity(s,yy,r)) + ResidualStorageCapacity(r,s,y)) =g=  sum((t,m)$(TechnologyToStorage(t,s,m,y)),  TotalCapacityAnnual(y,t,r) * StorageE2PRatio(s)*(1/%switch_e2pratio_deviationfactor%));
+
+
+
 equation SI1_UndiscountedCapitalInvestmentStorage(STORAGE,YEAR_FULL,REGION_FULL);
 SI1_UndiscountedCapitalInvestmentStorage(s,y,r).. CapitalCostStorage(r,s,y) * NewStorageCapacity(s,y,r) =e= CapitalInvestmentStorage(s,y,r);
 equation SI2_DiscountingCapitalInvestmentStorage(STORAGE,YEAR_FULL,REGION_FULL);
