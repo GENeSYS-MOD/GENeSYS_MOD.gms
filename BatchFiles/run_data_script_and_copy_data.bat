@@ -26,7 +26,7 @@ if exist "%SETTINGS_FILE%" (
         set /p "ANACONDA_PATH=Enter the path to the Anaconda installation folder (usually C:\\Users\username\anaconda3): "
         set /p "ENV_NAME=Enter the name of the Conda environment: "
     ) else if /I "!USE_ANACONDA!"=="n" (
-        set "USE_ANACONDA=no"
+        set "USE_ANACONDA=n"
     ) else (
         echo Invalid input! Please enter yes, y, no, or n.
         goto ask_anaconda
