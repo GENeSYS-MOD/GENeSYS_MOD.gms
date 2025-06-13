@@ -113,7 +113,7 @@ $load TechnologyEmissionsByMode = AnnualTechnologyEmissionByMode.l
 $gdxin
 $else
 AnnualProduction(y,f,r) = ProductionAnnual(y,f,r);
-AnnualTechnologyProduction(y,t,f,r) = ProductionByTechnologyAnnual.l(y,t,f,r) ;
+AnnualTechnologyProduction(y,t,f,r) = ProductionByTechnologyAnnual.l(r,t,f,y) ;
 AnnualTechnologyProductionByMode(r,t,m,f,y) = sum(l,RateOfProductionByTechnologyByMode(y,l,t,m,f,r)*YearSplit(l,y));
 TechnologyEmissions(y,t,e,r) = AnnualTechnologyEmission.l(y,t,e,r)                         ;
 AnnualSectorEmissions(r,e,se,y)  = AnnualSectoralEmissions.l(y,e,se,r)                         ;
@@ -131,9 +131,9 @@ SectorEmissions(y,r,'Power',e) =  sum((m,t),TechnologyEmissionsByMode(y,t,e,m,r)
 SectorEmissions(y,r,TierFive,e) = sum((m,t),TechnologyEmissionsByMode(y,t,e,m,r)*OutputActivityRatio(r,t,TierFive,m,y));
 
 Parameter test(YEAR_FULL,FUEL,REGION_FULL);
-test(y,f,r) = sum(t,ProductionByTechnologyAnnual.l(y,t,'Power',r)$(not TagTechnologyToSector(t,'Storages')));
+test(y,f,r) = sum(t,ProductionByTechnologyAnnual.l(r,t,'Power',y)$(not TagTechnologyToSector(t,'Storages')));
 
-EmissionIntensity(y,r,'Power',e)$(sum(t,ProductionByTechnologyAnnual.l(y,t,'Power',r)$(not TagTechnologyToSector(t,'Storages')))) = SectorEmissions(y,r,'Power',e)/sum(t,ProductionByTechnologyAnnual.l(y,t,'Power',r)$(not TagTechnologyToSector(t,'Storages')));
+EmissionIntensity(y,r,'Power',e)$(sum(t,ProductionByTechnologyAnnual.l(r,t,'Power',y)$(not TagTechnologyToSector(t,'Storages')))) = SectorEmissions(y,r,'Power',e)/sum(t,ProductionByTechnologyAnnual.l(r,t,'Power',y)$(not TagTechnologyToSector(t,'Storages')));
 EmissionIntensity(y,r,TierFive,e)$(AnnualProduction(y,TierFive,r)) = SectorEmissions(y,r,TierFive,e)/AnnualProduction(y,TierFive,r);
 
 

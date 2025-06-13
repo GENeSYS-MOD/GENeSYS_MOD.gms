@@ -83,8 +83,8 @@ parameter DepreciationMethod Defines the method to use for depreciation of asset
 parameter SpecifiedAnnualDemand(REGION_FULL,FUEL,y_full) Defines the total demand for a fuel (either in energy or a proxy) across the year. Unit: PJ or km;
 parameter SpecifiedDemandDevelopment(REGION_FULL,FUEL,y_full) Defines the change in energy demand per year between modeled years;
 parameter SpecifiedDemandProfile(REGION_FULL,FUEL,TIMESLICE_FULL,y_full) Defines the relative demand per timeslice as a fraction of the total annual demand. Unit: Percent;
-parameter RateOfDemand(y_full,TIMESLICE_FULL,FUEL,REGION_FULL) Rate of demand in given timeslice. Unit: GW;
-parameter Demand(y_full,TIMESLICE_FULL,FUEL,REGION_FULL) Fuel demand for each timeslice. Unit: PJ (except for transport);
+parameter RateOfDemand(REGION_FULL,FUEL,TIMESLICE_FULL,y_full) Rate of demand in given timeslice. Unit: GW;
+parameter Demand(REGION_FULL,FUEL,TIMESLICE_FULL,y_full) Fuel demand for each timeslice. Unit: PJ (except for transport);
 
 *
 * ######## Technology Performance #############
@@ -96,7 +96,7 @@ parameter OperationalLife(TECHNOLOGY);
 parameter ResidualCapacity(REGION_FULL,TECHNOLOGY,y_full);
 parameter InputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y_full);
 parameter OutputActivityRatio(REGION_FULL,TECHNOLOGY,FUEL,MODE_OF_OPERATION,y_full);
-parameter CapacityOfOneTechnologyUnit(y_full, TECHNOLOGY, REGION_FULL);
+parameter CapacityOfOneTechnologyUnit(REGION_FULL, TECHNOLOGY, y_full);
 parameter TagDispatchableTechnology(TECHNOLOGY);
 parameter BaseYearProduction(TECHNOLOGY,FUEL,YEAR_FULL);
 parameter RegionalBaseYearProduction(REGION_FULL,TECHNOLOGY,FUEL,YEAR_FULL);
@@ -189,13 +189,13 @@ parameter CurtailmentCostFactor;
 *
 * ######### Trade #############
 *
-parameter TradeRoute(REGION_FULL,FUEL,y_full,rr_full);
+parameter TradeRoute(REGION_FULL,rr_full,FUEL,y_full);
 parameter TagCanFuelBeTraded(FUEL);
 parameter TradeCostFactor(FUEL, YEAR_FULL);
-parameter TradeCosts(REGION_FULL,FUEL,YEAR_FULL,rr_full);
+parameter TradeCosts(REGION_FULL,rr_full,FUEL,YEAR_FULL);
 parameter TradeLossFactor(FUEL, YEAR_FULL);
-parameter TradeRouteInstalledCapacity(y_full,f,r_full,rr_full);
-parameter TradeLossBetweenRegions(REGION_FULL,FUEL,y_full,RR_FULL);
+parameter TradeRouteInstalledCapacity(r_full,rr_full,f,y_full);
+parameter TradeLossBetweenRegions(REGION_FULL,RR_FULL,FUEL,y_full);
 
 
 parameter CommissionedTradeCapacity(r_full,f,y_full,rr_full);
@@ -220,21 +220,21 @@ parameter ProductionGrowthLimit(FUEL,YEAR_FULL);
 *
 * ############### Capacity Variables ############*
 *
-positive variable NewCapacity(y_full,TECHNOLOGY,REGION_FULL);
-positive variable AccumulatedNewCapacity(y_full,TECHNOLOGY,REGION_FULL);
-positive variable TotalCapacityAnnual(y_full,TECHNOLOGY,REGION_FULL);
+positive variable NewCapacity(REGION_FULL,TECHNOLOGY,y_full);
+positive variable AccumulatedNewCapacity(REGION_FULL,TECHNOLOGY,y_full);
+positive variable TotalCapacityAnnual(REGION_FULL,TECHNOLOGY,y_full);
 
 *
 * ############### Activity Variables #############
 *
-positive variable RateOfActivity(y_full,TIMESLICE_FULL,TECHNOLOGY,MODE_OF_OPERATION,REGION_FULL);
+positive variable RateOfActivity(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,TIMESLICE_FULL,y_full);
 
-positive variable TotalTechnologyAnnualActivity(y_full,TECHNOLOGY,REGION_FULL);
+positive variable TotalTechnologyAnnualActivity(REGION_FULL,TECHNOLOGY,y_full);
 
-positive variable TotalAnnualTechnologyActivityByMode(y_full,TECHNOLOGY,MODE_OF_OPERATION,REGION_FULL);
+positive variable TotalAnnualTechnologyActivityByMode(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,y_full);
 
-positive variable ProductionByTechnologyAnnual(y_full,TECHNOLOGY,FUEL,REGION_FULL);
-positive variable UseByTechnologyAnnual(y_full,TECHNOLOGY,FUEL,REGION_FULL);
+positive variable ProductionByTechnologyAnnual(REGION_FULL,TECHNOLOGY,FUEL,y_full);
+positive variable UseByTechnologyAnnual(REGION_FULL,TECHNOLOGY,FUEL,y_full);
 
 positive variable TotalActivityPerYear(REGION_FULL,TIMESLICE_FULL,TECHNOLOGY,YEAR_FULL);
 positive variable CurtailedEnergyAnnual(y_full,f,r_full);
@@ -321,9 +321,9 @@ positive variable DiscountedNewTradeCapacityCosts(YEAR_FULL, FUEL, REGION_FULL, 
 
 free variable NetTrade(y_full,TIMESLICE_FULL,FUEL,REGION_FULL);
 free variable NetTradeAnnual(y_full,FUEL,REGION_FULL);
-free variable TotalTradeCosts(y_full,TIMESLICE_FULL,REGION_FULL);
-free variable AnnualTotalTradeCosts(y_full,REGION_FULL);
-free variable DiscountedAnnualTotalTradeCosts(y_full,REGION_FULL);
+free variable TotalTradeCosts(REGION_FULL,TIMESLICE_FULL,y_full);
+free variable AnnualTotalTradeCosts(REGION_FULL,y_full);
+free variable DiscountedAnnualTotalTradeCosts(REGION_FULL,y_full);
 
 *
 * ######### Transportation #############

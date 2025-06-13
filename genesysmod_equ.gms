@@ -27,7 +27,7 @@ free variable z;
 
 equation cost;
 cost.. z =e= sum((y,r), TotalDiscountedCost(y,r))
-+ sum((y,r), DiscountedAnnualTotalTradeCosts(y,r))
++ sum((y,r), DiscountedAnnualTotalTradeCosts(r,y))
 + sum((y,f,r,rr), DiscountedNewTradeCapacityCosts(y,f,r,rr))
 + sum((y,f,r), DiscountedAnnualCurtailmentCost(y,f,r))
 + sum((y,r,f,t),BaseYearBounds_TooHigh(y,r,t,f)*9999)
@@ -40,10 +40,10 @@ cost.. z =e= sum((y,r), TotalDiscountedCost(y,r))
 * # Parameter assignments #
 * #########################
 
-RateOfDemand(y,l,f,r) = SpecifiedAnnualDemand(r,f,y)*SpecifiedDemandProfile(r,f,l,y) / YearSplit(l,y);
-Demand(y,l,f,r) = RateOfDemand(y,l,f,r)*YearSplit(l,y);
+RateOfDemand(r,f,l,y) = SpecifiedAnnualDemand(r,f,y)*SpecifiedDemandProfile(r,f,l,y) / YearSplit(l,y);
+Demand(r,f,l,y) = RateOfDemand(r,f,l,y)*YearSplit(l,y);
 
-Demand(y,l,f,r)$(Demand(y,l,f,r) < 0.000001) = 0;
+Demand(r,f,l,y)$(Demand(r,f,l,y) < 0.000001) = 0;
 CapacityFactor(r,t,l,y)$(CapacityFactor(r,t,l,y) < 0.000001) = 0;
 
 parameter CanFuelBeUsedByModeByTech(YEAR_FULL, FUEL, REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION);
@@ -182,14 +182,14 @@ PureDemandFuel(y,f,r)$
 * ############### Capacity Adequacy A #############
 
 *
-equation CA1_TotalNewCapacity(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-CA1_TotalNewCapacity(y,t,r)$(sum(yy$((YearVal(y)-YearVal(yy) < OperationalLife(t)) AND (YearVal(y)-YearVal(yy) >= 0)), TotalAnnualMaxCapacity(r,t,yy)) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. AccumulatedNewCapacity(y,t,r) =e= sum(yy$((YearVal(y)-YearVal(yy) < OperationalLife(t)) AND (YearVal(y)-YearVal(yy) >= 0)), NewCapacity(yy,t,r));
-AccumulatedNewCapacity.fx(y,t,r)$(sum(yy$((YearVal(y)-YearVal(yy) < OperationalLife(t)) AND (YearVal(y)-YearVal(yy) >= 0)), TotalAnnualMaxCapacity(r,t,yy)) = 0 or TotalTechnologyModelPeriodActivityUpperLimit(r,t) = 0) = 0;
+equation CA1_TotalNewCapacity(REGION_FULL,TECHNOLOGY,YEAR_FULL);
+CA1_TotalNewCapacity(r,t,y)$(sum(yy$((YearVal(y)-YearVal(yy) < OperationalLife(t)) AND (YearVal(y)-YearVal(yy) >= 0)), TotalAnnualMaxCapacity(r,t,yy)) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. AccumulatedNewCapacity(r,t,y) =e= sum(yy$((YearVal(y)-YearVal(yy) < OperationalLife(t)) AND (YearVal(y)-YearVal(yy) >= 0)), NewCapacity(r,t,yy));
+AccumulatedNewCapacity.fx(r,t,y)$(sum(yy$((YearVal(y)-YearVal(yy) < OperationalLife(t)) AND (YearVal(y)-YearVal(yy) >= 0)), TotalAnnualMaxCapacity(r,t,yy)) = 0 or TotalTechnologyModelPeriodActivityUpperLimit(r,t) = 0) = 0;
 
 equation CA2_TotalAnnualCapacity(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-CA2_TotalAnnualCapacity(y,t,r)$(AccumulatedNewCapacity.up(y,t,r) > 0 or ResidualCapacity(r,t,y) > 0).. AccumulatedNewCapacity(y,t,r) + ResidualCapacity(r,t,y) =e= TotalCapacityAnnual(y,t,r);
-TotalCapacityAnnual.fx(y,t,r)$(AccumulatedNewCapacity.up(y,t,r) = 0 and ResidualCapacity(r,t,y) = 0) = 0;
-AccumulatedNewCapacity.fx(y,t,r)$(AccumulatedNewCapacity.up(y,t,r) = 0) = 0;
+CA2_TotalAnnualCapacity(y,t,r)$(AccumulatedNewCapacity.up(r,t,y) > 0 or ResidualCapacity(r,t,y) > 0).. AccumulatedNewCapacity(r,t,y) + ResidualCapacity(r,t,y) =e= TotalCapacityAnnual(r,t,y);
+TotalCapacityAnnual.fx(r,t,y)$(AccumulatedNewCapacity.up(r,t,y) = 0 and ResidualCapacity(r,t,y) = 0) = 0;
+AccumulatedNewCapacity.fx(r,t,y)$(AccumulatedNewCapacity.up(r,t,y) = 0) = 0;
 
 parameter CanBuildTechnology(YEAR_FULL, TECHNOLOGY, REGION_FULL);
 CanBuildTechnology(y,t,r)$
@@ -198,103 +198,103 @@ CanBuildTechnology(y,t,r)$
  AvailabilityFactor(r,t,y)*
  TotalTechnologyModelPeriodActivityUpperLimit(r,t)*
  TotalTechnologyAnnualActivityUpperLimit(r,t,y)
- > 0 and TotalCapacityAnnual.up(y,t,r) > 0) = 1;
+ > 0 and TotalCapacityAnnual.up(r,t,y) > 0) = 1;
 
-RateOfActivity.fx(y,l,t,m,r)$
+RateOfActivity.fx(r,t,m,l,y)$
   (CapacityFactor(r,t,l,y) = 0
 or AvailabilityFactor(r,t,y) = 0
 or TotalTechnologyModelPeriodActivityUpperLimit(r,t) = 0
 or TotalTechnologyAnnualActivityUpperLimit(r,t,y) = 0
 or TotalAnnualMaxCapacity(r,t,y) = 0
-or TotalCapacityAnnual.up(y,t,r) = 0
+or TotalCapacityAnnual.up(r,t,y) = 0
 or (sum(f,OutputActivityRatio(r,t,f,m,y)) = 0 and sum(f,InputActivityRatio(r,t,f,m,y)) = 0)
 ) = 0;
 
 
 $ifthen  %switch_intertemporal% == 1
 equation CA3a_RateOfTotalActivity_Intertemporal(REGION_FULL,TIMESLICE_FULL,TECHNOLOGY,YEAR_FULL);
-CA3a_RateOfTotalActivity_Intertemporal(r,l,t,y)$(CapacityFactor(r,t,l,y) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. sum(m, RateOfActivity(y,l,t,m,r)) =e= TotalActivityPerYear(r,l,t,y) - DispatchDummy(r,l,t,y)*TagDispatchableTechnology(t) - CurtailedCapacity(r,l,t,y)*CapacityToActivityUnit(t);
+CA3a_RateOfTotalActivity_Intertemporal(r,l,t,y)$(CapacityFactor(r,t,l,y) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. sum(m, RateOfActivity(r,t,m,l,y)) =e= TotalActivityPerYear(r,l,t,y) - DispatchDummy(r,l,t,y)*TagDispatchableTechnology(t) - CurtailedCapacity(r,l,t,y)*CapacityToActivityUnit(t);
 
 equation CA4_TotalActivityPerYear_Intertemporal(REGION_FULL,TIMESLICE_FULL,TECHNOLOGY,YEAR_FULL);
 CA4_TotalActivityPerYear_Intertemporal(r,l,t,y)$((sum(yy$((YearVal(y)-YearVal(yy) < OperationalLife(t)) AND (YearVal(y)-YearVal(yy) >= 0)),CapacityFactor(r,t,l,yy)) > 0 or CapacityFactor(r,t,l,'%year%') > 0) and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0).. TotalActivityPerYear(r,l,t,y) =e= sum(yy$((YearVal(y)-YearVal(yy) < OperationalLife(t)) AND (YearVal(y)-YearVal(yy) >= 0)),
-(NewCapacity(yy,t,r) * CapacityFactor(r,t,l,yy) * CapacityToActivityUnit(t)))+(ResidualCapacity(r,t,y)*CapacityFactor(r,t,l,'%year%') * CapacityToActivityUnit(t));
+(NewCapacity(r,t,yy) * CapacityFactor(r,t,l,yy) * CapacityToActivityUnit(t)))+(ResidualCapacity(r,t,y)*CapacityFactor(r,t,l,'%year%') * CapacityToActivityUnit(t));
 $else
 
 equation CA3b_RateOfTotalActivity(REGION_FULL,TIMESLICE_FULL,TECHNOLOGY,YEAR_FULL);
-CA3b_RateOfTotalActivity(r,l,t,y)$(CapacityFactor(r,t,l,y) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. sum(m, RateOfActivity(y,l,t,m,r)) =e= TotalCapacityAnnual(y,t,r) * CapacityFactor(r,t,l,y) * CapacityToActivityUnit(t) - DispatchDummy(r,l,t,y)*TagDispatchableTechnology(t) - CurtailedCapacity(r,l,t,y)*CapacityToActivityUnit(t);
+CA3b_RateOfTotalActivity(r,l,t,y)$(CapacityFactor(r,t,l,y) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. sum(m, RateOfActivity(r,t,m,l,y)) =e= TotalCapacityAnnual(r,t,y) * CapacityFactor(r,t,l,y) * CapacityToActivityUnit(t) - DispatchDummy(r,l,t,y)*TagDispatchableTechnology(t) - CurtailedCapacity(r,l,t,y)*CapacityToActivityUnit(t);
 $endif
 
 equation CA3c_CurtailedCapacity(REGION_FULL,TIMESLICE_FULL,TECHNOLOGY,YEAR_FULL) Ensures that there cannot be more curtailment than actual installed capacity;
-CA3c_CurtailedCapacity(r,l,t,y)..  TotalCapacityAnnual(y,t,r) =g= CurtailedCapacity(r,l,t,y);
+CA3c_CurtailedCapacity(r,l,t,y)..  TotalCapacityAnnual(r,t,y) =g= CurtailedCapacity(r,l,t,y);
 
 equation CA5_CapacityAdequacy(YEAR_FULL,TECHNOLOGY,REGION_FULL) Constraint to limit timeslice generation to installed capacity and availability factor;
-CA5_CapacityAdequacy(y,t,r)$(AvailabilityFactor(r,t,y)<1 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0 and TotalCapacityAnnual.up(y,t,r) > 0).. sum(l, sum(m, RateOfActivity(y,l,t,m,r))*YearSplit(l,y)) =l= sum(l,TotalCapacityAnnual(y,t,r)*CapacityFactor(r,t,l,y)*YearSplit(l,y)*AvailabilityFactor(r,t,y)*CapacityToActivityUnit(t));
+CA5_CapacityAdequacy(y,t,r)$(AvailabilityFactor(r,t,y)<1 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0 and TotalCapacityAnnual.up(r,t,y) > 0).. sum(l, sum(m, RateOfActivity(r,t,m,l,y))*YearSplit(l,y)) =l= sum(l,TotalCapacityAnnual(r,t,y)*CapacityFactor(r,t,l,y)*YearSplit(l,y)*AvailabilityFactor(r,t,y)*CapacityToActivityUnit(t));
 
 *
 * ##############* Energy Balances #############
 *
 
 equation EB1_TradeBalanceEachTS(YEAR_FULL,TIMESLICE_FULL,FUEL,r_full,rr_FULL);
-EB1_TradeBalanceEachTS(y,l,f,r,rr)$(TradeRoute(r,f,y,rr) and TagCanFuelBeTraded(f)).. Import(y,l,f,r,rr) =e= Export(y,l,f,rr,r);
-Import.fx(y,l,f,r,rr)$(TradeRoute(r,f,y,rr) = 0 or TagCanFuelBeTraded(f) = 0) = 0;
-Export.fx(y,l,f,rr,r)$(TradeRoute(r,f,y,rr) = 0 or TagCanFuelBeTraded(f) = 0) = 0;
-NetTrade.fx(y,l,f,r)$(sum(rr,TradeRoute(r,f,y,rr)) = 0 or TagCanFuelBeTraded(f) = 0) = 0;
+EB1_TradeBalanceEachTS(y,l,f,r,rr)$(TradeRoute(r,rr,f,y) and TagCanFuelBeTraded(f)).. Import(y,l,f,r,rr) =e= Export(y,l,f,rr,r);
+Import.fx(y,l,f,r,rr)$(TradeRoute(r,rr,f,y) = 0 or TagCanFuelBeTraded(f) = 0) = 0;
+Export.fx(y,l,f,rr,r)$(TradeRoute(r,rr,f,y) = 0 or TagCanFuelBeTraded(f) = 0) = 0;
+NetTrade.fx(y,l,f,r)$(sum(rr,TradeRoute(r,rr,f,y)) = 0 or TagCanFuelBeTraded(f) = 0) = 0;
 
 equation EB2_EnergyBalanceEachTS(YEAR_FULL,TIMESLICE_FULL,FUEL,REGION_FULL);
-EB2_EnergyBalanceEachTS(y,l,f,r)$(TagTimeIndependentFuel(y,f,r) = 0).. sum((t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y))*YearSplit(l,y) =e= Demand(y,l,f,r) + sum((t,m)$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*InputActivityRatio(r,t,f,m,y)*TimeDepEfficiency(r,t,l,y))*YearSplit(l,y) + NetTrade(y,l,f,r);
+EB2_EnergyBalanceEachTS(y,l,f,r)$(TagTimeIndependentFuel(y,f,r) = 0).. sum((t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(r,t,m,l,y)*OutputActivityRatio(r,t,f,m,y))*YearSplit(l,y) =e= Demand(r,f,l,y) + sum((t,m)$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(r,t,m,l,y)*InputActivityRatio(r,t,f,m,y)*TimeDepEfficiency(r,t,l,y))*YearSplit(l,y) + NetTrade(y,l,f,r);
 
 equation EB3_EnergyBalanceEachYear(YEAR_FULL,FUEL,REGION_FULL);
-EB3_EnergyBalanceEachYear(y,f,r)$(TagTimeIndependentFuel(y,f,r)).. sum((l,t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y)) =g= sum((l,t,m)$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*InputActivityRatio(r,t,f,m,y)*YearSplit(l,y)*TimeDepEfficiency(r,t,l,y)) + NetTradeAnnual(y,f,r);
+EB3_EnergyBalanceEachYear(y,f,r)$(TagTimeIndependentFuel(y,f,r)).. sum((l,t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(r,t,m,l,y)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y)) =g= sum((l,t,m)$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(r,t,m,l,y)*InputActivityRatio(r,t,f,m,y)*YearSplit(l,y)*TimeDepEfficiency(r,t,l,y)) + NetTradeAnnual(y,f,r);
 
 equation EB4_NetTradeBalance(YEAR_FULL,TIMESLICE_FULL,FUEL,REGION_FULL);
-EB4_NetTradeBalance(y,l,f,r)$(sum(rr,TradeRoute(r,f,y,rr)) and TagCanFuelBeTraded(f)).. sum(rr$(TradeRoute(r,f,y,rr)), Export(y,l,f,r,rr)*(1+TradeLossBetweenRegions(r,f,y,rr)) - Import(y,l,f,r,rr)) =e= NetTrade(y,l,f,r);
+EB4_NetTradeBalance(y,l,f,r)$(sum(rr,TradeRoute(r,rr,f,y)) and TagCanFuelBeTraded(f)).. sum(rr$(TradeRoute(r,rr,f,y)), Export(y,l,f,r,rr)*(1+TradeLossBetweenRegions(r,rr,f,y)) - Import(y,l,f,r,rr)) =e= NetTrade(y,l,f,r);
 
 equation EB5_AnnualNetTradeBalance(YEAR_FULL,FUEL,REGION_FULL);
-EB5_AnnualNetTradeBalance(y,f,r)$(sum(rr,TradeRoute(r,f,y,rr)) and TagCanFuelBeTraded(f)).. sum(l, (NetTrade(y,l,f,r))) =e= NetTradeAnnual(y,f,r);
-NetTradeAnnual.fx(y,f,r)$(sum(rr,TradeRoute(r,f,y,rr)) = 0 or TagCanFuelBeTraded(f) = 0) = 0;
+EB5_AnnualNetTradeBalance(y,f,r)$(sum(rr,TradeRoute(r,rr,f,y)) and TagCanFuelBeTraded(f)).. sum(l, (NetTrade(y,l,f,r))) =e= NetTradeAnnual(y,f,r);
+NetTradeAnnual.fx(y,f,r)$(sum(rr,TradeRoute(r,rr,f,y)) = 0 or TagCanFuelBeTraded(f) = 0) = 0;
 
 equation EB6_AnnualEnergyCurtailment(YEAR_FULL,FUEL,REGION_FULL);
 EB6_AnnualEnergyCurtailment(y,f,r).. CurtailedEnergyAnnual(y,f,r) =e= sum((l,t,m),CurtailedCapacity(r,l,t,y)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y)*CapacityToActivityUnit(t));
 
 equation EB7_AnnualSelfSufficiency(YEAR_FULL,FUEL,REGION_FULL);
-EB7_AnnualSelfSufficiency(y,f,r)$(SelfSufficiency(y,f,r) <> 0).. sum((l,t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y)) =g= (SpecifiedAnnualDemand(r,f,y)+sum((l,t,m)$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*InputActivityRatio(r,t,f,m,y)*YearSplit(l,y)*TimeDepEfficiency(r,t,l,y)))*SelfSufficiency(y,f,r);
+EB7_AnnualSelfSufficiency(y,f,r)$(SelfSufficiency(y,f,r) <> 0).. sum((l,t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(r,t,m,l,y)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y)) =g= (SpecifiedAnnualDemand(r,f,y)+sum((l,t,m)$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(r,t,m,l,y)*InputActivityRatio(r,t,f,m,y)*YearSplit(l,y)*TimeDepEfficiency(r,t,l,y)))*SelfSufficiency(y,f,r);
 
 *
 * ##############* Trade Capacities & Investments #############
 *
 equation TrC1_TradeCapacityPowerLinesImport(YEAR_FULL,TIMESLICE_FULL,FUEL,REGION_FULL,rr_full);
-TrC1_TradeCapacityPowerLinesImport(y,l,'Power',r,rr)$(TradeRoute(r,'Power',y,rr) > 0).. (Import(y,l,'Power',r,rr)) =l= TotalTradeCapacity(y,'Power',rr,r)*YearSplit(l,y)*31.536;
+TrC1_TradeCapacityPowerLinesImport(y,l,'Power',r,rr)$(TradeRoute(r,rr,'Power',y) > 0).. (Import(y,l,'Power',r,rr)) =l= TotalTradeCapacity(y,'Power',rr,r)*YearSplit(l,y)*31.536;
 
 equation TrC2a_TotalTradeCapacityStartYear(YEAR_FULL,FUEL,REGION_FULL,rr_full);
-TrC2a_TotalTradeCapacityStartYear(y,f,r,rr)$(TradeRoute(r,f,y,rr) and TagCanFuelBeTraded(f) and YearVal(y) = %year%).. TotalTradeCapacity(y,f,r,rr) =e= TradeCapacity(r,f,y,rr);
+TrC2a_TotalTradeCapacityStartYear(y,f,r,rr)$(TradeRoute(r,rr,f,y) and TagCanFuelBeTraded(f) and YearVal(y) = %year%).. TotalTradeCapacity(y,f,r,rr) =e= TradeCapacity(r,f,y,rr);
 equation TrC2b_TotalTradeCapacity(YEAR_FULL,FUEL,REGION_FULL,rr_full);
-TrC2b_TotalTradeCapacity(y,f,r,rr)$(TradeRoute(r,f,y,rr) and TagCanFuelBeTraded(f) and YearVal(y) > %year%).. TotalTradeCapacity(y,f,r,rr) =e= TotalTradeCapacity(y-1,f,r,rr) + NewTradeCapacity(y,f,r,rr) + CommissionedTradeCapacity(r,f,y,rr);
+TrC2b_TotalTradeCapacity(y,f,r,rr)$(TradeRoute(r,rr,f,y) and TagCanFuelBeTraded(f) and YearVal(y) > %year%).. TotalTradeCapacity(y,f,r,rr) =e= TotalTradeCapacity(y-1,f,r,rr) + NewTradeCapacity(y,f,r,rr) + CommissionedTradeCapacity(r,f,y,rr);
 
 equation TrC3_NewTradeCapacityLimitPowerLines(YEAR_FULL,FUEL,REGION_FULL,rr_full);
-TrC3_NewTradeCapacityLimitPowerLines(y,'Power',r,rr)$(TradeRoute(r,'Power',y,rr) > 0 and GrowthRateTradeCapacity(r,'Power',y,rr) > 0 and YearVal(y) > %year%).. (GrowthRateTradeCapacity(r,'Power',y,rr)*YearlyDifferenceMultiplier(y))*TotalTradeCapacity(y-1,'Power',r,rr) =g= NewTradeCapacity(y,'Power',r,rr);
-NewTradeCapacity.fx(y,'Power',r,rr)$(TradeRoute(r,'Power',y,rr) = 0 or GrowthRateTradeCapacity(r,'Power',y,rr) = 0) = 0;
+TrC3_NewTradeCapacityLimitPowerLines(y,'Power',r,rr)$(TradeRoute(r,rr,'Power',y) > 0 and GrowthRateTradeCapacity(r,'Power',y,rr) > 0 and YearVal(y) > %year%).. (GrowthRateTradeCapacity(r,'Power',y,rr)*YearlyDifferenceMultiplier(y))*TotalTradeCapacity(y-1,'Power',r,rr) =g= NewTradeCapacity(y,'Power',r,rr);
+NewTradeCapacity.fx(y,'Power',r,rr)$(TradeRoute(r,rr,'Power',y) = 0 or GrowthRateTradeCapacity(r,'Power',y,rr) = 0) = 0;
 
 
 
 *### Trade Capacities for H2 and Natural Gas, when initially no capacities existed, so that the model has the ability to build additional capacities
 equation TrC4a_NewTradeCapacityLimitNatGas(YEAR_FULL,FUEL,REGION_FULL,rr_full);
-TrC4a_NewTradeCapacityLimitNatGas(y,'Gas_Natural',r,rr)$(TradeRoute(r,'Gas_Natural',y,rr) and GrowthRateTradeCapacity(r,'Gas_Natural',y,rr)).. 100$(not TradeCapacity(r,'Gas_Natural',y,rr))+(GrowthRateTradeCapacity(r,'Gas_Natural',y,rr)*YearlyDifferenceMultiplier(y))*TotalTradeCapacity(y-1,'Gas_Natural',r,rr) =g= NewTradeCapacity(y,'Gas_Natural',r,rr);
+TrC4a_NewTradeCapacityLimitNatGas(y,'Gas_Natural',r,rr)$(TradeRoute(r,rr,'Gas_Natural',y) and GrowthRateTradeCapacity(r,'Gas_Natural',y,rr)).. 100$(not TradeCapacity(r,'Gas_Natural',y,rr))+(GrowthRateTradeCapacity(r,'Gas_Natural',y,rr)*YearlyDifferenceMultiplier(y))*TotalTradeCapacity(y-1,'Gas_Natural',r,rr) =g= NewTradeCapacity(y,'Gas_Natural',r,rr);
 
 equation TrC5a_NewTradeCapacityLimitH2(YEAR_FULL,FUEL,REGION_FULL,rr_full);
-TrC5a_NewTradeCapacityLimitH2(y,'H2',r,rr)$(TradeRoute(r,'H2',y,rr) and GrowthRateTradeCapacity(r,'H2',y,rr)).. 50$(not TradeCapacity(r,'H2',y,rr))+(GrowthRateTradeCapacity(r,'H2',y,rr)*YearlyDifferenceMultiplier(y))*TotalTradeCapacity(y-1,'H2',r,rr) =g= NewTradeCapacity(y,'H2',r,rr);
+TrC5a_NewTradeCapacityLimitH2(y,'H2',r,rr)$(TradeRoute(r,rr,'H2',y) and GrowthRateTradeCapacity(r,'H2',y,rr)).. 50$(not TradeCapacity(r,'H2',y,rr))+(GrowthRateTradeCapacity(r,'H2',y,rr)*YearlyDifferenceMultiplier(y))*TotalTradeCapacity(y-1,'H2',r,rr) =g= NewTradeCapacity(y,'H2',r,rr);
 
-NewTradeCapacity.fx(y,f,r,rr)$(not TradeRoute(r,f,y,rr)) = 0;
+NewTradeCapacity.fx(y,f,r,rr)$(not TradeRoute(r,rr,f,y)) = 0;
 
 
 equation TrC4_NewTradeCapacityCosts(YEAR_FULL,FUEL,REGION_FULL,rr_full);
-TrC4_NewTradeCapacityCosts(y,f,r,rr)$(TradeRoute(r,f,y,rr) and TradeCapacityGrowthCosts(r,f,rr))..  NewTradeCapacity(y,f,r,rr)*TradeCapacityGrowthCosts(r,f,rr)*TradeRoute(r,f,y,rr) =e= NewTradeCapacityCosts(y,f,r,rr);
+TrC4_NewTradeCapacityCosts(y,f,r,rr)$(TradeRoute(r,rr,f,y) and TradeCapacityGrowthCosts(r,f,rr))..  NewTradeCapacity(y,f,r,rr)*TradeCapacityGrowthCosts(r,f,rr)*TradeRoute(r,rr,f,y) =e= NewTradeCapacityCosts(y,f,r,rr);
 equation TrC5_DiscountedNewTradeCapacityCosts(YEAR_FULL,FUEL,REGION_FULL,rr_full);
-TrC5_DiscountedNewTradeCapacityCosts(y,f,r,rr)$(TradeRoute(r,f,y,rr) and TradeCapacityGrowthCosts(r,f,rr)).. NewTradeCapacityCosts(y,f,r,rr)/((1+GeneralDiscountRate(r))**(YearVal(y)-smin(yy, YearVal(yy))+0.5)) =e= DiscountedNewTradeCapacityCosts(y,f,r,rr);
-DiscountedNewTradeCapacityCosts.fx(y,f,r,rr)$(TradeRoute(r,f,y,rr) = 0 or not TradeCapacityGrowthCosts(r,f,rr)) = 0;
+TrC5_DiscountedNewTradeCapacityCosts(y,f,r,rr)$(TradeRoute(r,rr,f,y) and TradeCapacityGrowthCosts(r,f,rr)).. NewTradeCapacityCosts(y,f,r,rr)/((1+GeneralDiscountRate(r))**(YearVal(y)-smin(yy, YearVal(yy))+0.5)) =e= DiscountedNewTradeCapacityCosts(y,f,r,rr);
+DiscountedNewTradeCapacityCosts.fx(y,f,r,rr)$(TradeRoute(r,rr,f,y) = 0 or not TradeCapacityGrowthCosts(r,f,rr)) = 0;
 
 $ifthen set set_symmetric_transmission
 equation TrC6_SymmetricalTransmissionExpansion(YEAR_FULL,REGION_FULL,RR_FULL);
-TrC6_SymmetricalTransmissionExpansion(y,r,rr)$(TradeRoute(r,'Power',y,rr) > 0).. NewTradeCapacity(y,'Power',r,rr) =g= NewTradeCapacity(y,'Power',rr,r)*%set_symmetric_transmission%;
+TrC6_SymmetricalTransmissionExpansion(y,r,rr)$(TradeRoute(r,rr,'Power',y) > 0).. NewTradeCapacity(y,'Power',r,rr) =g= NewTradeCapacity(y,'Power',rr,r)*%set_symmetric_transmission%;
 $endif
 
 equation TrC7_TradeCapacityLimitNonPower(YEAR_FULL,FUEL,REGION_FULL,rr_full);
@@ -349,43 +349,43 @@ $endif.equ_hydrogen_tradecapacity
 *
 
 equation TrPA2a_FlatH2Imports(y_full,l_full,r_full);
-TrPA2a_FlatH2Imports(y,l,r)..   RateOfActivity(y,l,'Z_Import_H2','1',r)  =l= sum(ll,RateOfActivity(y,ll,'Z_Import_H2','1',r))*YearSplit(l,y)*1.05;
+TrPA2a_FlatH2Imports(y,l,r)..   RateOfActivity(r,'Z_Import_H2','1',l,y)  =l= sum(ll,RateOfActivity(r,'Z_Import_H2','1',ll,y))*YearSplit(l,y)*1.05;
 
 equation TrPA2b_FlatGasImports(y_full,l_full,r_full);
-TrPA2b_FlatGasImports(y,l,r)..   RateOfActivity(y,l,'Z_Import_Gas','1',r)  =l= sum(ll,RateOfActivity(y,ll,'Z_Import_Gas','1',r))*YearSplit(l,y)*1.05;
+TrPA2b_FlatGasImports(y,l,r)..   RateOfActivity(r,'Z_Import_Gas','1',l,y)  =l= sum(ll,RateOfActivity(r,'Z_Import_Gas','1',ll,y))*YearSplit(l,y)*1.05;
 
 
 *
 * ############## Trading Costs #############
 *
-equation TC1_AnnualTradeCosts(y_full,REGION_FULL);
-TC1_AnnualTradeCosts(y,r)$(sum((f,rr),TradeRoute(r,f,y,rr))).. sum((l,f,rr)$(TradeRoute(r,f,y,rr)),Import(y,l,f,r,rr) * TradeCosts(r,f,y,rr)) =e= AnnualTotalTradeCosts(y,r);
-AnnualTotalTradeCosts.fx(y,r)$(sum((f,rr),TradeRoute(r,f,y,rr)) = 0) = 0;
+equation TC1_AnnualTradeCosts(REGION_FULL,y_full);
+TC1_AnnualTradeCosts(r,y)$(sum((f,rr),TradeRoute(r,rr,f,y))).. sum((l,f,rr)$(TradeRoute(r,rr,f,y)),Import(y,l,f,r,rr) * TradeCosts(r,rr,f,y)) =e= AnnualTotalTradeCosts(r,y);
+AnnualTotalTradeCosts.fx(r,y)$(sum((f,rr),TradeRoute(r,rr,f,y)) = 0) = 0;
 
-equation TC2_DiscountedAnnualTradeCosts(y_full,REGION_FULL);
-TC2_DiscountedAnnualTradeCosts(y,r)..  AnnualTotalTradeCosts(y,r)/((1+GeneralDiscountRate(r))**(YearVal(y)-smin(yy, YearVal(yy))+0.5)) =e= DiscountedAnnualTotalTradeCosts(y,r);
+equation TC2_DiscountedAnnualTradeCosts(REGION_FULL,y_full);
+TC2_DiscountedAnnualTradeCosts(r,y)..  AnnualTotalTradeCosts(r,y)/((1+GeneralDiscountRate(r))**(YearVal(y)-smin(yy, YearVal(yy))+0.5)) =e= DiscountedAnnualTotalTradeCosts(r,y);
 
 *
 * ############## Accounting Technology Production/Use #############
 *
 
-equation ACC1_ComputeTotalAnnualRateOfActivity(YEAR_FULL,TECHNOLOGY,MODE_OF_OPERATION,REGION_FULL);
-ACC1_ComputeTotalAnnualRateOfActivity(y,t,m,r)$(CanBuildTechnology(y,t,r) > 0).. sum(l, RateOfActivity(y,l,t,m,r)*YearSplit(l,y)) =e= TotalAnnualTechnologyActivityByMode(y,t,m,r);
-TotalAnnualTechnologyActivityByMode.fx(y,t,m,r)$(CanBuildTechnology(y,t,r) = 0) = 0;
+equation ACC1_ComputeTotalAnnualRateOfActivity(REGION_FULL,TECHNOLOGY,MODE_OF_OPERATION,YEAR_FULL);
+ACC1_ComputeTotalAnnualRateOfActivity(r,t,m,y)$(CanBuildTechnology(y,t,r) > 0).. sum(l, RateOfActivity(r,t,m,l,y)*YearSplit(l,y)) =e= TotalAnnualTechnologyActivityByMode(r,t,m,y);
+TotalAnnualTechnologyActivityByMode.fx(r,t,m,y)$(CanBuildTechnology(y,t,r) = 0) = 0;
 
-equation ACC2_FuelProductionByTechnologyAnnual(YEAR_FULL,TECHNOLOGY,FUEL,REGION_FULL);
-ACC2_FuelProductionByTechnologyAnnual(y,t,f,r)$(sum(m, OutputActivityRatio(r,t,f,m,y)) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0 and TotalCapacityAnnual.up(y,t,r) > 0).. sum(l, sum(m$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y)) * YearSplit(l,y)) =e= ProductionByTechnologyAnnual(y,t,f,r);
-ProductionByTechnologyAnnual.fx(y,t,f,r)$(sum(m, OutputActivityRatio(r,t,f,m,y)) = 0 or AvailabilityFactor(r,t,y) = 0 or TotalAnnualMaxCapacity(r,t,y) = 0 or TotalTechnologyModelPeriodActivityUpperLimit(r,t) = 0 or TotalCapacityAnnual.up(y,t,r) = 0) = 0;
+equation ACC2_FuelProductionByTechnologyAnnual(REGION_FULL,TECHNOLOGY,FUEL,YEAR_FULL);
+ACC2_FuelProductionByTechnologyAnnual(r,t,f,y)$(sum(m, OutputActivityRatio(r,t,f,m,y)) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0 and TotalCapacityAnnual.up(r,t,y) > 0).. sum(l, sum(m$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(r,t,m,l,y)*OutputActivityRatio(r,t,f,m,y)) * YearSplit(l,y)) =e= ProductionByTechnologyAnnual(r,t,f,y);
+ProductionByTechnologyAnnual.fx(r,t,f,y)$(sum(m, OutputActivityRatio(r,t,f,m,y)) = 0 or AvailabilityFactor(r,t,y) = 0 or TotalAnnualMaxCapacity(r,t,y) = 0 or TotalTechnologyModelPeriodActivityUpperLimit(r,t) = 0 or TotalCapacityAnnual.up(r,t,y) = 0) = 0;
 
-equation ACC3_FuelUseByTechnologyAnnual(YEAR_FULL,TECHNOLOGY,FUEL,REGION_FULL);
-ACC3_FuelUseByTechnologyAnnual(y,t,f,r)$(sum(m, InputActivityRatio(r,t,f,m,y)) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0 and TotalCapacityAnnual.up(y,t,r) > 0).. sum(l, (sum(m$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*InputActivityRatio(r,t,f,m,y))*YearSplit(l,y))) =e= UseByTechnologyAnnual(y,t,f,r);
-UseByTechnologyAnnual.fx(y,t,f,r)$(sum(m, InputActivityRatio(r,t,f,m,y)) = 0 or AvailabilityFactor(r,t,y) = 0 or TotalAnnualMaxCapacity(r,t,y) = 0 or TotalTechnologyModelPeriodActivityUpperLimit(r,t) = 0 or TotalCapacityAnnual.up(y,t,r) = 0) = 0;
+equation ACC3_FuelUseByTechnologyAnnual(REGION_FULL,TECHNOLOGY,FUEL,YEAR_FULL);
+ACC3_FuelUseByTechnologyAnnual(r,t,f,y)$(sum(m, InputActivityRatio(r,t,f,m,y)) > 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0 and TotalCapacityAnnual.up(r,t,y) > 0).. sum(l, (sum(m$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(r,t,m,l,y)*InputActivityRatio(r,t,f,m,y))*YearSplit(l,y))) =e= UseByTechnologyAnnual(r,t,f,y);
+UseByTechnologyAnnual.fx(r,t,f,y)$(sum(m, InputActivityRatio(r,t,f,m,y)) = 0 or AvailabilityFactor(r,t,y) = 0 or TotalAnnualMaxCapacity(r,t,y) = 0 or TotalTechnologyModelPeriodActivityUpperLimit(r,t) = 0 or TotalCapacityAnnual.up(r,t,y) = 0) = 0;
 
 *
 * ############### Capital Costs #############
 *
 equation CC1_UndiscountedCapitalInvestments(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-CC1_UndiscountedCapitalInvestments(y,t,r).. CapitalCost(r,t,y) * NewCapacity(y,t,r) =e= CapitalInvestment(y,t,r);
+CC1_UndiscountedCapitalInvestments(y,t,r).. CapitalCost(r,t,y) * NewCapacity(r,t,y) =e= CapitalInvestment(y,t,r);
 equation CC2_DiscountedCapitalInvestments(YEAR_FULL,TECHNOLOGY,REGION_FULL);
 CC2_DiscountedCapitalInvestments(y,t,r).. CapitalInvestment(y,t,r)/((1+TechnologyDiscountRate(r,t))**(YearVal(y)-StartYear)) =e= DiscountedCapitalInvestment(y,t,r);
 
@@ -399,25 +399,25 @@ equation SC1_SpreadCapitalInvestmentsAcrossTime(YEAR_FULL);
 SC1_SpreadCapitalInvestmentsAcrossTime(y)$(YearVal(y) > %year%).. sum((t,r),CapitalInvestment(y,t,r)) =l= 1/(smax(yy,Yearval(yy))-smin(yy,YearVal(yy)))*YearlyDifferenceMultiplier(y-1)*InvestmentLimit*sum(yy,sum((t,r),CapitalInvestment(yy,t,r)));
 
 equation SC2_LimitAnnualCapacityAdditions(YEAR_FULL,REGION_FULL,TECHNOLOGY);
-SC2_LimitAnnualCapacityAdditions(y,r,t)$(TagTechnologyToSubsets(t,'Renewables') and YearVal(y)>2025).. NewCapacity(y,t,r) =l= YearlyDifferenceMultiplier(y-1)*NewRESCapacity*TotalAnnualMaxCapacity(r,t,y);
+SC2_LimitAnnualCapacityAdditions(y,r,t)$(TagTechnologyToSubsets(t,'Renewables') and YearVal(y)>2025).. NewCapacity(r,t,y) =l= YearlyDifferenceMultiplier(y-1)*NewRESCapacity*TotalAnnualMaxCapacity(r,t,y);
 
 equation SC3_SmoothingRenewableIntegration(YEAR_FULL,REGION_FULL,TECHNOLOGY,FUEL);
-SC3_SmoothingRenewableIntegration(y,r,t,f)$(Yearval(y) > %year% and TagTechnologyToSubsets(t,'PhaseInSet') and SpecifiedAnnualDemand(r,f,y-1)).. ProductionByTechnologyAnnual(y,t,f,r) =g= ProductionByTechnologyAnnual(y-1,t,f,r)*PhaseIn(y)*((SpecifiedAnnualDemand(r,f,y)/SpecifiedAnnualDemand(r,f,y-1))$(SpecifiedAnnualDemand(r,f,y))+1$(not SpecifiedAnnualDemand(r,f,y)));
+SC3_SmoothingRenewableIntegration(y,r,t,f)$(Yearval(y) > %year% and TagTechnologyToSubsets(t,'PhaseInSet') and SpecifiedAnnualDemand(r,f,y-1)).. ProductionByTechnologyAnnual(r,t,f,y) =g= ProductionByTechnologyAnnual(r,t,f,y-1)*PhaseIn(y)*((SpecifiedAnnualDemand(r,f,y)/SpecifiedAnnualDemand(r,f,y-1))$(SpecifiedAnnualDemand(r,f,y))+1$(not SpecifiedAnnualDemand(r,f,y)));
 
 equation SC3_SmoothingFossilPhaseOuts(YEAR_FULL,REGION_FULL,TECHNOLOGY,FUEL);
-SC3_SmoothingFossilPhaseOuts(y,r,t,f)$(Yearval(y) > %year% and TagTechnologyToSubsets(t,'PhaseOutSet') and SpecifiedAnnualDemand(r,f,y-1)).. ProductionByTechnologyAnnual(y,t,f,r) =l= ProductionByTechnologyAnnual(y-1,t,f,r)*PhaseOut(y)*((SpecifiedAnnualDemand(r,f,y)/SpecifiedAnnualDemand(r,f,y-1))$(SpecifiedAnnualDemand(r,f,y))+1$(not SpecifiedAnnualDemand(r,f,y)));
+SC3_SmoothingFossilPhaseOuts(y,r,t,f)$(Yearval(y) > %year% and TagTechnologyToSubsets(t,'PhaseOutSet') and SpecifiedAnnualDemand(r,f,y-1)).. ProductionByTechnologyAnnual(r,t,f,y) =l= ProductionByTechnologyAnnual(r,t,f,y-1)*PhaseOut(y)*((SpecifiedAnnualDemand(r,f,y)/SpecifiedAnnualDemand(r,f,y-1))$(SpecifiedAnnualDemand(r,f,y))+1$(not SpecifiedAnnualDemand(r,f,y)));
 
 equation SC4a_RelativeTechnologyPhaseInLimit(YEAR_FULL,REGION_FULL,FUEL);
-SC4a_RelativeTechnologyPhaseInLimit(y,r,f)$(Yearval(y) > %year% and ProductionGrowthLimit(f,y)>0 and not TagFuelToSubsets(f,'TransportFuels')).. sum((t)$(RETagTechnology(t,y)=1),ProductionByTechnologyAnnual(y,t,f,r)-ProductionByTechnologyAnnual(y-1,t,f,r)) =l= YearlyDifferenceMultiplier(y-1)*ProductionGrowthLimit(f,y)*sum((t),ProductionByTechnologyAnnual(y-1,t,f,r))-sum((t)$(TagTechnologyToSubsets(t,'StorageDummies')),ProductionByTechnologyAnnual(y-1,t,f,r));
+SC4a_RelativeTechnologyPhaseInLimit(y,r,f)$(Yearval(y) > %year% and ProductionGrowthLimit(f,y)>0 and not TagFuelToSubsets(f,'TransportFuels')).. sum((t)$(RETagTechnology(t,y)=1),ProductionByTechnologyAnnual(r,t,f,y)-ProductionByTechnologyAnnual(r,t,f,y-1)) =l= YearlyDifferenceMultiplier(y-1)*ProductionGrowthLimit(f,y)*sum((t),ProductionByTechnologyAnnual(r,t,f,y-1))-sum((t)$(TagTechnologyToSubsets(t,'StorageDummies')),ProductionByTechnologyAnnual(r,t,f,y-1));
 
 equation SC4b_RelativeTechnologyPhaseInLimit_Transport(YEAR_FULL,REGION_FULL,FUEL,MODALTYPE);
 SC4b_RelativeTechnologyPhaseInLimit_Transport(y,r,f,mt)$(Yearval(y) > 2025 and ProductionGrowthLimit(f,y)>0 and TagFuelToSubsets(f,'TransportFuels') and TagModalTypeToModalGroups(mt,'TransportModes'))..
-sum((t)$(RETagTechnology(t,y)=1 and TagTechnologyToModalType(t,'1',mt)),ProductionByTechnologyAnnual(y,t,f,r)-ProductionByTechnologyAnnual(y-1,t,f,r)) =l=
-YearlyDifferenceMultiplier(y-1)*ProductionGrowthLimit(f,y)*sum((t)$(TagTechnologyToModalType(t,'1',mt)),ProductionByTechnologyAnnual(y-1,t,f,r));
+sum((t)$(RETagTechnology(t,y)=1 and TagTechnologyToModalType(t,'1',mt)),ProductionByTechnologyAnnual(r,t,f,y)-ProductionByTechnologyAnnual(r,t,f,y-1)) =l=
+YearlyDifferenceMultiplier(y-1)*ProductionGrowthLimit(f,y)*sum((t)$(TagTechnologyToModalType(t,'1',mt)),ProductionByTechnologyAnnual(r,t,f,y-1));
 
 
 equation SC5_AnnualStorageChangeLimit(YEAR_FULL,REGION_FULL,FUEL);
-SC5_AnnualStorageChangeLimit(y,r,f)$(Yearval(y) > %year% and ProductionGrowthLimit(f,y)>0).. sum(t$(TagTechnologyToSubsets(t,'StorageDummies')),ProductionByTechnologyAnnual(y,t,f,r)-ProductionByTechnologyAnnual(y-1,t,f,r)) =l= YearlyDifferenceMultiplier(y-1)*(ProductionGrowthLimit(f,y)+StorageLimitOffset)*sum((t),ProductionByTechnologyAnnual(y-1,t,f,r))
+SC5_AnnualStorageChangeLimit(y,r,f)$(Yearval(y) > %year% and ProductionGrowthLimit(f,y)>0).. sum(t$(TagTechnologyToSubsets(t,'StorageDummies')),ProductionByTechnologyAnnual(r,t,f,y)-ProductionByTechnologyAnnual(r,t,f,y-1)) =l= YearlyDifferenceMultiplier(y-1)*(ProductionGrowthLimit(f,y)+StorageLimitOffset)*sum((t),ProductionByTechnologyAnnual(r,t,f,y-1))
 
 $endif
 
@@ -427,13 +427,13 @@ $endif
 *
 $ifthen %switch_ccs% == 1
 equation CCS1_CCSAdditionLimit(YEAR_FULL,REGION_FULL,FUEL);
-CCS1_CCSAdditionLimit(y,r,f)$(Yearval(y) > %year% and not sameas(f,'DAC_Dummy')).. sum(t$(TagTechnologyToSubsets(t,'CCS')),ProductionByTechnologyAnnual(y,t,f,r)-ProductionByTechnologyAnnual(y-1,t,f,r)) =l= YearlyDifferenceMultiplier(y-1)*(ProductionGrowthLimit('Air',y))*sum((t),ProductionByTechnologyAnnual(y-1,t,f,r));
+CCS1_CCSAdditionLimit(y,r,f)$(Yearval(y) > %year% and not sameas(f,'DAC_Dummy')).. sum(t$(TagTechnologyToSubsets(t,'CCS')),ProductionByTechnologyAnnual(r,t,f,y)-ProductionByTechnologyAnnual(r,t,f,y-1)) =l= YearlyDifferenceMultiplier(y-1)*(ProductionGrowthLimit('Air',y))*sum((t),ProductionByTechnologyAnnual(r,t,f,y-1));
 
 equation CCS2_MaximumCCStorageLimit(REGION_FULL);
 CCS2_MaximumCCStorageLimit(r)$(sum(rr,RegionalCCSLimit(rr)) > 0)..
 sum((y,t)$(TagTechnologyToSubsets(t,'CCS')),
          sum((f,m,e),
-                 TotalAnnualTechnologyActivityByMode(y,t,m,r)*EmissionContentPerFuel(f,e)*InputActivityRatio(r,t,f,m,y)*YearlyDifferenceMultiplier(y)*(((1-EmissionActivityRatio(r,t,m,e,y))$(EmissionActivityRatio(r,t,m,e,y)>0))+
+                 TotalAnnualTechnologyActivityByMode(r,t,m,y)*EmissionContentPerFuel(f,e)*InputActivityRatio(r,t,f,m,y)*YearlyDifferenceMultiplier(y)*(((1-EmissionActivityRatio(r,t,m,e,y))$(EmissionActivityRatio(r,t,m,e,y)>0))+
                  ((-1)*EmissionActivityRatio(r,t,m,e,y))$(EmissionActivityRatio(r,t,m,e,y)<0))
          )
 ) =l= RegionalCCSLimit(r);
@@ -446,18 +446,18 @@ $endif
 *
 equation SV1_SalvageValueAtEndOfPeriod1(YEAR_FULL,TECHNOLOGY,REGION_FULL);
 SV1_SalvageValueAtEndOfPeriod1(y,t,r)$(DepreciationMethod=1 and ((YearVal(y) + OperationalLife(t)-1 > smax(yy, YearVal(yy))) and (TechnologyDiscountRate(r,t) > 0)))..
-SalvageValue(y,t,r) =e= CapitalCost(r,t,y)*NewCapacity(y,t,r)*(1-(((1+TechnologyDiscountRate(r,t))**(smax(yy, YearVal(yy)) - YearVal(y)+1) -1)
+SalvageValue(y,t,r) =e= CapitalCost(r,t,y)*NewCapacity(r,t,y)*(1-(((1+TechnologyDiscountRate(r,t))**(smax(yy, YearVal(yy)) - YearVal(y)+1) -1)
 /((1+TechnologyDiscountRate(r,t))**OperationalLife(t)-1)));
 
 equation SV2_SalvageValueAtEndOfPeriod2(YEAR_FULL,TECHNOLOGY,REGION_FULL);
 SV2_SalvageValueAtEndOfPeriod2(y,t,r)$((((YearVal(y) + OperationalLife(t)-1 > smax(yy, YearVal(yy))) and (TechnologyDiscountRate(r,t) = 0)) or (DepreciationMethod=2 and (YearVal(y) + OperationalLife(t)-1 > smax(yy, YearVal(yy))))))..
-SalvageValue(y,t,r) =e= CapitalCost(r,t,y)*NewCapacity(y,t,r)*(1-(smax(yy, YearVal(yy))- YearVal(y)+1)/OperationalLife(t));
+SalvageValue(y,t,r) =e= CapitalCost(r,t,y)*NewCapacity(r,t,y)*(1-(smax(yy, YearVal(yy))- YearVal(y)+1)/OperationalLife(t));
 equation SV3_SalvageValueAtEndOfPeriod3(YEAR_FULL,TECHNOLOGY,REGION_FULL);
 SV3_SalvageValueAtEndOfPeriod3(y,t,r)$(YearVal(y) + OperationalLife(t)-1 <= smax(yy, YearVal(yy)))..
 SalvageValue(y,t,r) =e= 0;
 equation SV1b_SalvageValueAtEndOfPeriod1(YEAR_FULL,REGION_FULL);
 SV1b_SalvageValueAtEndOfPeriod1(y,r)$(DepreciationMethod=1 and ((YearVal(y) + 40 > smax(yy, YearVal(yy)))))..
-DiscountedSalvageValueTransmission(y,r) =e= (sum((f,rr),TradeCapacityGrowthCosts(r,f,rr)*TradeRoute(r,f,y,rr)*NewTradeCapacity(y,f,r,rr)*(1-(((1+GeneralDiscountRate(r))**(smax(yy, YearVal(yy)) - YearVal(y)+1) -1)
+DiscountedSalvageValueTransmission(y,r) =e= (sum((f,rr),TradeCapacityGrowthCosts(r,f,rr)*TradeRoute(r,rr,f,y)*NewTradeCapacity(y,f,r,rr)*(1-(((1+GeneralDiscountRate(r))**(smax(yy, YearVal(yy)) - YearVal(y)+1) -1)
 /((1+GeneralDiscountRate(r))**40)))))/((1+GeneralDiscountRate(r))**(1+smax(yy, YearVal(yy)) - smin(yy, YearVal(yy))));
 DiscountedSalvageValueTransmission.fx(y,r)$(DepreciationMethod=1 and not ((YearVal(y) + 40 > smax(yy, YearVal(yy))))) = 0;
 
@@ -469,11 +469,11 @@ DiscountedSalvageValue(y,t,r) =e= SalvageValue(y,t,r)/((1+TechnologyDiscountRate
 * ############### Operating Costs #############
 *
 equation OC1_OperatingCostsVariable(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-OC1_OperatingCostsVariable(y,t,r)$(sum(m,VariableCost(r,t,m,y) > 0) and CanBuildTechnology(y,t,r) > 0).. sum(m, (TotalAnnualTechnologyActivityByMode(y,t,m,r)*VariableCost(r,t,m,y))) =e= AnnualVariableOperatingCost(y,t,r);
+OC1_OperatingCostsVariable(y,t,r)$(sum(m,VariableCost(r,t,m,y) > 0) and CanBuildTechnology(y,t,r) > 0).. sum(m, (TotalAnnualTechnologyActivityByMode(r,t,m,y)*VariableCost(r,t,m,y))) =e= AnnualVariableOperatingCost(y,t,r);
 AnnualVariableOperatingCost.fx(y,t,r)$(CanBuildTechnology(y,t,r) = 0) = 0;
 
 equation OC2_OperatingCostsFixedAnnual(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-OC2_OperatingCostsFixedAnnual(y,t,r)$(FixedCost(r,t,y) > 0 and CanBuildTechnology(y,t,r) > 0).. sum(yy$((YearVal(y)-YearVal(yy) < OperationalLife(t)) AND (YearVal(y)-YearVal(yy) >= 0)), NewCapacity(yy,t,r)*FixedCost(r,t,yy))+ResidualCapacity(r,t,y)*FixedCost(r,t,y) =e= AnnualFixedOperatingCost(y,t,r);
+OC2_OperatingCostsFixedAnnual(y,t,r)$(FixedCost(r,t,y) > 0 and CanBuildTechnology(y,t,r) > 0).. sum(yy$((YearVal(y)-YearVal(yy) < OperationalLife(t)) AND (YearVal(y)-YearVal(yy) >= 0)), NewCapacity(r,t,yy)*FixedCost(r,t,yy))+ResidualCapacity(r,t,y)*FixedCost(r,t,y) =e= AnnualFixedOperatingCost(y,t,r);
 AnnualFixedOperatingCost.fx(y,t,r)$(CanBuildTechnology(y,t,r) = 0) = 0;
 
 equation OC3_OperatingCostsTotalAnnual(YEAR_FULL,TECHNOLOGY,REGION_FULL);
@@ -502,40 +502,40 @@ TDC2_TotalDiscountedCost(y,r).. sum(t,TotalDiscountedCostByTechnology(y,t,r))+su
 * ############### Total Capacity Constraints ##############
 *
 equation TCC1_TotalAnnualMaxCapacityConstraint(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-TCC1_TotalAnnualMaxCapacityConstraint(y,t,r)$(TotalAnnualMaxCapacity(r,t,y) < 999999 and TotalAnnualMaxCapacity(r,t,y) > 0).. TotalCapacityAnnual(y,t,r) =l= TotalAnnualMaxCapacity(r,t,y);
-TotalCapacityAnnual.fx(y,t,r)$(TotalAnnualMaxCapacity(r,t,y) = 0) = 0;
+TCC1_TotalAnnualMaxCapacityConstraint(y,t,r)$(TotalAnnualMaxCapacity(r,t,y) < 999999 and TotalAnnualMaxCapacity(r,t,y) > 0).. TotalCapacityAnnual(r,t,y) =l= TotalAnnualMaxCapacity(r,t,y);
+TotalCapacityAnnual.fx(r,t,y)$(TotalAnnualMaxCapacity(r,t,y) = 0) = 0;
 
 equation TCC2_TotalAnnualMinCapacityConstraint(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-TCC2_TotalAnnualMinCapacityConstraint(y,t,r)$(TotalAnnualMinCapacity(r,t,y)>0).. TotalCapacityAnnual(y,t,r) =g= TotalAnnualMinCapacity(r,t,y);
+TCC2_TotalAnnualMinCapacityConstraint(y,t,r)$(TotalAnnualMinCapacity(r,t,y)>0).. TotalCapacityAnnual(r,t,y) =g= TotalAnnualMinCapacity(r,t,y);
 
 *
 * ############### New Capacity Constraints ##############
 *
-equation NCC1_TotalAnnualMaxNewCapacityConstraint(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-NCC1_TotalAnnualMaxNewCapacityConstraint(y,t,r)$(TotalAnnualMaxCapacityInvestment(r,t,y) < 999999).. NewCapacity(y,t,r) =l= TotalAnnualMaxCapacityInvestment(r,t,y);
-equation NCC2_TotalAnnualMinNewCapacityConstraint(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-NCC2_TotalAnnualMinNewCapacityConstraint(y,t,r)$(TotalAnnualMinCapacityInvestment(r,t,y) > 0).. NewCapacity(y,t,r) =g= TotalAnnualMinCapacityInvestment(r,t,y);
+equation NCC1_TotalAnnualMaxNewCapacityConstraint(REGION_FULL,TECHNOLOGY,YEAR_FULL);
+NCC1_TotalAnnualMaxNewCapacityConstraint(r,t,y)$(TotalAnnualMaxCapacityInvestment(r,t,y) < 999999).. NewCapacity(r,t,y) =l= TotalAnnualMaxCapacityInvestment(r,t,y);
+equation NCC2_TotalAnnualMinNewCapacityConstraint(REGION_FULL,TECHNOLOGY,YEAR_FULL);
+NCC2_TotalAnnualMinNewCapacityConstraint(r,t,y)$(TotalAnnualMinCapacityInvestment(r,t,y) > 0).. NewCapacity(r,t,y) =g= TotalAnnualMinCapacityInvestment(r,t,y);
 
 *
 * ################ Annual Activity Constraints ##############
 *
 
 equation AAC1_TotalAnnualTechnologyActivity(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-AAC1_TotalAnnualTechnologyActivity(y,t,r)$(CanBuildTechnology(y,t,r) > 0 and sum(f,ProductionByTechnologyAnnual.up(y,t,f,r)) > 0).. sum(f,ProductionByTechnologyAnnual(y,t,f,r)) =e= TotalTechnologyAnnualActivity(y,t,r);
-TotalTechnologyAnnualActivity.fx(y,t,r)$(CanBuildTechnology(y,t,r) = 0 or sum(f,ProductionByTechnologyAnnual.up(y,t,f,r)) = 0) = 0;
+AAC1_TotalAnnualTechnologyActivity(y,t,r)$(CanBuildTechnology(y,t,r) > 0 and sum(f,ProductionByTechnologyAnnual.up(r,t,f,y)) > 0).. sum(f,ProductionByTechnologyAnnual(r,t,f,y)) =e= TotalTechnologyAnnualActivity(r,t,y);
+TotalTechnologyAnnualActivity.fx(r,t,y)$(CanBuildTechnology(y,t,r) = 0 or sum(f,ProductionByTechnologyAnnual.up(r,t,f,y)) = 0) = 0;
 
 equation AAC2_TotalAnnualTechnologyActivityUpperLimit(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-AAC2_TotalAnnualTechnologyActivityUpperLimit(y,t,r)$(TotalTechnologyAnnualActivityUpperLimit(r,t,y) < 999999).. TotalTechnologyAnnualActivity(y,t,r) =l= TotalTechnologyAnnualActivityUpperLimit(r,t,y);
+AAC2_TotalAnnualTechnologyActivityUpperLimit(y,t,r)$(TotalTechnologyAnnualActivityUpperLimit(r,t,y) < 999999).. TotalTechnologyAnnualActivity(r,t,y) =l= TotalTechnologyAnnualActivityUpperLimit(r,t,y);
 
 
 equation AAC3_TotalAnnualTechnologyActivityLowerLimit(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-AAC3_TotalAnnualTechnologyActivityLowerLimit(y,t,r)$(TotalTechnologyAnnualActivityLowerLimit(r,t,y) > 0).. TotalTechnologyAnnualActivity(y,t,r) =g= TotalTechnologyAnnualActivityLowerLimit(r,t,y);
+AAC3_TotalAnnualTechnologyActivityLowerLimit(y,t,r)$(TotalTechnologyAnnualActivityLowerLimit(r,t,y) > 0).. TotalTechnologyAnnualActivity(r,t,y) =g= TotalTechnologyAnnualActivityLowerLimit(r,t,y);
 
 *
 * ################ Total Activity Constraints ##############
 *
 equation TAC1_TotalModelHorizonTechnologyActivity(TECHNOLOGY,REGION_FULL);
-TAC1_TotalModelHorizonTechnologyActivity(t,r).. sum(y, TotalTechnologyAnnualActivity(y,t,r)*YearlyDifferenceMultiplier(y)) =e= TotalTechnologyModelPeriodActivity(t,r);
+TAC1_TotalModelHorizonTechnologyActivity(t,r).. sum(y, TotalTechnologyAnnualActivity(r,t,y)*YearlyDifferenceMultiplier(y)) =e= TotalTechnologyModelPeriodActivity(t,r);
 
 
 equation TAC2_TotalModelHorizonTechnologyActivityUpperLimit(TECHNOLOGY,REGION_FULL);
@@ -549,9 +549,9 @@ TAC3_TotalModelHorizonTechnologyActivityLowerLimit(y,t,r)$(TotalTechnologyModelP
 * ############### Reserve Margin Constraint #############* NTS: Should change demand for production
 *
 equation RM1_ReserveMargin_TechologiesIncluded_In_Activity_Units(YEAR_FULL,TIMESLICE_FULL,REGION_FULL);
-RM1_ReserveMargin_TechologiesIncluded_In_Activity_Units(y,l,r).. sum ((t,f), (sum(m$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y)) * YearSplit(l,y) *ReserveMarginTagTechnology(r,t,y) * ReserveMarginTagFuel(r,f,y))) =e= TotalActivityInReserveMargin(r,y,l);
+RM1_ReserveMargin_TechologiesIncluded_In_Activity_Units(y,l,r).. sum ((t,f), (sum(m$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(r,t,m,l,y)*OutputActivityRatio(r,t,f,m,y)) * YearSplit(l,y) *ReserveMarginTagTechnology(r,t,y) * ReserveMarginTagFuel(r,f,y))) =e= TotalActivityInReserveMargin(r,y,l);
 equation RM2_ReserveMargin_FuelsIncluded(YEAR_FULL,TIMESLICE_FULL,REGION_FULL);
-RM2_ReserveMargin_FuelsIncluded(y,l,r).. sum (f, (sum((t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y)) * YearSplit(l,y) * ReserveMarginTagFuel(r,f,y))) =e= DemandNeedingReserveMargin(y,l,r);
+RM2_ReserveMargin_FuelsIncluded(y,l,r).. sum (f, (sum((t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(r,t,m,l,y)*OutputActivityRatio(r,t,f,m,y)) * YearSplit(l,y) * ReserveMarginTagFuel(r,f,y))) =e= DemandNeedingReserveMargin(y,l,r);
 equation RM3_ReserveMargin_Constraint(YEAR_FULL,TIMESLICE_FULL,REGION_FULL);
 RM3_ReserveMargin_Constraint(y,l,r)$(ReserveMargin(r,y) > 0).. DemandNeedingReserveMargin(y,l,r) * ReserveMargin(r,y) =l= TotalActivityInReserveMargin(r,y,l);
 
@@ -560,10 +560,10 @@ RM3_ReserveMargin_Constraint(y,l,r)$(ReserveMargin(r,y) > 0).. DemandNeedingRese
 *
 
 equation RE1_ComputeTotalAnnualREProduction(YEAR_FULL,REGION_FULL,FUEL);
-RE1_ComputeTotalAnnualREProduction(y,r,f).. sum(t$(TagTechnologyToSubsets(t,'Renewables')),ProductionByTechnologyAnnual(y,t,f,r)) =e= TotalREProductionAnnual(y,r,f);
+RE1_ComputeTotalAnnualREProduction(y,r,f).. sum(t$(TagTechnologyToSubsets(t,'Renewables')),ProductionByTechnologyAnnual(r,t,f,y)) =e= TotalREProductionAnnual(y,r,f);
 
 equation RE2_AnnualREProductionLowerLimit(YEAR_FULL,REGION_FULL,FUEL);
-RE2_AnnualREProductionLowerLimit(y,r,f).. REMinProductionTarget(r,f,y)*sum((l,t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y))*RETagFuel(f,y) =l= TotalREProductionAnnual(y,r,f);
+RE2_AnnualREProductionLowerLimit(y,r,f).. REMinProductionTarget(r,f,y)*sum((l,t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(r,t,m,l,y)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y))*RETagFuel(f,y) =l= TotalREProductionAnnual(y,r,f);
 
 equation RE3_RETargetPath(YEAR_FULL,REGION_FULL,FUEL);
 RE3_RETargetPath(y,r,f)$(YearVal(y)>%year% and SpecifiedAnnualDemand(r,f,y) and SpecifiedAnnualDemand(r,f,y-1)).. TotalREProductionAnnual(y,r,f) =g= TotalREProductionAnnual(y-1,r,f)*((SpecifiedAnnualDemand(r,f,y)/SpecifiedAnnualDemand(r,f,y-1)));
@@ -572,7 +572,7 @@ RE3_RETargetPath(y,r,f)$(YearVal(y)>%year% and SpecifiedAnnualDemand(r,f,y) and 
 * ################ Emissions Accounting ##############
 *
 equation E1_AnnualEmissionProductionByMode(YEAR_FULL,TECHNOLOGY,EMISSION,MODE_OF_OPERATION,REGION_FULL);
-E1_AnnualEmissionProductionByMode(y,t,e,m,r)$(CanBuildTechnology(y,t,r) > 0).. EmissionActivityRatio(r,t,m,e,y)*sum(f,(TotalAnnualTechnologyActivityByMode(y,t,m,r)*EmissionContentPerFuel(f,e)*InputActivityRatio(r,t,f,m,y))) =e= AnnualTechnologyEmissionByMode(y,t,e,m,r);
+E1_AnnualEmissionProductionByMode(y,t,e,m,r)$(CanBuildTechnology(y,t,r) > 0).. EmissionActivityRatio(r,t,m,e,y)*sum(f,(TotalAnnualTechnologyActivityByMode(r,t,m,y)*EmissionContentPerFuel(f,e)*InputActivityRatio(r,t,f,m,y))) =e= AnnualTechnologyEmissionByMode(y,t,e,m,r);
 AnnualTechnologyEmissionByMode.fx(y,t,e,m,r)$(CanBuildTechnology(y,t,r) = 0) = 0;
 
 equation E2_AnnualEmissionProduction(YEAR_FULL,TECHNOLOGY,EMISSION,REGION_FULL);
@@ -634,15 +634,15 @@ S1b_StorageLevelYearStartLowerLimit(r,s,y).. StorageLevelYearStart(s,y,r) =g=  S
 
 equation S2_StorageLevelTSStart(REGION_FULL, STORAGE, YEAR_FULL, TIMESLICE_FULL);
 S2_StorageLevelTSStart(r,s,y, l)..  (StorageLevelTSStart(s,y,l-1,r) +
-      (sum((t,m)$(TechnologyToStorage(t,s,m,y)>0), RateOfActivity(y,l-1,t,m,r) * TechnologyToStorage(t,s,m,y))
-     - sum((t,m)$(TechnologyFromStorage(t,s,m,y)>0), RateOfActivity(y,l-1,t,m,r) / TechnologyFromStorage(t,s,m,y))) * YearSplit(l-1,y))$(ord(l) > 1)
+      (sum((t,m)$(TechnologyToStorage(t,s,m,y)>0), RateOfActivity(r,t,m,l-1,y) * TechnologyToStorage(t,s,m,y))
+     - sum((t,m)$(TechnologyFromStorage(t,s,m,y)>0), RateOfActivity(r,t,m,l-1,y) / TechnologyFromStorage(t,s,m,y))) * YearSplit(l-1,y))$(ord(l) > 1)
      + (StorageLevelYearStart(s,y,r))$(ord(l) = 1)
 =e= StorageLevelTSStart(s,y,l,r);
 
 equation S3_StorageRefilling(REGION_FULL, STORAGE, YEAR_FULL);
 S3_StorageRefilling(r,s,y)..
-sum((l), (sum((t,m)$(TechnologyToStorage(t,s,m,y)>0), RateOfActivity(y,l,t,m,r) * TechnologyToStorage(t,s,m,y))
-          - sum((t,m)$(TechnologyFromStorage(t,s,m,y)>0), RateOfActivity(y,l,t,m,r) / TechnologyFromStorage(t,s,m,y)))) =e= 0;
+sum((l), (sum((t,m)$(TechnologyToStorage(t,s,m,y)>0), RateOfActivity(r,t,m,l,y) * TechnologyToStorage(t,s,m,y))
+          - sum((t,m)$(TechnologyFromStorage(t,s,m,y)>0), RateOfActivity(r,t,m,l,y) / TechnologyFromStorage(t,s,m,y)))) =e= 0;
 
 equation S4_StorageLevelYearFinish(STORAGE,YEAR_FULL,REGION_FULL);
 S4_StorageLevelYearFinish(s,y,r).. StorageLevelYearStart(s,y,r) =e=  StorageLevelYearFinish(s,y,r);
@@ -659,7 +659,7 @@ sum(yy$(yearval(y)-yearval(yy) < OperationalLifeStorage(s) and yearval(y)-yearva
 
 equation S6_StorageActivityLimit(STORAGE,TECHNOLOGY,YEAR_FULL,TIMESLICE_FULL,REGION_FULL,MODE_OF_OPERATION);
 S6_StorageActivityLimit(s,t,y,l,r,m)$(TechnologyFromStorage(t,s,m,y)>0)..
-RateOfActivity(y,l,t,m,r)/TechnologyFromStorage(t,s,m,y)*YearSplit(l,y) =l= StorageLevelTSStart(s,y,l,r);
+RateOfActivity(r,t,m,l,y)/TechnologyFromStorage(t,s,m,y)*YearSplit(l,y) =l= StorageLevelTSStart(s,y,l,r);
 
 equation SI1_UndiscountedCapitalInvestmentStorage(STORAGE,YEAR_FULL,REGION_FULL);
 SI1_UndiscountedCapitalInvestmentStorage(s,y,r).. CapitalCostStorage(r,s,y) * NewStorageCapacity(s,y,r) =e= CapitalInvestmentStorage(s,y,r);
@@ -684,7 +684,7 @@ equation T1_SpecifiedAnnualDemandByModalSplit(MODALTYPE,TIMESLICE_FULL,REGION_FU
 T1_SpecifiedAnnualDemandByModalSplit(mt,l,r,f,y)$(SpecifiedAnnualDemand(r,f,y) and TagFuelToSubsets(f,'TransportFuels'))..  SpecifiedAnnualDemand(r,f,y)*ModalSplitByFuelAndModalType(r,f,mt,y)*SpecifiedDemandProfile(r,f,l,y) =e= DemandSplitByModalType(mt,l,r,f,y);
 
 equation T2_ProductionOfTechnologyByModalSplit(MODALTYPE,TIMESLICE_FULL,REGION_FULL,FUEL,YEAR_FULL);
-T2_ProductionOfTechnologyByModalSplit(mt,l,r,f,y)$(sum((t,m),TagTechnologyToModalType(t,m,mt)) and TagFuelToSubsets(f,'TransportFuels'))..  sum((t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0),TagTechnologyToModalType(t,m,mt)*RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y)) =e= ProductionSplitByModalType(mt,l,r,f,y);
+T2_ProductionOfTechnologyByModalSplit(mt,l,r,f,y)$(sum((t,m),TagTechnologyToModalType(t,m,mt)) and TagFuelToSubsets(f,'TransportFuels'))..  sum((t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0),TagTechnologyToModalType(t,m,mt)*RateOfActivity(r,t,m,l,y)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y)) =e= ProductionSplitByModalType(mt,l,r,f,y);
 
 equation T3_ModalSplitBalance(MODALTYPE,TIMESLICE_FULL,REGION_FULL,FUEL,YEAR_FULL);
 T3_ModalSplitBalance(mt,l,r,f,y)$(sum((t,m),TagTechnologyToModalType(t,m,mt)) and sum((t,m),OutputActivityRatio(r,t,f,m,y)) and TagFuelToSubsets(f,'TransportFuels')).. ProductionSplitByModalType(mt,l,r,f,y) =g= DemandSplitByModalType(mt,l,r,f,y);
@@ -695,11 +695,11 @@ $ifthen %switch_ramping% == 1
 * ##############* Ramping #############
 *
 equation R1_ProductionChange(YEAR_FULL,TIMESLICE_FULL,FUEL,TECHNOLOGY,REGION_FULL);
-R1_ProductionChange(y,l,f,t,r)$(ord(l) > 1 and TagDispatchableTechnology(t)=1 and (RampingUpFactor(t,y) <> 0 or RampingDownFactor(t,y) <> 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0)).. ((sum(m$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y))*YearSplit(l,y)) - ((sum(m$(OutputActivityRatio(r,t,f,m,y) <> 0),RateOfActivity(y,l-1,t,m,r)*OutputActivityRatio(r,t,f,m,y))*YearSplit(l-1,y)))) =e= ProductionUpChangeInTimeslice(y,l,f,t,r) - ProductionDownChangeInTimeslice(y,l,f,t,r);
+R1_ProductionChange(y,l,f,t,r)$(ord(l) > 1 and TagDispatchableTechnology(t)=1 and (RampingUpFactor(t,y) <> 0 or RampingDownFactor(t,y) <> 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0)).. ((sum(m$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(r,t,m,l,y)*OutputActivityRatio(r,t,f,m,y))*YearSplit(l,y)) - ((sum(m$(OutputActivityRatio(r,t,f,m,y) <> 0),RateOfActivity(r,t,m,l-1,y)*OutputActivityRatio(r,t,f,m,y))*YearSplit(l-1,y)))) =e= ProductionUpChangeInTimeslice(y,l,f,t,r) - ProductionDownChangeInTimeslice(y,l,f,t,r);
 equation R2_RampingUpLimit(YEAR_FULL,TIMESLICE_FULL,FUEL,TECHNOLOGY,REGION_FULL);
-R2_RampingUpLimit(y,l,f,t,r)$(ord(l) > 1 and TagDispatchableTechnology(t)=1 and RampingUpFactor(t,y) <> 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. ProductionUpChangeInTimeslice(y,l,f,t,r) =l= TotalCapacityAnnual(y,t,r)*AvailabilityFactor(r,t,y)*CapacityToActivityUnit(t)*RampingUpFactor(t,y)*YearSplit(l,y);
+R2_RampingUpLimit(y,l,f,t,r)$(ord(l) > 1 and TagDispatchableTechnology(t)=1 and RampingUpFactor(t,y) <> 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. ProductionUpChangeInTimeslice(y,l,f,t,r) =l= TotalCapacityAnnual(r,t,y)*AvailabilityFactor(r,t,y)*CapacityToActivityUnit(t)*RampingUpFactor(t,y)*YearSplit(l,y);
 equation R3_RampingDownLimit(YEAR_FULL,TIMESLICE_FULL,FUEL,TECHNOLOGY,REGION_FULL);
-R3_RampingDownLimit(y,l,f,t,r)$(ord(l) > 1 and TagDispatchableTechnology(t)=1 and RampingDownFactor(t,y) <> 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. ProductionDownChangeInTimeslice(y,l,f,t,r) =l= TotalCapacityAnnual(y,t,r)*AvailabilityFactor(r,t,y)*CapacityToActivityUnit(t)*RampingDownFactor(t,y)*YearSplit(l,y);
+R3_RampingDownLimit(y,l,f,t,r)$(ord(l) > 1 and TagDispatchableTechnology(t)=1 and RampingDownFactor(t,y) <> 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. ProductionDownChangeInTimeslice(y,l,f,t,r) =l= TotalCapacityAnnual(r,t,y)*AvailabilityFactor(r,t,y)*CapacityToActivityUnit(t)*RampingDownFactor(t,y)*YearSplit(l,y);
 
 *
 * ##############* Ramping Costs #############
@@ -716,7 +716,7 @@ AnnualProductionChangeCost.fx(y,t,r)$(TagDispatchableTechnology(t) = 0 or sum((m
 * ##############* Min Runing Constraint #############
 *
 equation MRC1_MinRunningConstraint(YEAR_FULL,TIMESLICE_FULL,FUEL,TECHNOLOGY,REGION_FULL);
-MRC1_MinRunningConstraint(y,l,f,t,r)$(MinActiveProductionPerTimeslice(y,l,f,t,r) > 0).. sum(m$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y)) =g= TotalCapacityAnnual(y,t,r)*AvailabilityFactor(r,t,y)*CapacityToActivityUnit(t)*MinActiveProductionPerTimeslice(y,l,f,t,r);
+MRC1_MinRunningConstraint(y,l,f,t,r)$(MinActiveProductionPerTimeslice(y,l,f,t,r) > 0).. sum(m$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(r,t,m,l,y)*OutputActivityRatio(r,t,f,m,y)) =g= TotalCapacityAnnual(r,t,y)*AvailabilityFactor(r,t,y)*CapacityToActivityUnit(t)*MinActiveProductionPerTimeslice(y,l,f,t,r);
 
 $endif
 
@@ -743,10 +743,10 @@ BaseYearBounds_TooLow.fx(y,r,t,f) = 0;
 $endif
 
 equation BYB1_RegionalBaseYearProductionLowerBound(YEAR_FULL,REGION_FULL,t,f);
-BYB1_RegionalBaseYearProductionLowerBound(y,r,t,f)$(RegionalBaseYearProduction(r,t,f,y) <> 0).. ProductionByTechnologyAnnual(y,t,f,r) =g= RegionalBaseYearProduction(r,t,f,y)*(1-BaseYearSlack(f))  - BaseYearBounds_TooHigh(y,r,t,f);
+BYB1_RegionalBaseYearProductionLowerBound(y,r,t,f)$(RegionalBaseYearProduction(r,t,f,y) <> 0).. ProductionByTechnologyAnnual(r,t,f,y) =g= RegionalBaseYearProduction(r,t,f,y)*(1-BaseYearSlack(f))  - BaseYearBounds_TooHigh(y,r,t,f);
 
 equation BYB2_RegionalBaseYearProductionUpperBound(YEAR_FULL,REGION_FULL,t,f);
-BYB2_RegionalBaseYearProductionUpperBound(y,r,t,f)$(RegionalBaseYearProduction(r,t,f,y) <> 0).. ProductionByTechnologyAnnual(y,t,f,r) =l= RegionalBaseYearProduction(r,t,f,y) + BaseYearBounds_TooLow(y,r,t,f);
+BYB2_RegionalBaseYearProductionUpperBound(y,r,t,f)$(RegionalBaseYearProduction(r,t,f,y) <> 0).. ProductionByTechnologyAnnual(r,t,f,y) =l= RegionalBaseYearProduction(r,t,f,y) + BaseYearBounds_TooLow(y,r,t,f);
 
 $endif
 
@@ -754,53 +754,53 @@ $endif
 * ######### Peaking Equations #############
 *
 $ifthen.equ_peaking_capacity %switch_peaking_capacity% == 1
-positive variable PeakingDemand(YEAR_FULL,REGION_FULL);
-positive variable PeakingCapacity(YEAR_FULL,REGION_FULL);
+positive variable PeakingDemand(REGION_FULL,YEAR_FULL);
+positive variable PeakingCapacity(REGION_FULL,YEAR_FULL);
 scalar GWh_to_PJ /0.0036/;
 scalar PeakingSlack /%set_peaking_slack%/;
 scalar MinRunShare /%set_peaking_minrun_share%/;
 scalar RenewableCapacityFactorReduction /%set_peaking_res_cf%/;
 scalar MinThermalShare /%set_peaking_min_thermal%/;
 
-equation PC1_PowerPeakingDemand(YEAR_FULL,REGION_FULL);
-PC1_PowerPeakingDemand(y,r)..
-PeakingDemand(y,r) =e=
+equation PC1_PowerPeakingDemand(REGION_FULL,YEAR_FULL);
+PC1_PowerPeakingDemand(r,y)..
+PeakingDemand(r,y) =e=
   sum((se,t)$(x_peakingDemand(r,se) and TagTechnologyToSector(t,se) and sum((s,m),TechnologyToStorage(t,s,m,y)) = 0),
-    UseByTechnologyAnnual(y,t,'power',r)/GWh_to_PJ*x_peakingDemand(r,se)/8760
+    UseByTechnologyAnnual(r,t,'power',y)/GWh_to_PJ*x_peakingDemand(r,se)/8760
 *     Demand per Year in PJ             to Gwh     Highest peak hour value   /number hours per year
   ) + SpecifiedAnnualDemand(r,'power',y)/GWh_to_PJ*x_peakingDemand(r,'power')/8760
 ;
 
 equation PC2_PowerPeakingCapacity(YEAR_FULL,REGION_FULL);
 PC2_PowerPeakingCapacity(y,r)..
-PeakingCapacity(y,r) =e=
+PeakingCapacity(r,y) =e=
   sum((t)$(sum(m,OutputActivityRatio(r,t,'power',m,y)) and sum((s,m),TechnologyToStorage(t,s,m,y)) = 0),
-    (TotalCapacityAnnual(y,t,r)*AvailabilityFactor(r,t,y)*RenewableCapacityFactorReduction*(sum(l,CapacityFactor(r,t,l,y))/card(l)))$(sum(l,CapacityFactor(r,t,l,y)) < card(l))
-  + (TotalCapacityAnnual(y,t,r)*AvailabilityFactor(r,t,y))$(sum(l,CapacityFactor(r,t,l,y)) >= card(l))
+    (TotalCapacityAnnual(r,t,y)*AvailabilityFactor(r,t,y)*RenewableCapacityFactorReduction*(sum(l,CapacityFactor(r,t,l,y))/card(l)))$(sum(l,CapacityFactor(r,t,l,y)) < card(l))
+  + (TotalCapacityAnnual(r,t,y)*AvailabilityFactor(r,t,y))$(sum(l,CapacityFactor(r,t,l,y)) >= card(l))
   )
 ;
 
 equation PC3_PeakingConstraint(YEAR_FULL,REGION_FULL);
 PC3_PeakingConstraint(y,r)$(YearVal(y) > %set_peaking_startyear%)..
-  PeakingCapacity(y,r)
+  PeakingCapacity(r,y)
 $ifthen.equ_peaking_with_trade %switch_peaking_with_trade% == 1
 + sum(rr,TotalTradeCapacity(y,'Power',rr,r))
 $endif.equ_peaking_with_trade
 $ifthen.equ_peaking_with_storages %switch_peaking_with_storages% == 1
-+ sum(t$(sum(m,OutputActivityRatio(r,t,'power',m,y)) and sum((s,m),TechnologyToStorage(t,s,m,y))), TotalCapacityAnnual(y,t,r))
++ sum(t$(sum(m,OutputActivityRatio(r,t,'power',m,y)) and sum((s,m),TechnologyToStorage(t,s,m,y))), TotalCapacityAnnual(r,t,y))
 $endif.equ_peaking_with_storages
-=g= PeakingDemand(y,r)*PeakingSlack
+=g= PeakingDemand(r,y)*PeakingSlack
 ;
 
 *$ifthen.equ_peaking_minThermal %switch_peaking_with_storages% == 1
 *equation PC3b_PeakingConstraint_Thermal(YEAR_FULL,REGION_FULL);
-*PC3b_PeakingConstraint_Thermal(y,r).. PeakingCapacity(y,r) =g= MinThermalShare*PeakingDemand(y,r)*PeakingSlack;
+*PC3b_PeakingConstraint_Thermal(y,r).. PeakingCapacity(r,y) =g= MinThermalShare*PeakingDemand(r,y)*PeakingSlack;
 *$endif.equ_peaking_minThermal
 
 $ifthen.equ_peaking_minrun %switch_peaking_minrun% == 1
 equation PC4_MinRunConstraint(YEAR_FULL,TECHNOLOGY,REGION_FULL);
-PC4_MinRunConstraint(y,t,r)$(TagTechnologyToSector(t,'Power')=1 and AvailabilityFactor(r,t,y)<=1 and TagDispatchableTechnology(t)=1 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0 and TotalCapacityAnnual.up(y,t,r) > 0 and YearVal(y) > %set_peaking_startyear%)..
-sum(l, sum(m, RateOfActivity(y,l,t,m,r))*YearSplit(l,y)) =g= sum(l,TotalCapacityAnnual(y,t,r)*CapacityFactor(r,t,l,y)*YearSplit(l,y)*AvailabilityFactor(r,t,y)*CapacityToActivityUnit(t))*MinRunShare;
+PC4_MinRunConstraint(y,t,r)$(TagTechnologyToSector(t,'Power')=1 and AvailabilityFactor(r,t,y)<=1 and TagDispatchableTechnology(t)=1 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0 and TotalCapacityAnnual.up(r,t,y) > 0 and YearVal(y) > %set_peaking_startyear%)..
+sum(l, sum(m, RateOfActivity(r,t,m,l,y))*YearSplit(l,y)) =g= sum(l,TotalCapacityAnnual(r,t,y)*CapacityFactor(r,t,l,y)*YearSplit(l,y)*AvailabilityFactor(r,t,y)*CapacityToActivityUnit(t))*MinRunShare;
 $endif.equ_peaking_minrun
 
 $endif.equ_peaking_capacity
@@ -814,12 +814,12 @@ positive variable TotalJobs(r_full,y_full);
 $include genesysmod_employment.gms
 
 equation ADD_Employment(r_full,y_full);
-ADD_Employment(r,y)..  sum((t,f),((NewCapacity(y,t,r)*EFactorManufacturing(t,y)*RegionalAdjustmentFactor('%model_region%',y)*LocalManufacturingFactor('%model_region%',y))
-                 +(NewCapacity(y,t,r)*EFactorConstruction(t,y)*RegionalAdjustmentFactor('%model_region%',y))
-                 +(TotalCapacityAnnual(y,t,r)*EFactorOM(t,y)*RegionalAdjustmentFactor('%model_region%',y))
-                 +(UseByTechnologyAnnual(y,t,f,r)*EFactorFuelSupply(t,y)))*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)
-                 +((UseByTechnologyAnnual(y,'HLI_Hardcoal','Hardcoal',r)+UseByTechnologyAnnual(y,'HMI_HardCoal','Hardcoal',r)
-                 +(UseByTechnologyAnnual(y,'HHI_BF_BOF','Hardcoal',r))*EFactorCoalJobs('Coal_Heat',y)*CoalSupply(r,y)))
+ADD_Employment(r,y)..  sum((t,f),((NewCapacity(r,t,y)*EFactorManufacturing(t,y)*RegionalAdjustmentFactor('%model_region%',y)*LocalManufacturingFactor('%model_region%',y))
+                 +(NewCapacity(r,t,y)*EFactorConstruction(t,y)*RegionalAdjustmentFactor('%model_region%',y))
+                 +(TotalCapacityAnnual(r,t,y)*EFactorOM(t,y)*RegionalAdjustmentFactor('%model_region%',y))
+                 +(UseByTechnologyAnnual(r,t,f,y)*EFactorFuelSupply(t,y)))*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)
+                 +((UseByTechnologyAnnual(r,'HLI_Hardcoal','Hardcoal',y)+UseByTechnologyAnnual(r,'HMI_HardCoal','Hardcoal',y)
+                 +(UseByTechnologyAnnual(r,'HHI_BF_BOF','Hardcoal',y))*EFactorCoalJobs('Coal_Heat',y)*CoalSupply(r,y)))
                  +(CoalSupply(r,y)*CoalDigging('%model_region%','Coal_Export','%emissionPathway%_%emissionScenario%',y)*EFactorCoalJobs('Coal_Export',y)))
                  =e= TotalJobs(r,y);
 $endif

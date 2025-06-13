@@ -228,20 +228,20 @@ additional_production(r,c,t,m,f,y,l,'Use','TWh','%EmissionPathway%_%sensitivity%
 *additional_production(r,'InputDemand','Power_Demand_IHS_Industrial','1','Power',y,l,'Use','PJ','%EmissionPathway%_%sensitivity%') = - Demand.l(y,l,'Power',r)*powerSubsectorShares(r,'ind');
 *additional_production(r,'InputDemand','Power_Demand_IHS_Commercial','1','Power',y,l,'Use','PJ','%EmissionPathway%_%sensitivity%') = - Demand.l(y,l,'Power',r)*powerSubsectorShares(r,'com');
 
-additional_production(r,'InputDemand','Power_Demand','1','Power',y,l,'Use','TWh','%EmissionPathway%_%sensitivity%') = - Demand(y,l,'Power',r) * 0.2778;
-additional_production(r,'InputDemand','Power_Demand_IHS_Residential','1','Power',y,l,'Use','TWh','%EmissionPathway%_%sensitivity%') = - Demand(y,l,'Power',r) * 0.2778*powerSubsectorShares(r,'res');
-additional_production(r,'InputDemand','Power_Demand_IHS_Industrial','1','Power',y,l,'Use','TWh','%EmissionPathway%_%sensitivity%') = - Demand(y,l,'Power',r) * 0.2778*powerSubsectorShares(r,'ind');
-additional_production(r,'InputDemand','Power_Demand_IHS_Commercial','1','Power',y,l,'Use','TWh','%EmissionPathway%_%sensitivity%') = - Demand(y,l,'Power',r) * 0.2778*powerSubsectorShares(r,'com');
+additional_production(r,'InputDemand','Power_Demand','1','Power',y,l,'Use','TWh','%EmissionPathway%_%sensitivity%') = - Demand(r,'Power',l,y) * 0.2778;
+additional_production(r,'InputDemand','Power_Demand_IHS_Residential','1','Power',y,l,'Use','TWh','%EmissionPathway%_%sensitivity%') = - Demand(r,'Power',l,y) * 0.2778*powerSubsectorShares(r,'res');
+additional_production(r,'InputDemand','Power_Demand_IHS_Industrial','1','Power',y,l,'Use','TWh','%EmissionPathway%_%sensitivity%') = - Demand(r,'Power',l,y) * 0.2778*powerSubsectorShares(r,'ind');
+additional_production(r,'InputDemand','Power_Demand_IHS_Commercial','1','Power',y,l,'Use','TWh','%EmissionPathway%_%sensitivity%') = - Demand(r,'Power',l,y) * 0.2778*powerSubsectorShares(r,'com');
 
 *additional_production(r,'InputDemand','Heat_Low_Residential_Demand','1','Heat_Low_Residential',y,l,'Use','PJ','%EmissionPathway%_%sensitivity%') = - Demand.l(y,l,'Heat_Low_Residential',r) ;
 *additional_production(r,'InputDemand','Heat_Low_Industrial_Demand','1','Heat_Low_Industrial',y,l,'Use','PJ','%EmissionPathway%_%sensitivity%') = - Demand.l(y,l,'Heat_Low_Industrial',r) ;
 *additional_production(r,'InputDemand','Heat_Medium_Industrial_Demand','1','Heat_Medium_Industrial',y,l,'Use','PJ','%EmissionPathway%_%sensitivity%') = - Demand.l(y,l,'Heat_Medium_Industrial',r) ;
 *additional_production(r,'InputDemand','Heat_High_Industrial_Demand','1','Heat_High_Industrial',y,l,'Use','PJ','%EmissionPathway%_%sensitivity%') = - Demand.l(y,l,'Heat_High_Industrial',r) ;
 
-additional_production(r,'InputDemand','Heat_Low_Residential_Demand','1','Heat_Low_Residential',y,l,'Use','TWh','%EmissionPathway%_%sensitivity%') = - Demand(y,l,'Heat_Low_Residential',r) * 0.2778 ;
-additional_production(r,'InputDemand','Heat_Low_Industrial_Demand','1','Heat_Low_Industrial',y,l,'Use','TWh','%EmissionPathway%_%sensitivity%') = - Demand(y,l,'Heat_Low_Industrial',r) * 0.2778 ;
-additional_production(r,'InputDemand','Heat_Medium_Industrial_Demand','1','Heat_Medium_Industrial',y,l,'Use','TWh','%EmissionPathway%_%sensitivity%') = - Demand(y,l,'Heat_Medium_Industrial',r) * 0.2778 ;
-additional_production(r,'InputDemand','Heat_High_Industrial_Demand','1','Heat_High_Industrial',y,l,'Use','TWh','%EmissionPathway%_%sensitivity%') = - Demand(y,l,'Heat_High_Industrial',r) * 0.2778 ;
+additional_production(r,'InputDemand','Heat_Low_Residential_Demand','1','Heat_Low_Residential',y,l,'Use','TWh','%EmissionPathway%_%sensitivity%') = - Demand(r,'Heat_Low_Residential',l,y) * 0.2778 ;
+additional_production(r,'InputDemand','Heat_Low_Industrial_Demand','1','Heat_Low_Industrial',y,l,'Use','TWh','%EmissionPathway%_%sensitivity%') = - Demand(r,'Heat_Low_Residential',l,y) * 0.2778 ;
+additional_production(r,'InputDemand','Heat_Medium_Industrial_Demand','1','Heat_Medium_Industrial',y,l,'Use','TWh','%EmissionPathway%_%sensitivity%') = - Demand(r,'Heat_Low_Residential',l,y) * 0.2778 ;
+additional_production(r,'InputDemand','Heat_High_Industrial_Demand','1','Heat_High_Industrial',y,l,'Use','TWh','%EmissionPathway%_%sensitivity%') = - Demand(r,'Heat_Low_Residential',l,y) * 0.2778 ;
 
 *additional_production(r,'Trade','Trade','1',f,y,l,'NetTrade','PJ','%EmissionPathway%_%sensitivity%') = - NetTrade.l(y,l,f,r) ;
 additional_production(r,'Trade','Trade','1',f,y,l,'NetTrade','TWh','%EmissionPathway%_%sensitivity%') = - NetTrade.l(y,l,f,r)* 0.2778 ;
@@ -249,10 +249,10 @@ additional_production(r,'Trade','Trade','1',f,y,l,'NetTrade','TWh','%EmissionPat
 additional_production(r,'Storage Losses',StorageDummies,m,f,y,l,'Use','TWh','%EmissionPathway%_%EmissionScenario%')$(OutputActivityRatio(r,StorageDummies,f,m,y)) = -(ProductionByTechnology.l(y,l,StorageDummies,f,r)*(1-OutputActivityRatio(r,StorageDummies,f,m,y)))/3.6;
 
 
-additional_capacity(r,c,t,y,'NewCapacity','%EmissionPathway%_%sensitivity%')$(map_techToCategory(t,c)) = AccumulatedNewCapacity.l(y,t,r) ;
+additional_capacity(r,c,t,y,'NewCapacity','%EmissionPathway%_%sensitivity%')$(map_techToCategory(t,c)) = AccumulatedNewCapacity.l(r,t,y) ;
 additional_capacity(r,c,t,y,'ResidualCapacity','%EmissionPathway%_%sensitivity%')$(map_techToCategory(t,c)) = ResidualCapacity(r,t,y) ;
-additional_capacity(r,c,t,y,'TotalCapacity','%EmissionPathway%_%sensitivity%')$(map_techToCategory(t,c)) = TotalCapacityAnnual.l(y,t,r) ;
-additional_capacity(r,c,t,y,'PotentialUsed','%EmissionPathway%_%sensitivity%')$(map_techToCategory(t,c) and (TotalAnnualMaxCapacity(r,t,y) > 0)) =  TotalCapacityAnnual.l(y,t,r)/TotalAnnualMaxCapacity(r,t,y);
+additional_capacity(r,c,t,y,'TotalCapacity','%EmissionPathway%_%sensitivity%')$(map_techToCategory(t,c)) = TotalCapacityAnnual.l(r,t,y) ;
+additional_capacity(r,c,t,y,'PotentialUsed','%EmissionPathway%_%sensitivity%')$(map_techToCategory(t,c) and (TotalAnnualMaxCapacity(r,t,y) > 0)) =  TotalCapacityAnnual.l(r,t,y)/TotalAnnualMaxCapacity(r,t,y);
 
 additional_emissions(r,'TechnologyEmission',c,e,t,y,'%EmissionPathway%_%sensitivity%')$(map_techToCategory(t,c))  = AnnualTechnologyEmission.l(y,t,e,r);
 additional_emissions(r,'ExogenousEmissions','X',e,'X',y,'%EmissionPathway%_%sensitivity%')  = AnnualExogenousEmission(r,e,y);
@@ -265,11 +265,11 @@ additional_costs('GeneratingCosts',r,'Resource',f,'1',y) = additional_resourceco
 additional_costs('TotalSystemCosts','X','X','X','X','X') = z.l;
 
 SelfSufficiencyRate(r,y) = ProductionAnnual.l(y,'Power',r)/(SpecifiedAnnualDemand(r,'Power',y)+UseAnnual.l(y,'Power',r));
-ElectrificationRate(Sector,y)$(sum((f,r)$(TagFuelToSector(Sector,f)>0),TagFuelToSector(Sector,f)*ProductionAnnual.l(y,f,r)) > 0) = sum((f,t,r)$(ProductionByTechnologyAnnual.l(y,t,f,r) > 0), TagFuelToSector(Sector,f)*TagElectricTechnology(t)*ProductionByTechnologyAnnual.l(y,t,f,r))/sum((f,r)$(TagFuelToSector(Sector,f)>0),TagFuelToSector(Sector,f)*ProductionAnnual.l(y,f,r));
+ElectrificationRate(Sector,y)$(sum((f,r)$(TagFuelToSector(Sector,f)>0),TagFuelToSector(Sector,f)*ProductionAnnual.l(y,f,r)) > 0) = sum((f,t,r)$(ProductionByTechnologyAnnual.l(r,t,f,y) > 0), TagFuelToSector(Sector,f)*TagElectricTechnology(t)*ProductionByTechnologyAnnual.l(r,t,f,y))/sum((f,r)$(TagFuelToSector(Sector,f)>0),TagFuelToSector(Sector,f)*ProductionAnnual.l(y,f,r));
 
 additional_other('SelfSufficiencyRate',r,'X','X',y) = SelfSufficiencyRate(r,y) ;
 additional_other('ElectrificationRate','X',Sector,'X',y)  = ElectrificationRate(Sector,y) ;
-additional_other('FinalEnergyConsumption',r,t,f,y) =  UseByTechnologyAnnual.l(y,t,f,r)/3.6;
+additional_other('FinalEnergyConsumption',r,t,f,y) =  UseByTechnologyAnnual.l(r,t,f,y)/3.6;
 additional_other('FinalEnergyConsumption',r,'InputDemand',f,y) = (SpecifiedAnnualDemand(r,f,y))/3.6;
 additional_other('FinalEnergyConsumption',r,'InputDemand',Transport,y) = additional_other('FinalEnergyConsumption',r,'InputDemand',Transport,y)*3.6;
 additional_other('ElectricityShareOfFinalEnergy',r,'X','X',y) = (UseAnnual.l(y,'Power',r)+SpecifiedAnnualDemand(r,'Power',y)) /  (sum(FinalEnergy,UseAnnual.l(y,FinalEnergy,r))+SpecifiedAnnualDemand(r,'Power',y));

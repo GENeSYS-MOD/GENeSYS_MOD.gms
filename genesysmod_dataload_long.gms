@@ -237,9 +237,9 @@ $endif
 ModalSplitByFuelAndModalType(r,f,mt,y) = Readin_ModalSplitByFuelAndModalType(r,f,y,mt);
 ModalSplitByFuelAndModalType(r_full,f,mt,y)$(ModalSplitByFuelAndModalType(r_full,f,mt,y) = 0) = ModalSplitByFuelAndModalType('World',f,mt,y);
 
-TradeRoute(r,f,y,rr) = Readin_TradeRoute(r,rr,f);
+TradeRoute(r,rr,f,y) = Readin_TradeRoute(r,rr,f);
 TradeCapacity(r,f,y,rr) = Readin_TradeCapacity(r,rr,f,y);
-TradeCosts(r,f,y,rr) = TradeCostFactor(f,y)*TradeRoute(r,f,y,rr);
+TradeCosts(r,rr,f,y) = TradeCostFactor(f,y)*TradeRoute(r,rr,f,y);
 CommissionedTradeCapacity(r,f,y,rr) = Readin_CommissionedTradeCapacity(r,rr,f,y);
 
 GrowthRateTradeCapacity(r,f,y,rr) = Readin_GrowthRateTradeCapacity(r,rr,f,y);
@@ -251,7 +251,7 @@ TradeCapacityGrowthCosts(r,f,rr) = Readin_TradeCapacityGrowthCosts(r,rr,f);
 GrowthRateTradeCapacity(r,f,y,rr)$(GrowthRateTradeCapacity(r,f,y,rr) = 0) = GrowthRateTradeCapacity(r,f,'%year%',rr);
 
 TradeLossFactor('Power',y) = 0.00003;
-TradeLossBetweenRegions(r,f,y,rr) = TradeLossFactor(f,y)*TradeRoute(r,f,y,rr);
+TradeLossBetweenRegions(r,rr,f,y) = TradeLossFactor(f,y)*TradeRoute(r,rr,f,y);
 
 *
 * ######### YearValue assignment #############
@@ -259,7 +259,7 @@ TradeLossBetweenRegions(r,f,y,rr) = TradeLossFactor(f,y)*TradeRoute(r,f,y,rr);
 parameter YearVal(y_full);
 YearVal(y) = y.val ;
 
-NewCapacity.fx(y,t,r)$(YearVal(y)>NewCapacityExpansionStop(r,t) and NewCapacityExpansionStop(r,t) and not TotalAnnualMinCapacity(r,t,y)) = 0;
+NewCapacity.fx(r,t,y)$(YearVal(y)>NewCapacityExpansionStop(r,t) and NewCapacityExpansionStop(r,t) and not TotalAnnualMinCapacity(r,t,y)) = 0;
 
 *
 * ####### Load from hourly Data #############

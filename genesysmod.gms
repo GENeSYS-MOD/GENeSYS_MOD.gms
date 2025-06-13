@@ -30,14 +30,14 @@ $if not set elmod_starthour              $setglobal elmod_starthour 8
 $if not set year                         $setglobal year 2018
 $if not set data_base_region             $setglobal data_base_region DE
 $if not set timeseries                   $setglobal timeseries elmod
-$if not set solver                       $setglobal solver cplex
+$if not set solver                       $setglobal solver gamschk
 
 
 $if not set switch_test_data_load        $setglobal switch_test_data_load 0
 $if not set switch_investLimit           $setglobal switch_investLimit 1
 $if not set switch_infeasibility_tech    $setglobal switch_infeasibility_tech 0
 $if not set switch_base_year_bounds      $setglobal switch_base_year_bounds 1
-$if not set switch_base_year_bounds_debugging      $setglobal switch_base_year_bounds_debugging 1
+$if not set switch_base_year_bounds_debugging      $setglobal switch_base_year_bounds_debugging 0
 
 
 $if not set switch_unixPath              $setglobal switch_unixPath 0
@@ -77,7 +77,7 @@ $if not set elmod_dunkelflaute           $setglobal elmod_dunkelflaute 0
 $if not set hydrogen_growthcost_multiplier $setglobal hydrogen_growthcost_multiplier 1
 
 
-$if not set emissionPathway              $setglobal emissionPathway NECPEssentials
+$if not set emissionPathway              $setglobal emissionPathway Green
 $if not set emissionScenario             $setglobal emissionScenario globalLimit
 
 $ifthen %switch_unixPath% == 1
@@ -101,8 +101,8 @@ $elseif %emissionPathway% == NECPEssentials
 $setglobal data_file RegularParameters_Europe_EnVis_NECPEssentials
 $setglobal hourly_data_file Timeseries_Europe_EnVis_NECPEssentials
 $elseif %emissionPathway% == Green
-$setglobal data_file RegularParameters_Europe_EnVis_Green
-$setglobal hourly_data_file Timeseries_Europe_EnVis_Green
+$setglobal data_file RegularParameters_Europe_EnVis_Green1
+$setglobal hourly_data_file Timeseries_Europe_EnVis_Green1
 $elseif %emissionPathway% == Trinity
 $setglobal data_file RegularParameters_Europe_EnVis_Trinity
 $setglobal hourly_data_file Timeseries_Europe_EnVis_Trinity

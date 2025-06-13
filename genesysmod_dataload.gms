@@ -231,15 +231,15 @@ $endif
 *
 * ####### Assigning TradeRoutes depending on initialized Regions and Year #############
 *
-TradeRoute(r,f,y,rr) = Readin_TradeRoute(r,f,rr);
+TradeRoute(r,rr,f,y) = Readin_TradeRoute(r,f,rr);
 TradeCapacity(r,f,y,rr) = Readin_TradeCapacity(r,f,y,rr);
 CommissionedTradeCapacity(r,f,y,rr) = Readin_CommissionedTradeCapacity(r,f,y,rr);
 
-TradeCosts(r,f,y,rr) = TradeCostFactor(f,y)*TradeRoute(r,f,y,rr);
+TradeCosts(r,rr,f,y) = TradeCostFactor(f,y)*TradeRoute(r,rr,f,y);
 GrowthRateTradeCapacity(r,f,y,rr)$(GrowthRateTradeCapacity(r,f,y,rr) = 0) = GrowthRateTradeCapacity(r,f,'%year%',rr);
 
 TradeLossFactor('Power',y) = 0.00003;
-TradeLossBetweenRegions(r,f,y,rr) = TradeLossFactor(f,y)*TradeRoute(r,f,y,rr);
+TradeLossBetweenRegions(r,rr,f,y) = TradeLossFactor(f,y)*TradeRoute(r,rr,f,y);
 
 *
 * ######### YearValue assignment #############
@@ -247,7 +247,7 @@ TradeLossBetweenRegions(r,f,y,rr) = TradeLossFactor(f,y)*TradeRoute(r,f,y,rr);
 parameter YearVal(y_full);
 YearVal(y) = y.val ;
 
-NewCapacity.fx(y,t,r)$(YearVal(y)>NewCapacityExpansionStop(r,t) and NewCapacityExpansionStop(r,t) and not TotalAnnualMinCapacity(r,t,y)) = 0;
+NewCapacity.fx(r,t,y)$(YearVal(y)>NewCapacityExpansionStop(r,t) and NewCapacityExpansionStop(r,t) and not TotalAnnualMinCapacity(r,t,y)) = 0;
 
 *
 * ####### Load from hourly Data #############

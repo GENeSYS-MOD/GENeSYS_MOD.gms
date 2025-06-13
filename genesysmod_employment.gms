@@ -5,11 +5,11 @@
 * Based on OSEMOSYS 2011.07.07 conversion to GAMS by Ken Noble, Noble-Soft Systems - August 2012
 *
 * Updated to newest OSeMOSYS-Version (2016.08) and further improved with additional equations 2016 - 2022
-* by Konstantin Löffler, Thorsten Burandt, Karlo Hainsch
+* by Konstantin Lï¿½ffler, Thorsten Burandt, Karlo Hainsch
 *
 * #############################################################
 *
-* Copyright 2020 Technische Universität Berlin and DIW Berlin
+* Copyright 2020 Technische Universitï¿½t Berlin and DIW Berlin
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -79,7 +79,7 @@ Jobs_Total
 
 
 equation EJ1_ManufacturingJobs(REGION_FULL,TECHNOLOGY,YEAR_FULL);
-EJ1_ManufacturingJobs(r,t,y).. Jobs_Manufacturing =e= NewCapacity(y,t,r)*EFactorManufacturing(t,y)*RegionalAdjustmentFactor('southafrica',y)*LocalManufacturingFactor('southafrica',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y));
+EJ1_ManufacturingJobs(r,t,y).. Jobs_Manufacturing =e= NewCapacity(r,t,y)*EFactorManufacturing(t,y)*RegionalAdjustmentFactor('southafrica',y)*LocalManufacturingFactor('southafrica',y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y));
 
 equation EJ4_SupplyJobsJobs(REGION_FULL,TECHNOLOGY,YEAR_FULL);
 EJ4_SupplyJobs(r,t,y).. Jobs_Supply =e= (UseByTechnology(l,t,f,r)*EFactorFuelSupply(t,y)*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)))*(-1)) +

@@ -246,8 +246,8 @@ variable_costs(r,'CHP_Oil') = resourcecosts(r,'oil','%dispatch_year%')*InputActi
 *                     to 1000eur/GWh
 variable_costs(r,d) = variable_costs(r,d)*3.6;
 
-dispatchable_capacity(r,d) = sum(t$(sameas(d,t)),TotalCapacityAnnual.l('%dispatch_year%', t, r));
-variable_capacity(r,v) = sum(t$(sameas(v,t)),TotalCapacityAnnual.l('%dispatch_year%', t, r));
+dispatchable_capacity(r,d) = sum(t$(sameas(d,t)),TotalCapacityAnnual.l(r,t,'%dispatch_year%'));
+variable_capacity(r,v) = sum(t$(sameas(v,t)),TotalCapacityAnnual.l(r,t,'%dispatch_year%'));
 
 availability_factor(r,d) = sum(t$(sameas(d,t)),AvailabilityFactor(r,t,'%dispatch_year%'));
 
@@ -306,7 +306,7 @@ parameter sector_load_curve_sum(r_full,se);
   sector_load_curve_sum(r,'Transportation') = sum(h,CountryData(r, h,'mobility_psng'));
 
 parameter sector_demand(r_full,se);
-sector_demand(r,se) = sum((t)$TagTechnologyToSector(t,se), UseByTechnologyAnnual.l('%dispatch_year%',t,'power',r))/3.6*1000;
+sector_demand(r,se) = sum((t)$TagTechnologyToSector(t,se), UseByTechnologyAnnual.l(r,t,'power','%dispatch_year%'))/3.6*1000;
 sector_demand(r,'Power') = SpecifiedAnnualDemand(r,'power','%dispatch_year%')/3.6*1000;
 
 parameter sector_load_curve;
@@ -331,10 +331,10 @@ storage_efficiency('S_Battery_Li-Ion') = OutputActivityRatio('%dispatch_base_reg
 storage_efficiency('S_Battery_Redox') = OutputActivityRatio('%dispatch_base_region%','D_Battery_Redox', 'Power', '2', '%dispatch_year%');
 storage_efficiency('S_CAES') = OutputActivityRatio('%dispatch_base_region%','D_CAES', 'Power', '2', '%dispatch_year%');
 
-storage_capacity_p(r,'S_PHS') = TotalCapacityAnnual.l('%dispatch_year%', 'D_PHS', r) + TotalCapacityAnnual.l('%dispatch_year%', 'D_PHS_Residual', r);
-storage_capacity_p(r,'S_Battery_Li-Ion') = TotalCapacityAnnual.l('%dispatch_year%', 'D_Battery_Li-Ion', r);
-storage_capacity_p(r,'S_Battery_Redox') = TotalCapacityAnnual.l('%dispatch_year%', 'D_Battery_Redox', r);
-storage_capacity_p(r,'S_CAES') = TotalCapacityAnnual.l('%dispatch_year%', 'D_CAES', r);
+storage_capacity_p(r,'S_PHS') = TotalCapacityAnnual.l(r, 'D_PHS', '%dispatch_year%') + TotalCapacityAnnual.l(r, 'D_PHS_Residual', '%dispatch_year%');
+storage_capacity_p(r,'S_Battery_Li-Ion') = TotalCapacityAnnual.l(r, 'D_Battery_Li-Ion', '%dispatch_year%');
+storage_capacity_p(r,'S_Battery_Redox') = TotalCapacityAnnual.l(r, 'D_Battery_Redox', '%dispatch_year%');
+storage_capacity_p(r,'S_CAES') = TotalCapacityAnnual.l(r, 'D_CAES', '%dispatch_year%');
 
 storage_capacity_e(r,'S_PHS') = storage_capacity_p(r,'S_PHS')*8*8760;
 storage_capacity_e(r,'S_Battery_Li-Ion') = storage_capacity_p(r,'S_Battery_Li-Ion')*1*8760;

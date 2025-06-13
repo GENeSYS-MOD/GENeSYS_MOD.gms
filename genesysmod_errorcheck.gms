@@ -26,9 +26,9 @@ error_TechMissingFromSectorList(t)$(not sum(se,TagTechnologyToSector(t,se))) = 1
 if(sum(t,error_TechMissingFromSectorList(t)),abort "Technology missing from Sector list. Please check TagTechnologyToSector to include all Technologies. Missing Technologies are listed in the parameter error_TechMissingFromSectorList.");
 
 * Check if TradeCosts are missing from a defined TradeRoute -> if yes, then exit
-parameter error_TradeCostsMissingFromTradeRoute(r_full,f,rr_full);
-error_TradeCostsMissingFromTradeRoute(r,f,rr)$(sum(y,TradeRoute(r,f,y,rr)) and TagCanFuelBeTraded(f) and not sum(y,TradeCosts(r,f,y,rr))) = 1;
-if(sum((f,r,rr),error_TradeCostsMissingFromTradeRoute(r,f,rr)),abort "TradeCosts are missing from a defined TradeRoute. Please check your TradeCosts to include all defined TradeRoutes. Missing TradeCosts are listed in the parameter error_TradeCostsMissingFromTradeRoute.");
+parameter error_TradeCostsMissingFromTradeRoute(r_full,rr_full,f);
+error_TradeCostsMissingFromTradeRoute(r,rr,f)$(sum(y,TradeRoute(r,rr,f,y)) and TagCanFuelBeTraded(f) and not sum(y,TradeCosts(r,rr,f,y))) = 1;
+if(sum((f,r,rr),error_TradeCostsMissingFromTradeRoute(r,rr,f)),abort "TradeCosts are missing from a defined TradeRoute. Please check your TradeCosts to include all defined TradeRoutes. Missing TradeCosts are listed in the parameter error_TradeCostsMissingFromTradeRoute.");
 
 * Check for errors in ModalSplit definitions -> if yes, then exit
 parameter error_ModalSplitByModalTypeDefinition(f,*,r_full,y_full);
@@ -58,8 +58,8 @@ if(sum((r,t),error_CapacityToActivityUnitDataMissing(r,t)),abort "CapacityToActi
 
 * Check for errors in TradeRoutes, if they have a capacity given
 parameter error_TradeCapacityMismatch(*,r_full,f,y_full,rr_full);
-error_TradeCapacityMismatch('TradeCapacity',r,f,y,rr)$(TradeCapacity(r,f,y,rr) and not TradeRoute(r,f,y,rr))  = 1;
-error_TradeCapacityMismatch('CommissionedTradeCapacity',r,f,y,rr)$(CommissionedTradeCapacity(r,f,y,rr) and not TradeRoute(r,f,y,rr))  = 1;
+error_TradeCapacityMismatch('TradeCapacity',r,f,y,rr)$(TradeCapacity(r,f,y,rr) and not TradeRoute(r,rr,f,y))  = 1;
+error_TradeCapacityMismatch('CommissionedTradeCapacity',r,f,y,rr)$(CommissionedTradeCapacity(r,f,y,rr) and not TradeRoute(r,rr,f,y))  = 1;
 if(sum((r,f,y,rr),error_TradeCapacityMismatch('TradeCapacity',r,f,y,rr)+error_TradeCapacityMismatch('CommissionedTradeCapacity',r,f,y,rr)),abort "TradeRoute is missing for some trade connections where a TradeCapacity has been set. Please check your TradeRoute and TradeCapacity data in Excel. Technologies where values are missing are listed in the parameter error_TradeCapacityMismatch.");
 
 
@@ -71,7 +71,7 @@ parameter warning_TechnologyEfficiencies(r_full,t,m,y_full);
 warning_TechnologyEfficiencies(r,t,m,y)$(not sum(se,TagTechnologyToSector(t,'Resources')) and not sum(se,TagTechnologyToSector(t,'Transportation')) and sum(f,OutputActivityRatio(r,t,f,m,y)) and ((sum(f,InputActivityRatio(r,t,f,m,y))/sum(f,OutputActivityRatio(r,t,f,m,y)))<1)$(sum(f,OutputActivityRatio(r,t,f,m,y)) and sum(f,InputActivityRatio(r,t,f,m,y)))) = 1;
 
 parameter error_tradelines(r_full,rr_full,f);
-error_tradelines(r,rr,f)$(TradeRoute(r,f,'2018',rr)-TradeRoute(r,f,'2018',rr))=1
+error_tradelines(r,rr,f)$(TradeRoute(r,rr,f,'2018')-TradeRoute(r,rr,f,'2018'))=1
 
 * If residual capacity is greater than max allowed annual capacity, set max capacity to residual capacity
 parameter ToSmallResidualCapacity;

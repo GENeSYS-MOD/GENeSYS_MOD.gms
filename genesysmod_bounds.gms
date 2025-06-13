@@ -20,8 +20,8 @@
 * ###### Eventually move to input data file ######
 *
 
-TradeCosts(r,'ETS',y,rr)$(not TradeCosts(r,'ETS',y,rr)) = 0.01;
-TradeCosts(r,'Power',y,rr)$(not TradeCosts(r,'Power',y,rr)) = 0.001;
+TradeCosts(r,rr,'ETS',y)$(not TradeCosts(r,rr,'ETS',y)) = 0.01;
+TradeCosts(r,rr,'Power',y)$(not TradeCosts(r,rr,'Power',y)) = 0.001;
 VariableCost(r,t,m,y)$(not VariableCost(r,t,m,y)) = 0.01;
 
 *
@@ -104,11 +104,11 @@ StorageLevelTSStart.fx('S_CAES',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(48
 ** This scales the capital cost of storage according to the number of days in the model.
 CapitalCostStorage(r,s,y) = max(round(CapitalCostStorage(r,s,y)/365*8760/%elmod_nthhour%/(24/hour_steps),4),0.01);
 
-*equation Add_E2PRatio_up(STORAGE,YEAR_FULL,REGION_FULL);
-*Add_E2PRatio_up(s,y,r).. StorageUpperLimit(s,y,r) =l=  sum((t,m)$(TechnologyToStorage(t,s,m,y)),  TotalCapacityAnnual(y,t,r) * StorageE2PRatio(s) * 0.0036 * 3);
+equation Add_E2PRatio_up(STORAGE,YEAR_FULL,REGION_FULL);
+Add_E2PRatio_up(s,y,r).. (sum((yy)$(OperationalLifeStorage(s) >= Yearval(y)-Yearval(yy) and Yearval(y)-Yearval(yy) >= 0), NewStorageCapacity(s,yy,r)) + ResidualStorageCapacity(r,s,y)) =l=  sum((t,m)$(TechnologyToStorage(t,s,m,y)),  TotalCapacityAnnual(r,t,y) * StorageE2PRatio(s));
 
-*equation Add_E2PRatio_low(STORAGE,YEAR_FULL,REGION_FULL);
-*Add_E2PRatio_low(s,y,r).. StorageUpperLimit(s,y,r) =g=  sum((t,m)$(TechnologyToStorage(t,s,m,y)),  TotalCapacityAnnual(y,t,r) * StorageE2PRatio(s) * 0.0036 * 0.5);
+equation Add_E2PRatio_low(STORAGE,YEAR_FULL,REGION_FULL);
+Add_E2PRatio_low(s,y,r).. (sum((yy)$(OperationalLifeStorage(s) >= Yearval(y)-Yearval(yy) and Yearval(y)-Yearval(yy) >= 0), NewStorageCapacity(s,yy,r)) + ResidualStorageCapacity(r,s,y)) =g=  sum((t,m)$(TechnologyToStorage(t,s,m,y)),  TotalCapacityAnnual(r,t,y) * StorageE2PRatio(s));
 
 
 *
@@ -125,23 +125,23 @@ CapacityFactor(r,'HD_Solar_Thermal',l,y) = CapacityFactor(r,'P_PV_Utility_Avg',l
 *
 * ####### No new capacity construction in 2015 #############
 *
-NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'Transformation')) = 0;
-NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'PowerSupply')) = 0;
-NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'SectorCoupling')) = 0;
-NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'StorageDummies')) = 0;
-NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'Transport')) = 0;
-NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'CHP')) = 0;
+NewCapacity.fx(r,t,'%year%')$(TagTechnologyToSubsets(t,'Transformation')) = 0;
+NewCapacity.fx(r,t,'%year%')$(TagTechnologyToSubsets(t,'PowerSupply')) = 0;
+NewCapacity.fx(r,t,'%year%')$(TagTechnologyToSubsets(t,'SectorCoupling')) = 0;
+NewCapacity.fx(r,t,'%year%')$(TagTechnologyToSubsets(t,'StorageDummies')) = 0;
+NewCapacity.fx(r,t,'%year%')$(TagTechnologyToSubsets(t,'Transport')) = 0;
+NewCapacity.fx(r,t,'%year%')$(TagTechnologyToSubsets(t,'CHP')) = 0;
 
-NewCapacity.up('%year%',t,r)$(TagTechnologyToSubsets(t,'Biomass')) = +INF;
-NewCapacity.up('%year%','HB_Gas_Boiler',r) = +INF;
-NewCapacity.up('%year%','HLI_Gas_Boiler',r) = +INF;
-NewCapacity.up('%year%','HHI_BF_BOF',r) = +INF;
-NewCapacity.up('%year%','HMHI_Gas',r) = +INF;
-NewCapacity.up('%year%','HHI_Bio_BF_BOF',r) = +INF;
-NewCapacity.up('%year%','HHI_Scrap_EAF',r) = +INF;
-NewCapacity.up('%year%','HHI_DRI_EAF',r) = +INF;
-NewCapacity.up('%year%','D_Gas_Methane',r) = +INF;
-NewCapacity.up('%year%','X_SMR',r) = +INF;
+NewCapacity.up(r,t,'%year%')$(TagTechnologyToSubsets(t,'Biomass')) = +INF;
+NewCapacity.up(r,'HB_Gas_Boiler','%year%') = +INF;
+NewCapacity.up(r,'HLI_Gas_Boiler','%year%') = +INF;
+NewCapacity.up(r,'HHI_BF_BOF','%year%') = +INF;
+NewCapacity.up(r,'HMHI_Gas','%year%') = +INF;
+NewCapacity.up(r,'HHI_Bio_BF_BOF','%year%') = +INF;
+NewCapacity.up(r,'HHI_Scrap_EAF','%year%') = +INF;
+NewCapacity.up(r,'HHI_DRI_EAF','%year%') = +INF;
+NewCapacity.up(r,'D_Gas_Methane','%year%') = +INF;
+NewCapacity.up(r,'X_SMR','%year%') = +INF;
 
 
 *
@@ -213,8 +213,8 @@ TotalAnnualMaxCapacity(r,t,y)$(AvailabilityFactor(r,t,y) = 0 and TagTechnologyTo
 TotalTechnologyAnnualActivityUpperLimit(r,t,y)$(TagTechnologyToSubsets(t,'CCS')) = 99999;
 TotalTechnologyAnnualActivityUpperLimit(r,t,y)$(AvailabilityFactor(r,t,y) = 0 and TagTechnologyToSubsets(t,'CCS')) = 0;
 
-ProductionByTechnologyAnnual.up(y,t,f,r)$(TagTechnologyToSubsets(t,'CCS')) = +INF;
-ProductionByTechnologyAnnual.fx(y,t,f,r)$(AvailabilityFactor(r,t,y) = 0 and TagTechnologyToSubsets(t,'CCS')) = 0;
+ProductionByTechnologyAnnual.up(r,t,f,y)$(TagTechnologyToSubsets(t,'CCS')) = +INF;
+ProductionByTechnologyAnnual.fx(r,t,f,y)$(AvailabilityFactor(r,t,y) = 0 and TagTechnologyToSubsets(t,'CCS')) = 0;
 
 TotalAnnualMaxCapacity(r,'A_Air',y) = 99999;
 TotalTechnologyAnnualActivityUpperLimit(r,'A_Air',y) = 99999;
@@ -226,7 +226,7 @@ $else
 
 AvailabilityFactor(r,t,y)$(TagTechnologyToSubsets(t,'CCS')) = 0;
 TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'CCS')) = 0;
-ProductionByTechnologyAnnual.fx(y,t,f,r)$(TagTechnologyToSubsets(t,'CCS')) = 0;
+ProductionByTechnologyAnnual.fx(r,t,f,y)$(TagTechnologyToSubsets(t,'CCS')) = 0;
 $endif
 
 
