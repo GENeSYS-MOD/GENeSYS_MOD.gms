@@ -71,8 +71,8 @@ $if not set set_storagelevelstart_up     $setglobal set_storagelevelstart_up 0.7
 $if not set set_storagelevelstart_low    $setglobal set_storagelevelstart_low 0.75
 
 $if not set switch_peaking_capacity      $setglobal switch_peaking_capacity 1
-$if not set switch_peaking_with_trade    $setglobal switch_peaking_with_trade 0
-$if not set switch_peaking_with_storages $setglobal switch_peaking_with_storages 0
+$if not set switch_peaking_with_trade    $setglobal switch_peaking_with_trade 1
+$if not set switch_peaking_with_storages $setglobal switch_peaking_with_storages 1
 $if not set switch_peaking_minrun        $setglobal switch_peaking_minrun 0
 $if not set set_peaking_slack            $setglobal set_peaking_slack 1.0
 *consider vRES only partially (1.0 consider vRES fully, 0.0 ignore vRES in peaking equation)
