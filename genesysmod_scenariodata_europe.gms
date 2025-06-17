@@ -68,8 +68,8 @@ $endif
 
 RegionalBaseYearProduction('SE','HB_Direct_Electric',f,y) = 0;
 RegionalBaseYearProduction('SE','HB_Biomass',f,y) = 0;
-RegionalBaseYearProduction(r,'CHP_Biomass_Solid','Heat_District',y) = 0;
-RegionalBaseYearProduction(r,'CHP_Biomass_Solid','Power',y) = 0;
+*RegionalBaseYearProduction(r,'CHP_Biomass_Solid','Heat_District',y) = 0;
+*RegionalBaseYearProduction(r,'CHP_Biomass_Solid','Power',y) = 0;
 
 NewCapacity.up(y,'PSNG_Rail_Conv',r) = 0;
 NewCapacity.up(y,'FRT_Rail_Conv',r) = 0;
