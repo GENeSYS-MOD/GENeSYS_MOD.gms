@@ -807,10 +807,10 @@ $endif.equ_peaking_with_storages
 =g= PeakingDemand(y,r)*PeakingSlack
 ;
 
-*$ifthen.equ_peaking_minThermal %switch_peaking_with_storages% == 1
-*equation PC3b_PeakingConstraint_Thermal(YEAR_FULL,REGION_FULL);
-*PC3b_PeakingConstraint_Thermal(y,r).. PeakingCapacity(y,r) =g= MinThermalShare*PeakingDemand(y,r)*PeakingSlack;
-*$endif.equ_peaking_minThermal
+$ifthen.equ_peaking_minThermal %switch_peaking_with_storages% == 1
+equation PC3b_PeakingConstraint_Thermal(YEAR_FULL,REGION_FULL);
+PC3b_PeakingConstraint_Thermal(y,r)$(YearVal(y) > %set_peaking_startyear%).. PeakingCapacity(y,r) =g= MinThermalShare*PeakingDemand(y,r)*PeakingSlack;
+$endif.equ_peaking_minThermal
 
 $ifthen.equ_peaking_minrun %switch_peaking_minrun% == 1
 equation PC4_MinRunConstraint(YEAR_FULL,TECHNOLOGY,REGION_FULL);

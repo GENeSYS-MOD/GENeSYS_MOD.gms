@@ -18,7 +18,7 @@ SpecifiedAnnualDemand(r,'Heat_District',y) = 0;
 
 
 equation Add_DistrictHeatLimit(y_full,f,r_full);
-Add_DistrictHeatLimit(y,'Heat_District',r).. sum((l,t,m)$(OutputActivityRatio(r,t,'Heat_District',m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,'Heat_District',m,y)*YearSplit(l,y)) =g= ProductionAnnualLowerLimit(y,'Heat_District',r)-heatingslack(y,r);
+Add_DistrictHeatLimit(y,'Heat_District',r).. sum((l,t,m)$(OutputActivityRatio(r,t,'Heat_District',m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,'Heat_District',m,y)*YearSplit(l,y)) =g= ProductionAnnualLowerLimit(y,'Heat_District',r);
 
 
 ProductionByTechnologyAnnual.up(y,'HLI_Geothermal','Heat_Low_Industrial',r) = SpecifiedAnnualDemand(r,'Heat_Low_Industrial',y)*0.25;
