@@ -85,7 +85,7 @@ output_systemcosts('Discounted System Costs',se,r,y) = sum((t)$(TagTechnologyToS
 +DiscountedOperatingCost.l(y,t,r)-DiscountedSalvageValue.l(y,t,r)+DiscountedTechnologyEmissionsPenalty.l(y,t,r));
 output_systemcosts('Discounted System Costs',se,'Europe',y) = sum((t,r)$(TagTechnologyToSector(t,se)),DiscountedCapitalInvestment.l(y,t,r)
 +DiscountedOperatingCost.l(y,t,r)-DiscountedSalvageValue.l(y,t,r)+DiscountedTechnologyEmissionsPenalty.l(y,t,r));
-output_systemcosts('Discounted System Costs','Trade',r,y) = DiscountedAnnualTotalTradeCosts.l(r,y)+sum((f,rr),DiscountedNewTradeCapacityCosts.l(y,f,r,rr));
+output_systemcosts('Discounted System Costs','Trade',r,y) = DiscountedAnnualTotalTradeCosts.l(r,y)+sum((f,rr),DiscountedNewTradeCapacityCosts.l(r,rr,f,y));
 output_systemcosts('Discounted System Costs','Trade','Europe',y) = sum(r,output_systemcosts('Discounted System Costs','Trade',r,y));
 
 output_systemcosts('Discounted System Cost Split','CAPEX',r,y) = sum((t),DiscountedCapitalInvestment.l(y,t,r));
@@ -94,11 +94,11 @@ output_systemcosts('Discounted System Cost Split','CAPEX','Europe',y) = sum((t,r
 output_systemcosts('Discounted System Cost Split','OPEX',r,y) = sum((t),DiscountedOperatingCost.l(y,t,r));
 output_systemcosts('Discounted System Cost Split','OPEX','Europe',y) = sum((t,r),DiscountedOperatingCost.l(y,t,r));
 
-output_systemcosts('Discounted System Cost Split','Trade',r,y) = DiscountedAnnualTotalTradeCosts.l(r,y)+sum((f,rr),DiscountedNewTradeCapacityCosts.l(y,f,r,rr));
-output_systemcosts('Discounted System Cost Split','Trade','Europe',y) = sum(r,DiscountedAnnualTotalTradeCosts.l(r,y)+sum((f,rr),DiscountedNewTradeCapacityCosts.l(y,f,r,rr)));
+output_systemcosts('Discounted System Cost Split','Trade',r,y) = DiscountedAnnualTotalTradeCosts.l(r,y)+sum((f,rr),DiscountedNewTradeCapacityCosts.l(r,rr,f,y));
+output_systemcosts('Discounted System Cost Split','Trade','Europe',y) = sum(r,DiscountedAnnualTotalTradeCosts.l(r,y)+sum((f,rr),DiscountedNewTradeCapacityCosts.l(r,rr,f,y)));
 
-output_systemcosts('Discounted Power Costs','Trade',r,y) = sum((l,rr)$(TradeRoute(r,rr,'Power',y)),Import.l(y,l,'Power',r,rr)*TradeCosts(r,rr,'Power'))/((1+GeneralDiscountRate(r))**(YearVal(y)-smin(yy, YearVal(yy))+0.5))+sum((rr),DiscountedNewTradeCapacityCosts.l(y,'Power',r,rr));
-output_systemcosts('Discounted Power Costs','Trade','Europe',y) = sum(r,sum((l,rr)$(TradeRoute(r,rr,'Power',y)),Import.l(y,l,'Power',r,rr)*TradeCosts(r,rr,'Power'))/((1+GeneralDiscountRate(r))**(YearVal(y)-smin(yy, YearVal(yy))+0.5))+sum((rr),DiscountedNewTradeCapacityCosts.l(y,'Power',r,rr)));
+output_systemcosts('Discounted Power Costs','Trade',r,y) = sum((l,rr)$(TradeRoute(r,rr,'Power',y)),Import.l(y,l,'Power',r,rr)*TradeCosts(r,rr,'Power'))/((1+GeneralDiscountRate(r))**(YearVal(y)-smin(yy, YearVal(yy))+0.5))+sum((rr),DiscountedNewTradeCapacityCosts.l(r,rr,'Power',y));
+output_systemcosts('Discounted Power Costs','Trade','Europe',y) = sum(r,sum((l,rr)$(TradeRoute(r,rr,'Power',y)),Import.l(y,l,'Power',r,rr)*TradeCosts(r,rr,'Power'))/((1+GeneralDiscountRate(r))**(YearVal(y)-smin(yy, YearVal(yy))+0.5))+sum((rr),DiscountedNewTradeCapacityCosts.l(r,rr,'Power',y)));
 
 output_systemcosts('Discounted Power Costs','Generation',r,y) = sum((t)$(TagTechnologyToSector(t,'Power')),DiscountedCapitalInvestment.l(y,t,r)
 +DiscountedOperatingCost.l(y,t,r)-DiscountedSalvageValue.l(y,t,r)+DiscountedTechnologyEmissionsPenalty.l(y,t,r));
@@ -111,9 +111,9 @@ output_systemcosts('Discounted Power Costs','Storage','Europe',y) = sum((t,r)$(T
 +DiscountedOperatingCost.l(y,t,r)-DiscountedSalvageValue.l(y,t,r)+DiscountedTechnologyEmissionsPenalty.l(y,t,r));
 
 output_systemcosts('Discounted Power Costs','Transmission',r,y) = (sum((l,rr)$(TradeRoute(r,rr,'Power',y)),Import.l(y,l,'Power',r,rr) * TradeCosts(r,rr,'Power'))/((1+GeneralDiscountRate(r))**(YearVal(y)-smin(yy, YearVal(yy))+0.5)))
-+sum(rr,DiscountedNewTradeCapacityCosts.l(y,'Power',r,rr));
++sum(rr,DiscountedNewTradeCapacityCosts.l(r,rr,'Power',y));
 output_systemcosts('Discounted Power Costs','Transmission','Europe',y) = sum(r,(sum((l,rr)$(TradeRoute(r,rr,'Power',y)),Import.l(y,l,'Power',r,rr) * TradeCosts(r,rr,'Power'))/((1+GeneralDiscountRate(r))**(YearVal(y)-smin(yy, YearVal(yy))+0.5)))
-+sum(rr,DiscountedNewTradeCapacityCosts.l(y,'Power',r,rr)));
++sum(rr,DiscountedNewTradeCapacityCosts.l(r,rr,'Power',y)));
 
 output_systemcosts('Discounted System Costs','Power','Europe_AT',y)$(output_systemcosts('Discounted System Costs','Power','Europe_AT',y) = 0) = na;
 
@@ -123,7 +123,7 @@ output_systemcosts('Nominal System Costs',se,r,y) = sum((t)$(TagTechnologyToSect
 +OperatingCost.l(y,t,r)-SalvageValue.l(y,t,r)+AnnualTechnologyEmissionsPenalty.l(y,t,r));
 output_systemcosts('Nominal System Costs',se,'Europe',y) = sum((t,r)$(TagTechnologyToSector(t,se)),CapitalInvestment.l(y,t,r)
 +OperatingCost.l(y,t,r)-SalvageValue.l(y,t,r)+AnnualTechnologyEmissionsPenalty.l(y,t,r));
-output_systemcosts('Nominal System Costs','Trade',r,y) = AnnualTotalTradeCosts.l(r,y)+sum((f,rr),NewTradeCapacityCosts.l(y,f,r,rr));
+output_systemcosts('Nominal System Costs','Trade',r,y) = AnnualTotalTradeCosts.l(r,y)+sum((f,rr),NewTradeCapacityCosts.l(r,rr,f,y));
 output_systemcosts('Nominal System Costs','Trade','Europe',y) = sum(r,output_systemcosts('Nominal System Costs','Trade',r,y));
 
 
@@ -133,11 +133,11 @@ output_systemcosts('Nominal System Cost Split','CAPEX','Europe',y) = sum((t,r),C
 output_systemcosts('Nominal System Cost Split','OPEX',r,y) = sum((t),OperatingCost.l(y,t,r));
 output_systemcosts('Nominal System Cost Split','OPEX','Europe',y) = sum((t,r),OperatingCost.l(y,t,r));
 
-output_systemcosts('Nominal System Cost Split','Trade',r,y) = AnnualTotalTradeCosts.l(r,y)+sum((f,rr),NewTradeCapacityCosts.l(y,f,r,rr));
-output_systemcosts('Nominal System Cost Split','Trade','Europe',y) = sum(r,AnnualTotalTradeCosts.l(r,y)+sum((f,rr),NewTradeCapacityCosts.l(y,f,r,rr)));
+output_systemcosts('Nominal System Cost Split','Trade',r,y) = AnnualTotalTradeCosts.l(r,y)+sum((f,rr),NewTradeCapacityCosts.l(r,rr,f,y));
+output_systemcosts('Nominal System Cost Split','Trade','Europe',y) = sum(r,AnnualTotalTradeCosts.l(r,y)+sum((f,rr),NewTradeCapacityCosts.l(r,rr,f,y)));
 
-output_systemcosts('Nominal Power Costs','Trade',r,y) = sum((l,rr)$(TradeRoute(r,rr,'Power',y)),Import.l(y,l,'Power',r,rr) * TradeCosts(r,rr,'Power')) + sum((rr),NewTradeCapacityCosts.l(y,'Power',r,rr));
-output_systemcosts('Nominal Power Costs','Trade','Europe',y) = sum(r,sum((l,rr)$(TradeRoute(r,rr,'Power',y)),Import.l(y,l,'Power',r,rr) * TradeCosts(r,rr,'Power')) + sum((rr),NewTradeCapacityCosts.l(y,'Power',r,rr)));
+output_systemcosts('Nominal Power Costs','Trade',r,y) = sum((l,rr)$(TradeRoute(r,rr,'Power',y)),Import.l(y,l,'Power',r,rr) * TradeCosts(r,rr,'Power')) + sum((rr),NewTradeCapacityCosts.l(r,rr,'Power',y));
+output_systemcosts('Nominal Power Costs','Trade','Europe',y) = sum(r,sum((l,rr)$(TradeRoute(r,rr,'Power',y)),Import.l(y,l,'Power',r,rr) * TradeCosts(r,rr,'Power')) + sum((rr),NewTradeCapacityCosts.l(r,rr,'Power',y)));
 
 output_systemcosts('Nominal Power Costs','Generation',r,y) = sum((t)$(TagTechnologyToSector(t,'Power')),CapitalInvestment.l(y,t,r)
 +OperatingCost.l(y,t,r)-SalvageValue.l(y,t,r)+AnnualTechnologyEmissionsPenalty.l(y,t,r));
@@ -150,9 +150,9 @@ output_systemcosts('Nominal Power Costs','Storage','Europe',y) = sum((t,r)$(TagT
 +OperatingCost.l(y,t,r)-SalvageValue.l(y,t,r)+AnnualTechnologyEmissionsPenalty.l(y,t,r));
 
 output_systemcosts('Nominal Power Costs','Transmission',r,y) = (sum((l,rr)$(TradeRoute(r,rr,'Power',y)),Import.l(y,l,'Power',r,rr) * TradeCosts(r,rr,'Power')))
-+sum(rr,NewTradeCapacityCosts.l(y,'Power',r,rr));
++sum(rr,NewTradeCapacityCosts.l(r,rr,'Power',y));
 output_systemcosts('Nominal Power Costs','Transmission','Europe',y) = sum(r,(sum((l,rr)$(TradeRoute(r,rr,'Power',y)),Import.l(y,l,'Power',r,rr) * TradeCosts(r,rr,'Power')))
-+sum(rr,NewTradeCapacityCosts.l(y,'Power',r,rr)));
++sum(rr,NewTradeCapacityCosts.l(r,rr,'Power',y)));
 
 output_systemcosts('Nominal System Costs','Total',r,y) = sum(se,output_systemcosts('Nominal System Costs',se,r,y))+output_systemcosts('Nominal System Costs','Trade',r,y);
 output_systemcosts('Nominal System Costs','Total','Europe',y) = sum(r, output_systemcosts('Nominal System Costs','Total',r,y))+output_systemcosts('Nominal System Costs','Trade','Europe',y);
@@ -411,7 +411,7 @@ output_flexibility('Capacity [GWh | Energy]','Europe_AT','D_PHS',y)$(output_flex
 * Level of import dependency per region"
 
 parameter output_interconnection;
-output_interconnection('Transmission Capacity [GW]',r,y) = sum(rr,TotalTradeCapacity.l(y,'Power',r,rr));
+output_interconnection('Transmission Capacity [GW]',r,y) = sum(rr,TotalTradeCapacity.l(r,rr,'Power',y));
 output_interconnection('Net Trade Volumes [TWh]',r,y) = NetTradeAnnual.l(y,'Power',r)/3.6;
 output_interconnection('Absolute Import Volume [TWh]',r,y) = sum((l,rr), Import.l(y,l,'Power',r,rr));
 output_interconnection('Import Dependency [%]',r,y) = (-1)*min(0,NetTradeAnnual.l(y,'Power',r))/(UseAnnual.l(y,'Power',r)-sum(StorageDummies,UseByTechnologyAnnual.l(r,StorageDummies,'Power',y))+SpecifiedAnnualDemand(r,'Power',y));

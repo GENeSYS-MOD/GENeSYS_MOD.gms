@@ -198,10 +198,10 @@ parameter TradeRouteInstalledCapacity(r_full,rr_full,f,y_full);
 parameter TradeLossBetweenRegions(REGION_FULL,RR_FULL,FUEL,y_full);
 
 
-parameter CommissionedTradeCapacity(r_full,f,y_full,rr_full);
-parameter TradeCapacity(r_full, f, y_full, rr_full);
-parameter TradeCapacityGrowthCosts(r_full, f, rr_full);
-parameter GrowthRateTradeCapacity(r_full, f, y_full, rr_full);
+parameter CommissionedTradeCapacity(r_full,rr_full,f,y_full);
+parameter TradeCapacity(r_full, rr_full, f, y_full);
+parameter TradeCapacityGrowthCosts(r_full, rr_full, f);
+parameter GrowthRateTradeCapacity(r_full, rr_full, f, y_full);
 
 parameter SelfSufficiency(y_full, fuel, r_full);
 
@@ -314,10 +314,10 @@ variable AnnualSectoralEmissions(y_full,EMISSION,SECTOR,REGION_FULL);
 positive variable Import(y_full,TIMESLICE_FULL,FUEL,REGION_FULL,rr_full);
 positive variable Export(y_full,TIMESLICE_FULL,FUEL,REGION_FULL,rr_full);
 
-positive variable NewTradeCapacity(YEAR_FULL, FUEL, REGION_FULL, rr_full);
-positive variable TotalTradeCapacity(YEAR_FULL, FUEL, REGION_FULL, rr_full);
-positive variable NewTradeCapacityCosts(YEAR_FULL, FUEL, REGION_FULL, rr_full);
-positive variable DiscountedNewTradeCapacityCosts(YEAR_FULL, FUEL, REGION_FULL, rr_full);
+positive variable NewTradeCapacity(REGION_FULL, rr_full, FUEL, YEAR_FULL);
+positive variable TotalTradeCapacity(REGION_FULL, rr_full, FUEL, YEAR_FULL);
+positive variable NewTradeCapacityCosts(REGION_FULL, rr_full, FUEL, YEAR_FULL);
+positive variable DiscountedNewTradeCapacityCosts(REGION_FULL, rr_full, FUEL, YEAR_FULL);
 
 free variable NetTrade(y_full,TIMESLICE_FULL,FUEL,REGION_FULL);
 free variable NetTradeAnnual(y_full,FUEL,REGION_FULL);

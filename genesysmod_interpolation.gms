@@ -57,7 +57,7 @@ TotalAnnualMaxCapacity(r,t,y)$(TotalAnnualMaxCapacity(r,t,y) = 0) = TotalAnnualM
 ResidualCapacity(r,t,y)$(ResidualCapacity(r,t,y) = 0 and ResidualCapacity(r,t,y+1)>0) = (ResidualCapacity(r,t,y-1)+ResidualCapacity(r,t,y+1))/2;
 TotalTechnologyAnnualActivityUpperLimit(r,t,y)$(TotalTechnologyAnnualActivityUpperLimit(r,t,y) = 0 and TotalTechnologyAnnualActivityUpperLimit(r,t,y+1)>0) = (TotalTechnologyAnnualActivityUpperLimit(r,t,y-1)+TotalTechnologyAnnualActivityUpperLimit(r,t,y+1))/2;
 
-GrowthRateTradeCapacity(r,'Power',y,rr)$(GrowthRateTradeCapacity(r,'Power',y,rr) = 0) = GrowthRateTradeCapacity(r,'Power',y-1,rr);
+GrowthRateTradeCapacity(r,rr,'Power',y)$(GrowthRateTradeCapacity(r,rr,'Power',y) = 0) = GrowthRateTradeCapacity(r,rr,'Power',y-1);
 
 $ifthen %switch_employment_calculation% == 1
 EFactorConstruction(t,y)$(EFactorConstruction(t,y) = 0) = (EFactorConstruction(t,y-1)+EFactorConstruction(t,y+1))/2;

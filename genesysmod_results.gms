@@ -17,17 +17,17 @@
 * #############################################################
 
 parameter check_tradecapacityusage;
-check_tradecapacityusage(y,l,f,r,rr)$(Import.l(y,l,f,rr,r) and TagFuelToSubsets(f,'GasFuels')) = (TotalTradeCapacity.l(y,f,r,rr)*YearSplit(l,y))-Import.l(y,l,f,rr,r);
+check_tradecapacityusage(r,rr,f,l,y)$(Import.l(y,l,f,rr,r) and TagFuelToSubsets(f,'GasFuels')) = (TotalTradeCapacity.l(r,rr,f,y)*YearSplit(l,y))-Import.l(y,l,f,rr,r);
 parameter check_tradecapacityfull;
-check_tradecapacityfull(y,l,r,rr)$(sum(f$(TagFuelToSubsets(f,'GasFuels')),Import.l(y,l,f,rr,r))=(TotalTradeCapacity.l(y,'Gas_Natural',r,rr)*YearSplit(l,y)) and TotalTradeCapacity.l(y,'Gas_Natural',r,rr)) = 1;
+check_tradecapacityfull(r,rr,l,y)$(sum(f$(TagFuelToSubsets(f,'GasFuels')),Import.l(y,l,f,rr,r))=(TotalTradeCapacity.l(r,rr,'Gas_Natural',y)*YearSplit(l,y)) and TotalTradeCapacity.l(r,rr,'Gas_Natural',y)) = 1;
 parameter output_pipeline_data;
-output_pipeline_data('Percentage used of Pipeline network',f,l,r,rr,y)$(TotalTradeCapacity.l(y,'Gas_Natural',r,rr) and TagFuelToSubsets(f,'GasFuels')) = 1-(Import.l(y,l,f,rr,r)/(TotalTradeCapacity.l(y,'Gas_Natural',r,rr)*YearSplit(l,y)));
+output_pipeline_data('Percentage used of Pipeline network',f,l,r,rr,y)$(TotalTradeCapacity.l(r,rr,'Gas_Natural',y) and TagFuelToSubsets(f,'GasFuels')) = 1-(Import.l(y,l,f,rr,r)/(TotalTradeCapacity.l(r,rr,'Gas_Natural',y)*YearSplit(l,y)));
 parameter output_pipeline_data;
-output_pipeline_data('Percentage used of Pipeline network','Unused',l,r,rr,y)$(TotalTradeCapacity.l(y,'Gas_Natural',r,rr)) = 1-sum(f$(TagFuelToSubsets(f,'GasFuels')),(Import.l(y,l,f,rr,r)/(TotalTradeCapacity.l(y,'Gas_Natural',r,rr)*YearSplit(l,y))));
+output_pipeline_data('Percentage used of Pipeline network','Unused',l,r,rr,y)$(TotalTradeCapacity.l(r,rr,'Gas_Natural',y)) = 1-sum(f$(TagFuelToSubsets(f,'GasFuels')),(Import.l(y,l,f,rr,r)/(TotalTradeCapacity.l(r,rr,'Gas_Natural',y)*YearSplit(l,y))));
 parameter output_pipeline_data;
-output_pipeline_data('Percentage used of Pipeline network',f,'Yearly Average',r,rr,y)$(TotalTradeCapacity.l(y,'Gas_Natural',r,rr) and TagFuelToSubsets(f,'GasFuels')) = sum(l,Import.l(y,l,f,rr,r))/sum(l,(TotalTradeCapacity.l(y,'Gas_Natural',r,rr)*YearSplit(l,y)));
+output_pipeline_data('Percentage used of Pipeline network',f,'Yearly Average',r,rr,y)$(TotalTradeCapacity.l(r,rr,'Gas_Natural',y) and TagFuelToSubsets(f,'GasFuels')) = sum(l,Import.l(y,l,f,rr,r))/sum(l,(TotalTradeCapacity.l(r,rr,'Gas_Natural',y)*YearSplit(l,y)));
 parameter output_pipeline_data;
-output_pipeline_data('Percentage used of Pipeline network','Unused','Yearly Average',r,rr,y)$(TotalTradeCapacity.l(y,'Gas_Natural',r,rr)) = 1-(sum((l,f)$(TagFuelToSubsets(f,'GasFuels')),Import.l(y,l,f,rr,r))/sum(l,(TotalTradeCapacity.l(y,'Gas_Natural',r,rr)*YearSplit(l,y))));
+output_pipeline_data('Percentage used of Pipeline network','Unused','Yearly Average',r,rr,y)$(TotalTradeCapacity.l(r,rr,'Gas_Natural',y)) = 1-(sum((l,f)$(TagFuelToSubsets(f,'GasFuels')),Import.l(y,l,f,rr,r))/sum(l,(TotalTradeCapacity.l(r,rr,'Gas_Natural',y)*YearSplit(l,y))));
 
 
 $ifthen %switch_only_write_results% == 0
@@ -121,9 +121,9 @@ output_exogenous_costs(r,t,'Variable Costs',y) = VariableCost(r,t,'1',y) + sum((
 output_exogenous_costs(r,'Carbon','Carbon Price',y) = EmissionsPenalty(r,'CO2',y);
 
 parameter output_trade;
-output_trade(r,rr,f,'Transmissions Capacity',y) = TotalTradeCapacity.l(y, f, r, rr);
-output_trade(r,rr,f,'Transmission Expansion Costs in MEUR/GW',y) = TradeCapacityGrowthCosts(r,f,rr)*TradeRoute(r,rr,f,y);
-output_trade('General','General',f,'Transmission Expansion Costs in MEUR/GW/km',y) = TradeCapacityGrowthCosts('%data_base_region%',f,'%data_base_region%');
+output_trade(r,rr,f,'Transmissions Capacity',y) = TotalTradeCapacity.l(r,rr, f, y);
+output_trade(r,rr,f,'Transmission Expansion Costs in MEUR/GW',y) = TradeCapacityGrowthCosts(r,rr,f)*TradeRoute(r,rr,f,y);
+output_trade('General','General',f,'Transmission Expansion Costs in MEUR/GW/km',y) = TradeCapacityGrowthCosts('%data_base_region%','%data_base_region%',f);
 output_trade(r,rr,f,'Export',y) = sum(l,Export.l(y,l,f,r,rr));
 output_trade(r,rr,f,'Import',y) = sum(l,Import.l(y,l,f,r,rr));
 

@@ -285,7 +285,7 @@ capacity_factor(r,'RES_Wind_Onshore_Opt',h) = CountryData(r, h, 'wind_onshore_op
 
 capacity_factor(r,v,h) = capacity_factor(r,v,h)*sum(t$(sameas(v,t)),AvailabilityFactor(r,t,'%dispatch_year%'));
 
-transmission_capacity(r,rr) = TotalTradeCapacity.l('%dispatch_year%', 'power', r, rr);
+transmission_capacity(r,rr) = TotalTradeCapacity.l(r, rr, 'power', '%dispatch_year%');
 
 dispatchable_capacity_minactivity('RES_Hydro_Large') = 0.15;
 

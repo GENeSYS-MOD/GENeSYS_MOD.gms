@@ -28,7 +28,7 @@ free variable z;
 equation cost;
 cost.. z =e= sum((y,r), TotalDiscountedCost(y,r))
 + sum((y,r), DiscountedAnnualTotalTradeCosts(r,y))
-+ sum((y,f,r,rr), DiscountedNewTradeCapacityCosts(y,f,r,rr))
++ sum((y,f,r,rr), DiscountedNewTradeCapacityCosts(r,rr,f,y))
 + sum((y,f,r), DiscountedAnnualCurtailmentCost(y,f,r))
 + sum((y,r,f,t),BaseYearBounds_TooHigh(y,r,t,f)*9999)
 + sum((y,r,f,t),BaseYearBounds_TooLow(y,r,t,f)*9999)
@@ -262,54 +262,54 @@ EB7_AnnualSelfSufficiency(y,f,r)$(SelfSufficiency(y,f,r) <> 0).. sum((l,t,m)$(Ou
 *
 * ##############* Trade Capacities & Investments #############
 *
-equation TrC1_TradeCapacityPowerLinesImport(YEAR_FULL,TIMESLICE_FULL,FUEL,REGION_FULL,rr_full);
-TrC1_TradeCapacityPowerLinesImport(y,l,'Power',r,rr)$(TradeRoute(r,rr,'Power',y) > 0).. (Import(y,l,'Power',r,rr)) =l= TotalTradeCapacity(y,'Power',rr,r)*YearSplit(l,y)*31.536;
+equation TrC1_TradeCapacityPowerLinesImport(REGION_FULL,rr_full,FUEL,TIMESLICE_FULL,YEAR_FULL);
+TrC1_TradeCapacityPowerLinesImport(r,rr,'Power',l,y)$(TradeRoute(r,rr,'Power',y) > 0).. (Import(y,l,'Power',r,rr)) =l= TotalTradeCapacity(rr,r,'Power',y)*YearSplit(l,y)*31.536;
 
-equation TrC2a_TotalTradeCapacityStartYear(YEAR_FULL,FUEL,REGION_FULL,rr_full);
-TrC2a_TotalTradeCapacityStartYear(y,f,r,rr)$(TradeRoute(r,rr,f,y) and TagCanFuelBeTraded(f) and YearVal(y) = %year%).. TotalTradeCapacity(y,f,r,rr) =e= TradeCapacity(r,f,y,rr);
-equation TrC2b_TotalTradeCapacity(YEAR_FULL,FUEL,REGION_FULL,rr_full);
-TrC2b_TotalTradeCapacity(y,f,r,rr)$(TradeRoute(r,rr,f,y) and TagCanFuelBeTraded(f) and YearVal(y) > %year%).. TotalTradeCapacity(y,f,r,rr) =e= TotalTradeCapacity(y-1,f,r,rr) + NewTradeCapacity(y,f,r,rr) + CommissionedTradeCapacity(r,f,y,rr);
+equation TrC2a_TotalTradeCapacityStartYear(REGION_FULL,rr_full,FUEL,YEAR_FULL);
+TrC2a_TotalTradeCapacityStartYear(r,rr,f,y)$(TradeRoute(r,rr,f,y) and TagCanFuelBeTraded(f) and YearVal(y) = %year%).. TotalTradeCapacity(r,rr,f,y) =e= TradeCapacity(r,rr,f,y);
+equation TrC2b_TotalTradeCapacity(REGION_FULL,rr_full,FUEL,YEAR_FULL);
+TrC2b_TotalTradeCapacity(r,rr,f,y)$(TradeRoute(r,rr,f,y) and TagCanFuelBeTraded(f) and YearVal(y) > %year%).. TotalTradeCapacity(r,rr,f,y) =e= TotalTradeCapacity(r,rr,f,y-1) + NewTradeCapacity(r,rr,f,y) + CommissionedTradeCapacity(r,rr,f,y);
 
-equation TrC3_NewTradeCapacityLimitPowerLines(YEAR_FULL,FUEL,REGION_FULL,rr_full);
-TrC3_NewTradeCapacityLimitPowerLines(y,'Power',r,rr)$(TradeRoute(r,rr,'Power',y) > 0 and GrowthRateTradeCapacity(r,'Power',y,rr) > 0 and YearVal(y) > %year%).. (GrowthRateTradeCapacity(r,'Power',y,rr)*YearlyDifferenceMultiplier(y))*TotalTradeCapacity(y-1,'Power',r,rr) =g= NewTradeCapacity(y,'Power',r,rr);
-NewTradeCapacity.fx(y,'Power',r,rr)$(TradeRoute(r,rr,'Power',y) = 0 or GrowthRateTradeCapacity(r,'Power',y,rr) = 0) = 0;
+equation TrC3_NewTradeCapacityLimitPowerLines(REGION_FULL,rr_full,FUEL,YEAR_FULL);
+TrC3_NewTradeCapacityLimitPowerLines(r,rr,'Power',y)$(TradeRoute(r,rr,'Power',y) > 0 and GrowthRateTradeCapacity(r,rr,'Power',y) > 0 and YearVal(y) > %year%).. (GrowthRateTradeCapacity(r,rr,'Power',y)*YearlyDifferenceMultiplier(y))*TotalTradeCapacity(r,rr,'Power',y-1) =g= NewTradeCapacity(r,rr,'Power',y);
+NewTradeCapacity.fx(r,rr,'Power',y)$(TradeRoute(r,rr,'Power',y) = 0 or GrowthRateTradeCapacity(r,rr,'Power',y) = 0) = 0;
 
 
 
 *### Trade Capacities for H2 and Natural Gas, when initially no capacities existed, so that the model has the ability to build additional capacities
-equation TrC4a_NewTradeCapacityLimitNatGas(YEAR_FULL,FUEL,REGION_FULL,rr_full);
-TrC4a_NewTradeCapacityLimitNatGas(y,'Gas_Natural',r,rr)$(TradeRoute(r,rr,'Gas_Natural',y) and GrowthRateTradeCapacity(r,'Gas_Natural',y,rr)).. 100$(not TradeCapacity(r,'Gas_Natural',y,rr))+(GrowthRateTradeCapacity(r,'Gas_Natural',y,rr)*YearlyDifferenceMultiplier(y))*TotalTradeCapacity(y-1,'Gas_Natural',r,rr) =g= NewTradeCapacity(y,'Gas_Natural',r,rr);
+equation TrC4a_NewTradeCapacityLimitNatGas(REGION_FULL,rr_full,FUEL,YEAR_FULL);
+TrC4a_NewTradeCapacityLimitNatGas(r,rr,'Gas_Natural',y)$(TradeRoute(r,rr,'Gas_Natural',y) and GrowthRateTradeCapacity(r,rr,'Gas_Natural',y)).. 100$(not TradeCapacity(r,rr,'Gas_Natural',y))+(GrowthRateTradeCapacity(r,rr,'Gas_Natural',y)*YearlyDifferenceMultiplier(y))*TotalTradeCapacity(r,rr,'Gas_Natural',y-1) =g= NewTradeCapacity(r,rr,'Gas_Natural',y);
 
-equation TrC5a_NewTradeCapacityLimitH2(YEAR_FULL,FUEL,REGION_FULL,rr_full);
-TrC5a_NewTradeCapacityLimitH2(y,'H2',r,rr)$(TradeRoute(r,rr,'H2',y) and GrowthRateTradeCapacity(r,'H2',y,rr)).. 50$(not TradeCapacity(r,'H2',y,rr))+(GrowthRateTradeCapacity(r,'H2',y,rr)*YearlyDifferenceMultiplier(y))*TotalTradeCapacity(y-1,'H2',r,rr) =g= NewTradeCapacity(y,'H2',r,rr);
+equation TrC5a_NewTradeCapacityLimitH2(REGION_FULL,rr_full,FUEL,YEAR_FULL);
+TrC5a_NewTradeCapacityLimitH2(r,rr,'H2',y)$(TradeRoute(r,rr,'H2',y) and GrowthRateTradeCapacity(r,rr,'H2',y)).. 50$(not TradeCapacity(r,rr,'H2',y))+(GrowthRateTradeCapacity(r,rr,'H2',y)*YearlyDifferenceMultiplier(y))*TotalTradeCapacity(r,rr,'H2',y-1) =g= NewTradeCapacity(r,rr,'H2',y);
 
-NewTradeCapacity.fx(y,f,r,rr)$(not TradeRoute(r,rr,f,y)) = 0;
+NewTradeCapacity.fx(r,rr,f,y)$(not TradeRoute(r,rr,f,y)) = 0;
 
 
-equation TrC4_NewTradeCapacityCosts(YEAR_FULL,FUEL,REGION_FULL,rr_full);
-TrC4_NewTradeCapacityCosts(y,f,r,rr)$(TradeRoute(r,rr,f,y) and TradeCapacityGrowthCosts(r,f,rr))..  NewTradeCapacity(y,f,r,rr)*TradeCapacityGrowthCosts(r,f,rr)*TradeRoute(r,rr,f,y) =e= NewTradeCapacityCosts(y,f,r,rr);
-equation TrC5_DiscountedNewTradeCapacityCosts(YEAR_FULL,FUEL,REGION_FULL,rr_full);
-TrC5_DiscountedNewTradeCapacityCosts(y,f,r,rr)$(TradeRoute(r,rr,f,y) and TradeCapacityGrowthCosts(r,f,rr)).. NewTradeCapacityCosts(y,f,r,rr)/((1+GeneralDiscountRate(r))**(YearVal(y)-smin(yy, YearVal(yy))+0.5)) =e= DiscountedNewTradeCapacityCosts(y,f,r,rr);
-DiscountedNewTradeCapacityCosts.fx(y,f,r,rr)$(TradeRoute(r,rr,f,y) = 0 or not TradeCapacityGrowthCosts(r,f,rr)) = 0;
+equation TrC4_NewTradeCapacityCosts(REGION_FULL,rr_full,FUEL,YEAR_FULL);
+TrC4_NewTradeCapacityCosts(r,rr,f,y)$(TradeRoute(r,rr,f,y) and TradeCapacityGrowthCosts(r,rr,f))..  NewTradeCapacity(r,rr,f,y)*TradeCapacityGrowthCosts(r,rr,f)*TradeRoute(r,rr,f,y) =e= NewTradeCapacityCosts(r,rr,f,y);
+equation TrC5_DiscountedNewTradeCapacityCosts(REGION_FULL,rr_full,FUEL,YEAR_FULL);
+TrC5_DiscountedNewTradeCapacityCosts(r,rr,f,y)$(TradeRoute(r,rr,f,y) and TradeCapacityGrowthCosts(r,rr,f)).. NewTradeCapacityCosts(r,rr,f,y)/((1+GeneralDiscountRate(r))**(YearVal(y)-smin(yy, YearVal(yy))+0.5)) =e= DiscountedNewTradeCapacityCosts(r,rr,f,y);
+DiscountedNewTradeCapacityCosts.fx(r,rr,f,y)$(TradeRoute(r,rr,f,y) = 0 or not TradeCapacityGrowthCosts(r,rr,f)) = 0;
 
 $ifthen set set_symmetric_transmission
 equation TrC6_SymmetricalTransmissionExpansion(YEAR_FULL,REGION_FULL,RR_FULL);
-TrC6_SymmetricalTransmissionExpansion(y,r,rr)$(TradeRoute(r,rr,'Power',y) > 0).. NewTradeCapacity(y,'Power',r,rr) =g= NewTradeCapacity(y,'Power',rr,r)*%set_symmetric_transmission%;
+TrC6_SymmetricalTransmissionExpansion(y,r,rr)$(TradeRoute(r,rr,'Power',y) > 0).. NewTradeCapacity(r,rr,'Power',y) =g= NewTradeCapacity(rr,r,'Power',y)*%set_symmetric_transmission%;
 $endif
 
-equation TrC7_TradeCapacityLimitNonPower(YEAR_FULL,FUEL,REGION_FULL,rr_full);
-TrC7_TradeCapacityLimitNonPower(y,f,r,rr)$(TradeCapacityGrowthCosts(r,f,rr) and not sameas(f,'Power')).. sum(l,Import(y,l,f,rr,r)) =l= TotalTradeCapacity(y,f,r,rr);
+equation TrC7_TradeCapacityLimitNonPower(REGION_FULL,rr_full,FUEL,YEAR_FULL);
+TrC7_TradeCapacityLimitNonPower(r,rr,f,y)$(TradeCapacityGrowthCosts(r,rr,f) and not sameas(f,'Power')).. sum(l,Import(y,l,f,rr,r)) =l= TotalTradeCapacity(r,rr,f,y);
 
 
 
 
-equation TrPl1aa_TradeCapacityPipelinesLines(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,rr_full);
-TrPl1aa_TradeCapacityPipelinesLines(y,l,r,rr).. Import(y,l,'H2',rr,r) =l= TotalTradeCapacity(y,'H2',r,rr)*YearSplit(l,y);
+equation TrPl1aa_TradeCapacityPipelinesLines(REGION_FULL,rr_full,TIMESLICE_FULL,YEAR_FULL);
+TrPl1aa_TradeCapacityPipelinesLines(r,rr,l,y).. Import(y,l,'H2',rr,r) =l= TotalTradeCapacity(r,rr,'H2',y)*YearSplit(l,y);
 
 
 **##################LH2 Trucks####
-equation TrPl1aaa_TradeCapacityTrucks(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,rr_full);
-TrPl1aaa_TradeCapacityTrucks(y,l,r,rr).. Import(y,l,'LH2',rr,r) =l= TotalTradeCapacity(y,'LH2',r,rr)*YearSplit(l,y);
+equation TrPl1aaa_TradeCapacityTrucks(REGION_FULL,rr_full,TIMESLICE_FULL,YEAR_FULL);
+TrPl1aaa_TradeCapacityTrucks(r,rr,l,y).. Import(y,l,'LH2',rr,r) =l= TotalTradeCapacity(r,rr,'LH2',y)*YearSplit(l,y);
 **######################
 
 
@@ -322,9 +322,9 @@ $ifthen.equ_hydrogen_tradecapacity %switch_hydrogen_blending_share% == 0
 
 
 
-equation TrPA1a_TradeCapacityPipelineAccounting(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,rr_full);
+equation TrPA1a_TradeCapacityPipelineAccounting(REGION_FULL,rr_full,TIMESLICE_FULL,YEAR_FULL);
 * before it was H2 - instead of H2_blend - - update GM_Coding_Week_Berlin-Trondheim_2024
-TrPA1a_TradeCapacityPipelineAccounting(y,l,r,rr).. sum(f$(not sameas(f,'H2_blend') and TagFuelToSubsets(f,'GasFuels')), Import(y,l,f,rr,r)) =l= TotalTradeCapacity(y,'Gas_Natural',r,rr)*YearSplit(l,y);
+TrPA1a_TradeCapacityPipelineAccounting(r,rr,l,y).. sum(f$(not sameas(f,'H2_blend') and TagFuelToSubsets(f,'GasFuels')), Import(y,l,f,rr,r)) =l= TotalTradeCapacity(r,rr,'Gas_Natural',y)*YearSplit(l,y);
 
 $else.equ_hydrogen_tradecapacity
 
@@ -334,13 +334,13 @@ scalar dedicated_h2;
 dedicated_h2 = %switch_hydrogen_blending_share%;
 
 
-equation TrPA1b_TradeCapacityPipelineAccountingGasFuels(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,rr_full);
-TrPA1b_TradeCapacityPipelineAccountingGasFuels(y,l,r,rr)$(%switch_hydrogen_blending_share%>0 and %switch_hydrogen_blending_share%<1).. sum(f$(not sameas(f,'H2_blend') and TagFuelToSubsets(f,'GasFuels')), Import(y,l,f,rr,r)) + Import(y,l,'H2_blend',rr,r)*(11.4/3.0) =l= TotalTradeCapacity(y,'gas_natural',r,rr)*YearSplit(l,y);
-equation TrPA1c_TradeCapacityPipelineAccountingH2Blend(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,rr_full);
-TrPA1c_TradeCapacityPipelineAccountingH2Blend(y,l,r,rr)$(%switch_hydrogen_blending_share%>0 and %switch_hydrogen_blending_share%<1).. Import(y,l,'H2_blend',rr,r) =l= (%switch_hydrogen_blending_share%/((1-%switch_hydrogen_blending_share%)*(11.4/3.0))) * sum(f$(not sameas(f,'H2_blend') and TagFuelToSubsets(f,'GasFuels')), Import(y,l,f,rr,r));
+equation TrPA1b_TradeCapacityPipelineAccountingGasFuels(REGION_FULL,rr_full,TIMESLICE_FULL,YEAR_FULL);
+TrPA1b_TradeCapacityPipelineAccountingGasFuels(r,rr,l,y)$(%switch_hydrogen_blending_share%>0 and %switch_hydrogen_blending_share%<1).. sum(f$(not sameas(f,'H2_blend') and TagFuelToSubsets(f,'GasFuels')), Import(y,l,f,rr,r)) + Import(y,l,'H2_blend',rr,r)*(11.4/3.0) =l= TotalTradeCapacity(r,rr,'gas_natural',y)*YearSplit(l,y);
+equation TrPA1c_TradeCapacityPipelineAccountingH2Blend(REGION_FULL,rr_full,TIMESLICE_FULL,YEAR_FULL);
+TrPA1c_TradeCapacityPipelineAccountingH2Blend(r,rr,l,y)$(%switch_hydrogen_blending_share%>0 and %switch_hydrogen_blending_share%<1).. Import(y,l,'H2_blend',rr,r) =l= (%switch_hydrogen_blending_share%/((1-%switch_hydrogen_blending_share%)*(11.4/3.0))) * sum(f$(not sameas(f,'H2_blend') and TagFuelToSubsets(f,'GasFuels')), Import(y,l,f,rr,r));
 
-equation TrPA1d_TradeCapacityPipelineAccountingCombined(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,rr_full);
-TrPA1d_TradeCapacityPipelineAccountingCombined(y,l,r,rr)$(%switch_hydrogen_blending_share% = 1).. sum(f$(not sameas(f,'H2_blend') and TagFuelToSubsets(f,'GasFuels')), Import(y,l,f,rr,r)) + Import(y,l,'H2_blend',rr,r)*(11.4/3.0) =l= TotalTradeCapacity(y,'Gas_Natural',r,rr)*YearSplit(l,y);
+equation TrPA1d_TradeCapacityPipelineAccountingCombined(REGION_FULL,rr_full,TIMESLICE_FULL,YEAR_FULL);
+TrPA1d_TradeCapacityPipelineAccountingCombined(r,rr,l,y)$(%switch_hydrogen_blending_share% = 1).. sum(f$(not sameas(f,'H2_blend') and TagFuelToSubsets(f,'GasFuels')), Import(y,l,f,rr,r)) + Import(y,l,'H2_blend',rr,r)*(11.4/3.0) =l= TotalTradeCapacity(r,rr,'Gas_Natural',y)*YearSplit(l,y);
 
 $endif.equ_hydrogen_tradecapacity
 
@@ -457,7 +457,7 @@ SV3_SalvageValueAtEndOfPeriod3(y,t,r)$(YearVal(y) + OperationalLife(t)-1 <= smax
 SalvageValue(y,t,r) =e= 0;
 equation SV1b_SalvageValueAtEndOfPeriod1(YEAR_FULL,REGION_FULL);
 SV1b_SalvageValueAtEndOfPeriod1(y,r)$(DepreciationMethod=1 and ((YearVal(y) + 40 > smax(yy, YearVal(yy)))))..
-DiscountedSalvageValueTransmission(y,r) =e= (sum((f,rr),TradeCapacityGrowthCosts(r,f,rr)*TradeRoute(r,rr,f,y)*NewTradeCapacity(y,f,r,rr)*(1-(((1+GeneralDiscountRate(r))**(smax(yy, YearVal(yy)) - YearVal(y)+1) -1)
+DiscountedSalvageValueTransmission(y,r) =e= (sum((f,rr),TradeCapacityGrowthCosts(r,rr,f)*TradeRoute(r,rr,f,y)*NewTradeCapacity(r,rr,f,y)*(1-(((1+GeneralDiscountRate(r))**(smax(yy, YearVal(yy)) - YearVal(y)+1) -1)
 /((1+GeneralDiscountRate(r))**40)))))/((1+GeneralDiscountRate(r))**(1+smax(yy, YearVal(yy)) - smin(yy, YearVal(yy))));
 DiscountedSalvageValueTransmission.fx(y,r)$(DepreciationMethod=1 and not ((YearVal(y) + 40 > smax(yy, YearVal(yy))))) = 0;
 
@@ -784,7 +784,7 @@ equation PC3_PeakingConstraint(YEAR_FULL,REGION_FULL);
 PC3_PeakingConstraint(y,r)$(YearVal(y) > %set_peaking_startyear%)..
   PeakingCapacity(r,y)
 $ifthen.equ_peaking_with_trade %switch_peaking_with_trade% == 1
-+ sum(rr,TotalTradeCapacity(y,'Power',rr,r))
++ sum(rr,TotalTradeCapacity(rr,r,'Power',y))
 $endif.equ_peaking_with_trade
 $ifthen.equ_peaking_with_storages %switch_peaking_with_storages% == 1
 + sum(t$(sum(m,OutputActivityRatio(r,t,'power',m,y)) and sum((s,m),TechnologyToStorage(t,s,m,y))), TotalCapacityAnnual(r,t,y))
