@@ -126,13 +126,6 @@ NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'Transport')) = 0;
 NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'CHP')) = 0;
 
 NewCapacity.up('%year%',t,r)$(TagTechnologyToSubsets(t,'Biomass')) = +INF;
-NewCapacity.up('%year%','HB_Gas_Boiler',r) = +INF;
-NewCapacity.up('%year%','HLI_Gas_Boiler',r) = +INF;
-NewCapacity.up('%year%','HHI_BF_BOF',r) = +INF;
-NewCapacity.up('%year%','HMHI_Gas',r) = +INF;
-NewCapacity.up('%year%','HHI_Bio_BF_BOF',r) = +INF;
-NewCapacity.up('%year%','HHI_Scrap_EAF',r) = +INF;
-NewCapacity.up('%year%','HHI_DRI_EAF',r) = +INF;
 NewCapacity.up('%year%','D_Gas_Methane',r) = +INF;
 NewCapacity.up('%year%','X_SMR',r) = +INF;
 
