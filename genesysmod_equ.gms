@@ -799,7 +799,7 @@ equation PC3_PeakingConstraint(YEAR_FULL,REGION_FULL);
 PC3_PeakingConstraint(y,r)$(YearVal(y) > %set_peaking_startyear%)..
   PeakingCapacity(y,r)
 $ifthen.equ_peaking_with_trade %switch_peaking_with_trade% == 1
-+ sum(rr,TotalTradeCapacity(y,'Power',rr,r))
++ sum(rr$(TradeRoute(rr,'Power',y,r)),TotalTradeCapacity(y,'Power',rr,r))
 $endif.equ_peaking_with_trade
 $ifthen.equ_peaking_with_storages %switch_peaking_with_storages% == 1
 + sum(t$(sum(m,OutputActivityRatio(r,t,'power',m,y)) and sum((s,m),TechnologyToStorage(t,s,m,y))), TotalCapacityAnnual(y,t,r))
