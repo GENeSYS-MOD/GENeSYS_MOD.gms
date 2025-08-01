@@ -101,7 +101,7 @@ if "%PROCESSING_OPTION%"=="2" (
 REM Writing Python script line by line
 echo Writing temp_script.py...
 echo # -*- coding: utf-8 -*- > "%PYTHON_SCRIPT%"
-echo settings_file = 'Set_filter_file.xlsx' >> "%PYTHON_SCRIPT%"
+echo settings_file = 'Set_filter_file_Europe2060.xlsx' >> "%PYTHON_SCRIPT%"
 echo output_file_format = 'excel' >> "%PYTHON_SCRIPT%"
 echo output_format = 'long' >> "%PYTHON_SCRIPT%"
 echo processing_option = '%PROCESSING_OPTION%' >> "%PYTHON_SCRIPT%"
