@@ -27,15 +27,15 @@ if(sum(t,error_TechMissingFromSectorList(t)),abort "Technology missing from Sect
 
 * Check if TradeCosts are missing from a defined TradeRoute -> if yes, then exit
 parameter error_TradeCostsMissingFromTradeRoute(r_full,f,rr_full);
-error_TradeCostsMissingFromTradeRoute(r,f,rr)$(sum(y,TradeRoute(r,f,y,rr)) and not TradeCosts(f,r,rr)) = 1;
+error_TradeCostsMissingFromTradeRoute(r,f,rr)$(sum(y,TradeRoute(r,f,y,rr)) and TagCanFuelBeTraded(f) and not sum(y,TradeCosts(r,f,y,rr))) = 1;
 if(sum((f,r,rr),error_TradeCostsMissingFromTradeRoute(r,f,rr)),abort "TradeCosts are missing from a defined TradeRoute. Please check your TradeCosts to include all defined TradeRoutes. Missing TradeCosts are listed in the parameter error_TradeCostsMissingFromTradeRoute.");
 
-** Check for errors in ModalSplit definitions -> if yes, then exit
-*parameter error_ModalSplitByModalTypeDefinition(f,*,r_full,y_full);
-*error_ModalSplitByModalTypeDefinition(f,'Error in ModalGroup',r,y)$(round(sum(ModalGroups,ModalSplitByFuelAndModalType(r,f,y,ModalGroups)),4)>1) = 1;
-*error_ModalSplitByModalTypeDefinition(f,'Error in SubGroup',r,y)$(round(sum(mt$(not sum(ModalGroups,diag(mt,ModalGroups))),ModalSplitByFuelAndModalType(r,f,y,mt)),4)>1) = 1;
-*if(sum((f,r,y),error_ModalSplitByModalTypeDefinition(f,'Error in ModalGroup',r,y)),abort "ModalSplit is wrongly defined for a ModalGroup (e.g., MT_FRT_Road). The sum of ModalTypes cannot exceed 1. Please check your data. Problematic regions and years are listed in the parameter error_ModalSplitByModalTypeDefinition.");
-*if(sum((f,r,y),error_ModalSplitByModalTypeDefinition(f,'Error in SubGroup',r,y)),abort "ModalSplit is wrongly defined for a subgroup in the ModalSplit (e.g., MT_FRT_Road_RE). The sum of ModalTypes cannot exceed 1. Please check your data. Problematic regions and years are listed in the parameter error_ModalSplitByModalTypeDefinition.");
+* Check for errors in ModalSplit definitions -> if yes, then exit
+parameter error_ModalSplitByModalTypeDefinition(f,*,r_full,y_full);
+error_ModalSplitByModalTypeDefinition(f,'Error in ModalGroup',r,y)$(round(sum(mt$(TagModalTypeToModalGroups(mt,'TransportModes')),ModalSplitByFuelAndModalType(r,f,mt,y)),4)>1) = 1;
+error_ModalSplitByModalTypeDefinition(f,'Error in SubGroup',r,y)$(round(sum(mt$(TagModalTypeToModalGroups(mt,'ModalSubgroups')),ModalSplitByFuelAndModalType(r,f,mt,y)),4)>1) = 1;
+if(sum((f,r,y),error_ModalSplitByModalTypeDefinition(f,'Error in ModalGroup',r,y)),abort "ModalSplit is wrongly defined for a ModalGroup (e.g., MT_FRT_Road). The sum of ModalTypes cannot exceed 1. Please check your data. Problematic regions and years are listed in the parameter error_ModalSplitByModalTypeDefinition.");
+if(sum((f,r,y),error_ModalSplitByModalTypeDefinition(f,'Error in SubGroup',r,y)),abort "ModalSplit is wrongly defined for a subgroup in the ModalSplit (e.g., MT_FRT_Road_RE). The sum of ModalTypes cannot exceed 1. Please check your data. Problematic regions and years are listed in the parameter error_ModalSplitByModalTypeDefinition.");
 
 * Check for errors in OperationalLife data -> if yes, then exit
 parameter error_OperationalLifeMissing(t);
@@ -55,6 +55,17 @@ if(sum((r,t,y),error_CapacityFactorDataMissing(r,t,y)),abort "CapacityFactor is 
 parameter error_CapacityToActivityUnitDataMissing(r_full,t);
 error_CapacityToActivityUnitDataMissing(r,t)$(sum(y,AvailabilityFactor(r,t,y)) and not CapacityToActivityUnit(t)) = 1;
 if(sum((r,t),error_CapacityToActivityUnitDataMissing(r,t)),abort "CapacityToActivityUnit is missing from a Technology. Please check your CapacityToActivityUnit data in Excel to account for all technologies. Technologies where values are missing are listed in the parameter error_CapacityToActivityUnitDataMissing.");
+
+* Check for errors in TradeRoutes, if they have a capacity given
+parameter error_TradeCapacityMismatch(*,r_full,f,y_full,rr_full);
+error_TradeCapacityMismatch('TradeCapacity',r,f,y,rr)$(TradeCapacity(r,f,y,rr) and not TradeRoute(r,f,y,rr))  = 1;
+error_TradeCapacityMismatch('CommissionedTradeCapacity',r,f,y,rr)$(CommissionedTradeCapacity(r,f,y,rr) and not TradeRoute(r,f,y,rr))  = 1;
+if(sum((r,f,y,rr),error_TradeCapacityMismatch('TradeCapacity',r,f,y,rr)+error_TradeCapacityMismatch('CommissionedTradeCapacity',r,f,y,rr)),abort "TradeRoute is missing for some trade connections where a TradeCapacity has been set. Please check your TradeRoute and TradeCapacity data in Excel. Technologies where values are missing are listed in the parameter error_TradeCapacityMismatch.");
+
+* Check for missing entries in AvailabilityFactor -> if yes, then exit
+parameter error_AvailabilityFactorMissing(r_full,t,y_full);
+error_AvailabilityFactorMissing(r,t,y)$(ResidualCapacity(r,t,y) and not AvailabilityFactor(r,t,y)) = 1;
+if(sum((r,t,y),error_AvailabilityFactorMissing(r,t,y)),display "WARNING: AvailabilityFactor is missing from a Technology. Please check your AvailabilityFactor data in Excel to account for all technologies. Technologies where values are missing are listed in the parameter error_AvailabilityFactorMissing.");
 
 
 

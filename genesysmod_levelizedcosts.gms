@@ -36,9 +36,10 @@ Set TierFive(f);
 TierFive(f) = no;
 TierFive('Mobility_Passenger') = yes;
 TierFive('Mobility_Freight') = yes;
-TierFive('Heat_Low_Residential') = yes;
+TierFive('Heat_Buildings') = yes;
 TierFive('Heat_Low_Industrial') = yes;
-TierFive('Heat_Medium_Industrial') = yes;
+TierFive('Heat_MediumHigh_Industrial') = yes;
+TierFive('Heat_MediumLow_Industrial') = yes;
 TierFive('Heat_High_Industrial') = yes;
 
 Set Resources(f);
@@ -53,12 +54,12 @@ Resources('H2') = yes;
 
 Set ResourceTechnologies(t);
 ResourceTechnologies(t) = no;
-ResourceTechnologies('RES_Grass') = yes;
-ResourceTechnologies('RES_Wood') = yes;
-ResourceTechnologies('RES_Residues') = yes;
-ResourceTechnologies('RES_Paper_Cardboard') = yes;
-ResourceTechnologies('RES_Roundwood') = yes;
-ResourceTechnologies('RES_Biogas') = yes;
+ResourceTechnologies('R_Grass') = yes;
+ResourceTechnologies('R_Wood') = yes;
+ResourceTechnologies('R_Residues') = yes;
+ResourceTechnologies('R_Paper_Cardboard') = yes;
+ResourceTechnologies('R_Roundwood') = yes;
+ResourceTechnologies('R_Biogas') = yes;
 ResourceTechnologies('Z_Import_Hardcoal') = yes;
 ResourceTechnologies('R_Coal_Hardcoal') = yes;
 ResourceTechnologies('R_Coal_Lignite') = yes;
@@ -132,8 +133,8 @@ SectorEmissions(y,r,TierFive,e) = sum((m,t),TechnologyEmissionsByMode(y,t,e,m,r)
 Parameter test(YEAR_FULL,FUEL,REGION_FULL);
 test(y,f,r) = sum(t,ProductionByTechnologyAnnual.l(y,t,'Power',r)$(not TagTechnologyToSector(t,'Storages')));
 
-EmissionIntensity(y,r,'Power',e) = SectorEmissions(y,r,'Power',e)/sum(t,ProductionByTechnologyAnnual.l(y,t,'Power',r)$(not TagTechnologyToSector(t,'Storages')));
-EmissionIntensity(y,r,TierFive,e) = SectorEmissions(y,r,TierFive,e)/AnnualProduction(y,TierFive,r);
+EmissionIntensity(y,r,'Power',e)$(sum(t,ProductionByTechnologyAnnual.l(y,t,'Power',r)$(not TagTechnologyToSector(t,'Storages')))) = SectorEmissions(y,r,'Power',e)/sum(t,ProductionByTechnologyAnnual.l(y,t,'Power',r)$(not TagTechnologyToSector(t,'Storages')));
+EmissionIntensity(y,r,TierFive,e)$(AnnualProduction(y,TierFive,r)) = SectorEmissions(y,r,TierFive,e)/AnnualProduction(y,TierFive,r);
 
 
 RegionalEmissionContentPerFuel(y,r,f,e) = EmissionContentPerFuel(f,e);

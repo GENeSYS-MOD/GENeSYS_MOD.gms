@@ -375,12 +375,13 @@ ScaledCountryData(r,l,cde)${(SmoothedCountryDataMax(r,cde) - SmoothedCountryData
 
 YearSplit(l,y) = 1/card(l);
 
-SpecifiedDemandProfile(r,f,l,y)$(SpecifiedAnnualDemand(r,f,y)) = ScaledCountryData(r,l,'load')/card(l);
+SpecifiedDemandProfile(r,f,l,y)$(SpecifiedAnnualDemand(r,f,y)) = ScaledCountryData(r,l,'load')/sum(ll,ScaledCountryData(r,ll,'load'));
 SpecifiedDemandProfile(r,'Mobility_Passenger',l,y) = ScaledCountryData(r,l,'mobility_psng')/sum(ll,ScaledCountryData(r,ll,'mobility_psng'));
 SpecifiedDemandProfile(r,'Mobility_Freight',l,y) = ScaledCountryData(r,l,'mobility_psng')/sum(ll,ScaledCountryData(r,ll,'mobility_psng'));
-SpecifiedDemandProfile(r,'Heat_Low_Residential',l,y) = ScaledCountryData(r,l,'heat_low')/sum(ll,ScaledCountryData(r,ll,'heat_low'));
+SpecifiedDemandProfile(r,'Heat_Buildings',l,y) = ScaledCountryData(r,l,'heat_low')/sum(ll,ScaledCountryData(r,ll,'heat_low'));
 SpecifiedDemandProfile(r,'Heat_Low_Industrial',l,y) = ScaledCountryData(r,l,'heat_high')/sum(ll,ScaledCountryData(r,ll,'heat_high'));
-SpecifiedDemandProfile(r,'Heat_Medium_Industrial',l,y) = ScaledCountryData(r,l,'heat_high')/sum(ll,ScaledCountryData(r,ll,'heat_high'));
+SpecifiedDemandProfile(r,'Heat_MediumLow_Industrial',l,y) = ScaledCountryData(r,l,'heat_high')/sum(ll,ScaledCountryData(r,ll,'heat_high'));
+SpecifiedDemandProfile(r,'Heat_MediumHigh_Industrial',l,y) = ScaledCountryData(r,l,'heat_high')/sum(ll,ScaledCountryData(r,ll,'heat_high'));
 SpecifiedDemandProfile(r,'Heat_High_Industrial',l,y) = ScaledCountryData(r,l,'heat_high')/sum(ll,ScaledCountryData(r,ll,'heat_high'));
 
 CapacityFactor(r,t,l,y) = 1;
@@ -389,44 +390,44 @@ CapacityFactor(r,t,l,y)$(TagTechnologyToSubsets(t,'Wind')) = 0;
 
 TimeDepEfficiency(r,t,l,y) = 1;
 
-CapacityFactor(r,'HLR_Heatpump_Aerial',l,y) = 1;
-CapacityFactor(r,'HLR_Heatpump_Ground',l,y) = 1;
-TimeDepEfficiency(r,'HLR_Heatpump_Aerial',l,y) = ScaledCountryData(r,l,'heat_pump_air');
-TimeDepEfficiency(r,'HLR_Heatpump_Ground',l,y) = ScaledCountryData(r,l,'heat_pump_ground');
+CapacityFactor(r,'HB_Heatpump_Aerial',l,y) = 1;
+CapacityFactor(r,'HB_Heatpump_Ground',l,y) = 1;
+TimeDepEfficiency(r,'HB_Heatpump_Aerial',l,y) = ScaledCountryData(r,l,'heat_pump_air');
+TimeDepEfficiency(r,'HB_Heatpump_Ground',l,y) = ScaledCountryData(r,l,'heat_pump_ground');
 
-CapacityFactor(r,'Res_pv_utility_opt',l,y) = ScaledCountryData(r,l,'pv_opt');
-CapacityFactor(r,'Res_Wind_Onshore_opt',l,y) = ScaledCountryData(r,l,'wind_onshore_opt');
-CapacityFactor(r,'Res_Wind_Offshore_Transitional',l,y) = ScaledCountryData(r,l,'wind_offshore');
+CapacityFactor(r,'P_pv_utility_opt',l,y) = ScaledCountryData(r,l,'pv_opt');
+CapacityFactor(r,'P_Wind_Onshore_opt',l,y) = ScaledCountryData(r,l,'wind_onshore_opt');
+CapacityFactor(r,'P_Wind_Offshore_Transitional',l,y) = ScaledCountryData(r,l,'wind_offshore');
 
-CapacityFactor(r,'Res_pv_utility_avg',l,y) = ScaledCountryData(r,l,'pv_avg');
-CapacityFactor(r,'Res_Wind_Onshore_avg',l,y) = ScaledCountryData(r,l,'wind_onshore_avg');
-CapacityFactor(r,'Res_Wind_Offshore_Shallow',l,y) = ScaledCountryData(r,l,'wind_offshore_shallow');
+CapacityFactor(r,'P_pv_utility_avg',l,y) = ScaledCountryData(r,l,'pv_avg');
+CapacityFactor(r,'P_Wind_Onshore_avg',l,y) = ScaledCountryData(r,l,'wind_onshore_avg');
+CapacityFactor(r,'P_Wind_Offshore_Shallow',l,y) = ScaledCountryData(r,l,'wind_offshore_shallow');
 
-CapacityFactor(r,'Res_pv_utility_inf',l,y) = ScaledCountryData(r,l,'pv_inf');
-CapacityFactor(r,'Res_Wind_Onshore_inf',l,y) = ScaledCountryData(r,l,'wind_onshore_inf');
-CapacityFactor(r,'Res_Wind_Offshore_Deep',l,y) = ScaledCountryData(r,l,'wind_offshore_deep');
+CapacityFactor(r,'P_pv_utility_inf',l,y) = ScaledCountryData(r,l,'pv_inf');
+CapacityFactor(r,'P_Wind_Onshore_inf',l,y) = ScaledCountryData(r,l,'wind_onshore_inf');
+CapacityFactor(r,'P_Wind_Offshore_Deep',l,y) = ScaledCountryData(r,l,'wind_offshore_deep');
 
-CapacityFactor(r,'Res_pv_utility_tracking',l,y) = ScaledCountryData(r,l,'pv_tracking');
+CapacityFactor(r,'P_pv_utility_tracking',l,y) = ScaledCountryData(r,l,'pv_tracking');
 
-CapacityFactor(r,'Res_Hydro_Small',l,y) = ScaledCountryData(r,l,'hydro_ror');
+CapacityFactor(r,'P_Hydro_RoR',l,y) = ScaledCountryData(r,l,'hydro_ror');
 
 
 if(card(l) = 8760,
-CapacityFactor(r,'HLR_Heatpump_Aerial',l,y) = CountryData(r,l,'heat_pump_air');
-CapacityFactor(r,'HLR_Heatpump_Ground',l,y) = CountryData(r,l,'heat_pump_ground');
+CapacityFactor(r,'HB_Heatpump_Aerial',l,y) = CountryData(r,l,'heat_pump_air');
+CapacityFactor(r,'HB_Heatpump_Ground',l,y) = CountryData(r,l,'heat_pump_ground');
 
-CapacityFactor(r,'Res_pv_utility_opt',l,y) = CountryData(r,l,'pv_opt');
-CapacityFactor(r,'Res_Wind_Onshore_opt',l,y) = CountryData(r,l,'wind_onshore_opt');
-CapacityFactor(r,'Res_Wind_Offshore_Transitional',l,y) = CountryData(r,l,'wind_offshore');
+CapacityFactor(r,'P_pv_utility_opt',l,y) = CountryData(r,l,'pv_opt');
+CapacityFactor(r,'P_Wind_Onshore_opt',l,y) = CountryData(r,l,'wind_onshore_opt');
+CapacityFactor(r,'P_Wind_Offshore_Transitional',l,y) = CountryData(r,l,'wind_offshore');
 
-CapacityFactor(r,'Res_pv_utility_avg',l,y) = CountryData(r,l,'pv_avg');
-CapacityFactor(r,'Res_Wind_Onshore_avg',l,y) = CountryData(r,l,'wind_onshore_avg');
-CapacityFactor(r,'Res_Wind_Offshore_Shallow',l,y) = CountryData(r,l,'wind_offshore_shallow');
+CapacityFactor(r,'P_pv_utility_avg',l,y) = CountryData(r,l,'pv_avg');
+CapacityFactor(r,'P_Wind_Onshore_avg',l,y) = CountryData(r,l,'wind_onshore_avg');
+CapacityFactor(r,'P_Wind_Offshore_Shallow',l,y) = CountryData(r,l,'wind_offshore_shallow');
 
-CapacityFactor(r,'Res_pv_utility_inf',l,y) = CountryData(r,l,'pv_inf');
-CapacityFactor(r,'Res_Wind_Onshore_inf',l,y) = CountryData(r,l,'wind_onshore_inf');
-CapacityFactor(r,'Res_Wind_Offshore_Deep',l,y) = CountryData(r,l,'wind_offshore_deep');
+CapacityFactor(r,'P_pv_utility_inf',l,y) = CountryData(r,l,'pv_inf');
+CapacityFactor(r,'P_Wind_Onshore_inf',l,y) = CountryData(r,l,'wind_onshore_inf');
+CapacityFactor(r,'P_Wind_Offshore_Deep',l,y) = CountryData(r,l,'wind_offshore_deep');
 
-CapacityFactor(r,'Res_pv_utility_tracking',l,y) = CountryData(r,l,'pv_tracking');
-CapacityFactor(r,'Res_Hydro_Small',l,y) = CountryData(r,l,'hydro_ror');
+CapacityFactor(r,'P_pv_utility_tracking',l,y) = CountryData(r,l,'pv_tracking');
+CapacityFactor(r,'P_Hydro_RoR',l,y) = CountryData(r,l,'hydro_ror');
 );

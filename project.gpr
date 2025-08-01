@@ -1,0 +1,1193 @@
+[PROJECT]
+
+[GDXDISP: InputActivityRatio Par 5]
+PlaneDim=1
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=2,1,3,4,5
+Decim=3
+PlaneRownr=46
+PlaneFilter1=HD_Heatpump_Air
+
+[GDXDISP: heapSizeAfterSolve Par 0]
+PlaneDim=0
+RowDim=0
+Squeeze=1
+SqTrail0=0
+Order=
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: heapSizeBeforSolve Par 0]
+PlaneDim=0
+RowDim=0
+Squeeze=1
+SqTrail0=0
+Order=
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: CurtailedEnergyAnnual Var 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: elapsed Par 0]
+PlaneDim=0
+RowDim=0
+Squeeze=1
+SqTrail0=0
+Order=
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: t Alias 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: TECHNOLOGY Set 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: TierFive Set 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: Time Set 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: AAC1_TotalAnnualTechnologyActivity Equ 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: TimeDepEfficiency Par 4]
+PlaneDim=1
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=2,1,3,4
+Decim=7
+PlaneRownr=59
+PlaneFilter1=HD_Heatpump_Air
+
+[GDXDISP: AAC2_TotalAnnualTechnologyActivityUpperLimit Equ 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: BaseYearBounds_TooHigh Var 4]
+PlaneDim=1
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=5,1,3,4,2
+Decim=0
+PlaneRownr=-1
+
+[GDXDISP: BaseYearBounds_TooLow Var 4]
+PlaneDim=0
+RowDim=4
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4,5
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: AccumulatedNewCapacity Var 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: e Alias 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: error_CapacityFactorDataMissing Par 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: error_TechMissingFromSectorList Par 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: error_OperationalLifeMissing Par 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: Import Var 5]
+PlaneDim=0
+RowDim=5
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4,5,6
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: o Alias 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: output_capacity Par 6]
+PlaneDim=0
+RowDim=6
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4,5,6
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: s Alias 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: SpecifiedAnnualDemand Par 3]
+PlaneDim=1
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=2,1,3
+Decim=1
+PlaneRownr=1
+PlaneFilter1=Heat_Buildings
+
+[GDXDISP: OperatingCost Var 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: OperationalLifeStorage Par 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: OperationalLife Par 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: CA1_TotalNewCapacity Equ 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: CapacityFactor Par 4]
+PlaneDim=1
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=2,1,3,4
+Decim=7
+PlaneRownr=59
+PlaneFilter1=HD_Heatpump_Air
+
+[GDXDISP: PC1_PowerPeakingDemand Equ 2]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: TAC1_TotalModelHorizonTechnologyActivity Equ 2]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: TagDemandFuelToSector Par 2]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: TagTechnologyToModalType Par 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: Production Par 4]
+PlaneDim=0
+RowDim=4
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: ProductionGrowthLimit Par 2]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: RETagTechnology Par 2]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: r Alias 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: RE1_ComputeTotalAnnualREProduction Equ 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: RETagFuel Par 2]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: z Var 0]
+PlaneDim=0
+RowDim=0
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=0
+PlaneRownr=-1
+
+[GDXDISP: RE1_FuelProductionByTechnologyAnnual Equ 4]
+PlaneDim=0
+RowDim=4
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4,5
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: RETagFuel Par 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: SC1_SpreadCapitalInvestmentsAcrossTime Equ 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: SC4_RelativeTechnologyPhaseInLimit Equ 2]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: RETotalDemandOfTargetFuelAnnual Var 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: RETargetMin Var 2]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: OutputActivityRatio Par 5]
+PlaneDim=1
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=2,1,3,4,5
+Decim=2
+PlaneRownr=37
+PlaneFilter1=HB_Convert_DH
+
+[GDXDISP: ReserveMargin Par 2]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: PhaseIn Par 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: PhaseOut Par 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: RETagTechnology Par 3]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: Passenger Set 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: ResidualCapacity Par 3]
+PlaneDim=1
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=1
+PlaneRownr=20
+PlaneFilter1=NO
+
+[GDXDISP: AnnualEmissionLimit Par 2]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: TagTechnologyToSector Par 2]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: TagTechnologyToSubsets Par 2]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: TagFuelToSubsets Par 2]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[RP:GENESYSMOD_DATALOAD_LONG]
+1=
+
+[RP:GENESYSMOD_LEVELIZEDCOSTS]
+1=
+
+[GDXDISP: ProductionAnnual Par 3]
+PlaneDim=1
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=2,3,1
+Decim=0
+PlaneRownr=-1
+PlaneFilter1=H2
+
+[GDXDISP: SpecifiedDemandProfile Par 4]
+PlaneDim=1
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=2,1,3,4
+Decim=7
+PlaneRownr=4
+PlaneFilter1=Heat_Medium_Industrial
+
+[GDXDISP: dedicated_h2 Par 0]
+PlaneDim=0
+RowDim=0
+Squeeze=1
+SqTrail0=0
+Order=
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: NCC1_TotalAnnualMaxNewCapacityConstraint Equ 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: negativeCDE Par 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: NewCapacity Var 3]
+PlaneDim=2
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=4,3,2,1
+Decim=0
+PlaneRownr=20
+PlaneFilter1=Level
+PlaneFilter2=NO
+
+[GDXDISP: Demand Par 4]
+PlaneDim=1
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=3,1,2,4
+Decim=7
+PlaneRownr=-1
+PlaneFilter1=Heat_Medium_Industrial
+
+[GDXDISP: AvailabilityFactor Par 3]
+PlaneDim=1
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=7
+PlaneRownr=21
+PlaneFilter1=NO
+
+[GDXDISP: PhaseOutSet Set 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: TotalAnnualMaxCapacity Par 3]
+PlaneDim=1
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=2
+PlaneRownr=-1
+PlaneFilter1=CH
+
+[GDXDISP: NewStorageCapacity Var 3]
+PlaneDim=1
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=4,1,3,2
+Decim=1
+PlaneRownr=-1
+
+[GDXDISP: start_hour Par 0]
+PlaneDim=0
+RowDim=0
+Squeeze=1
+SqTrail0=0
+Order=
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: STORAGE Set 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: ToSmallResidualCapacity Par 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: TotalActivityInReserveMargin Var 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: TotalStorageCapacityAnnual Par 3]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=2,3,1
+Decim=1
+PlaneRownr=-1
+
+[GDXDISP: TotalCapacityAnnual Var 3]
+PlaneDim=1
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=4,2,3,1
+Decim=1
+PlaneRownr=-1
+
+[GDXDISP: Add_BuildingsInertia Equ 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: Add_E2PRatio_low Equ 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: Add_E2PRatio_up Equ 3]
+PlaneDim=1
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=4,1,3,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: EMISSION Set 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: E9_AnnualEmissionsLimit Equ 2]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: E10_ModelPeriodEmissionsLimit Equ 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: EmissionActivityRatio Par 5]
+PlaneDim=1
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4,5
+Decim=3
+PlaneRownr=6
+PlaneFilter1=DE
+
+[RP:UNTITLED_2]
+1=
+
+[GDXDISP: TotalAnnualMinCapacity Par 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: TotalActivityPerYear Var 4]
+PlaneDim=0
+RowDim=4
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4,5
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: Readin_GrowthRateTradeCapacity Par 4]
+PlaneDim=0
+RowDim=4
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: ResidualStorageCapacity Par 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: warning_TechnologyEfficiencies Par 4]
+PlaneDim=0
+RowDim=4
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: warning_TotalAnnualMinCapacityTooHigh Par 3]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: y Alias 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: YEAR Set 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: ProductionByTechnology Par 5]
+PlaneDim=0
+RowDim=5
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4,5
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: ProductionByTechnologyAnnual Var 4]
+PlaneDim=2
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=5,3,4,2,1
+Decim=3
+PlaneRownr=14
+PlaneFilter1=Upper
+PlaneFilter2=Heat_Buildings
+
+[GDXDISP: CapitalCost Par 3]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=2
+PlaneRownr=-1
+
+[GDXDISP: CapacityToActivityUnit Par 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: E2_AnnualEmissionProduction Equ 4]
+PlaneDim=0
+RowDim=4
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4,5
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: EB3_EnergyBalanceEachYear Equ 3]
+PlaneDim=1
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=4,1,3,2
+Decim=0
+PlaneRownr=1
+PlaneFilter1=Marginal
+
+[GDXDISP: EB2_EnergyBalanceEachTS Equ 4]
+PlaneDim=2
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=3,5,1,2,4
+Decim=1
+PlaneRownr=46
+PlaneFilter1=Power
+PlaneFilter2=Level
+
+[GDXDISP: Use Par 4]
+PlaneDim=0
+RowDim=4
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: UseByTechnology Par 5]
+PlaneDim=0
+RowDim=5
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4,5
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: UseByTechnologyAnnual Var 4]
+PlaneDim=2
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=5,3,2,4,1
+Decim=1
+PlaneRownr=18
+PlaneFilter1=Level
+PlaneFilter2=Oil
+
+[GDXDISP: VariableCost Par 4]
+PlaneDim=1
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=3,1,2,4
+Decim=4
+PlaneRownr=-1
+
+[GDXDISP: f Alias 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: FinalEnergy Set 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: FixedCost Par 3]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=1
+PlaneRownr=-1
+
+[GDXDISP: DiscountedAnnualCurtailmentCost Var 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: DiscountedOperatingCost Var 3]
+PlaneDim=1
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=4,2,3,1
+Decim=0
+PlaneRownr=-1
+
+[GDXDISP: TotalDiscountedCost Var 2]
+PlaneDim=1
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=3,2,1
+Decim=0
+PlaneRownr=-1
+
+[GDXDISP: REGION Set 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: ProductionSplitByModalType Var 5]
+PlaneDim=0
+RowDim=5
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4,5,6
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: RegionalAnnualEmissionLimit Par 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: RegionalBaseYearProduction Par 4]
+PlaneDim=1
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4
+Decim=7
+PlaneRownr=24
+PlaneFilter1=SE
+
+[GDXDISP: TC1_AnnualTradeCosts Equ 2]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=7
+PlaneRownr=-1
+
+[RP:GENESYSMOD_DEC]
+1=
+
+[RP:GENESYSMOD_RESULTS]
+1=
+
+[RP:GENESYSMOD_TIMESERIES_REDUCTION]
+1=
+
+[GDXDISP: NetTrade Var 4]
+PlaneDim=0
+RowDim=4
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4,5
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: NetTradeAnnual Var 3]
+PlaneDim=2
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=4,2,3,1
+Decim=0
+PlaneRownr=12
+PlaneFilter1=Level
+PlaneFilter2=Power
+
+[RP:GENESYSMOD_SETTINGS]
+1=
+
+[GDXDISP: AverageCapacityFactor Par 2]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[RP:GENESYSMOD_DATALOAD]
+1=
+
+[GDXDISP: ProductionAnnualLowerLimit Par 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: ACC1_ComputeTotalAnnualRateOfActivity Equ 4]
+PlaneDim=0
+RowDim=4
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4,5
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: TotalTechnologyModelPeriodActivityUpperLimit Par 2]
+PlaneDim=1
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: Add_FlatGasImports Equ 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: Add_ProductionAnnualLowerLimit Equ 3]
+PlaneDim=1
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=4,2,3,1
+Decim=7
+PlaneRownr=-1
+
+[RP:GENESYSMOD_EQU]
+1=
+
+[RP:GENESYSMOD_VARIABLE_PARAMETER]
+1=
+
+[GDXDISP: heatingslack Var 2]
+PlaneDim=1
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=3,2,1
+Decim=0
+PlaneRownr=-1
+
+[RP:GENESYSMOD_BOUNDS]
+1=
+
+[RP:GENESYSMOD_SCENARIODATA_EUROPE]
+1=
+
+[RP:GENESYSMOD]
+1=-gdx=test_repowereu_buildings -gdxCompress=1 --emissionPathway=REPowerEU
+2=-gdx=test_repowereu_industry -gdxCompress=1 --emissionPathway=REPowerEU
+3=-gdx=test_repowereu_noCA5 -gdxCompress=1 --emissionPathway=REPowerEU
+4=-gdx=test_repowereu -gdxCompress=1 --emissionPathway=REPowerEU
+5=-gdx=test_necpessentials_2018_3 -gdxCompress=1
+6=-gdx=test_necpessentials_2018_2 -gdxCompress=1
+7=-gdx=test_necpessentials_2021 -gdxCompress=1
+8=-gdx=test_necpessentials_2018 -gdxCompress=1
+9=-gdx=test -gdxCompress=1
+10=-gdx=test -gdxCompress=1 --emissionPathway=Decentral
+11=-gdx=test -gdxCompress=1 --emissionPathway=2degree
+12=-gdx=test -gdxCompress=1 --emissionPathway=BAU
+
+[MRUFILES]
+1=C:\Users\testbed\Documents\GENeSYS_MOD.gms\Results\Man0EUvRE_Trinity_122c_new.gdx
+2=C:\Users\testbed\Documents\GENeSYS_MOD.gms\Results\test_necpessentials_2018.gdx
+3=C:\Users\testbed\Documents\GENeSYS_MOD.gms\Results\test_necpessentials_2021.gdx
+4=C:\Users\testbed\Documents\GENeSYS_MOD.gms\test_necpessentials484.gdx
+5=C:\Users\testbed\Documents\GENeSYS_MOD.gms\test_necpessentials244_dataload.gdx
+6=C:\Users\testbed\Documents\GENeSYS_MOD.gms\test_necpessentials244.gdx
+7=C:\Users\testbed\Documents\GENeSYS_MOD.gms\test_NECPEssentials_244.gdx
+
+[OPENWINDOW_1]
+FILE0=C:\Users\testbed\Documents\GENeSYS_MOD.gms\GdxFiles\Output_europe_NECPEssentials_globalLimit_reduced.gdx
+FILE1=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod.gms
+FILE2=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod.lst
+FILE3=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod_bounds.gms
+FILE4=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod_dataload.gms
+FILE5=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod_dataload_long.gms
+FILE6=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod_dec.gms
+FILE7=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod_equ.gms
+FILE8=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod_levelizedcosts.gms
+FILE9=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod_results.gms
+FILE10=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod_scenariodata_europe.gms
+FILE11=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod_settings.gms
+FILE12=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod_timeseries_reduction.gms
+FILE13=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod_variable_parameter.gms
+FILE14=C:\Users\testbed\Documents\GENeSYS_MOD.gms\Results\Man0EUvRE_Green_122c_new.gdx
+FILE15=C:\Users\testbed\Documents\GENeSYS_MOD.gms\test.gdx
+FILE16=C:\Users\testbed\Documents\GENeSYS_MOD.gms\test_repowereu_buildings.gdx
+FILE17=C:\Users\testbed\Documents\GENeSYS_MOD.gms\test_repowereu_industry.gdx
+FILE18=C:\Users\testbed\Documents\genesys-mod\Results\Large\Einstein_PlannedProjectsI3600_lin_nc_49_g40c-r.gdx
+FILE19=C:\Users\testbed\Documents\genesysmod-guadeloupe\genesysmod_results.gms
+FILE20=C:\Users\testbed\Documents\genesysmod-guadeloupe\genesysmod_variable_parameter.gms
+FILE21=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod.lst
+MAXIM=0
+TOP=2
+LEFT=0
+HEIGHT=740
+WIDTH=1222

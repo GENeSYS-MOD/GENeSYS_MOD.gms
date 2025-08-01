@@ -1,0 +1,5 @@
+threads 6
+method 2
+names no
+barhomogeneous 1
+timelimit 1000000

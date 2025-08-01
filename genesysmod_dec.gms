@@ -37,12 +37,14 @@ alias (REGION,r,rr)
 
 set TECHNOLOGY List of all available technologies
                /Infeasibility_Power,
+                Infeasibility_H2,
                 Infeasibility_HLI,
                 Infeasibility_HMI,
                 Infeasibility_HHI,
                 Infeasibility_HRI,
                 Infeasibility_Mob_Passenger,
-                Infeasibility_Mob_Freight /;
+                Infeasibility_Mob_Freight,
+                Infeasibility_Natural_Gas /;
 alias (t,TECHNOLOGY);
 
 set DummyTechnology(TECHNOLOGY) Subset of technologies that serve as infeasibility helpers;
@@ -79,6 +81,7 @@ parameter DepreciationMethod Defines the method to use for depreciation of asset
 * ####### Demands #############
 *
 parameter SpecifiedAnnualDemand(REGION_FULL,FUEL,y_full) Defines the total demand for a fuel (either in energy or a proxy) across the year. Unit: PJ or km;
+parameter SpecifiedDemandDevelopment(REGION_FULL,FUEL,y_full) Defines the change in energy demand per year between modeled years;
 parameter SpecifiedDemandProfile(REGION_FULL,FUEL,TIMESLICE_FULL,y_full) Defines the relative demand per timeslice as a fraction of the total annual demand. Unit: Percent;
 parameter RateOfDemand(y_full,TIMESLICE_FULL,FUEL,REGION_FULL) Rate of demand in given timeslice. Unit: GW;
 parameter Demand(y_full,TIMESLICE_FULL,FUEL,REGION_FULL) Fuel demand for each timeslice. Unit: PJ (except for transport);
@@ -131,6 +134,9 @@ parameter StorageE2PRatio(STORAGE);
 *
 parameter TotalAnnualMaxCapacity(REGION_FULL,TECHNOLOGY,YEAR_FULL);
 parameter TotalAnnualMinCapacity(REGION_FULL,TECHNOLOGY,YEAR_FULL);
+parameter NewCapacityExpansionStop(REGION_FULL,TECHNOLOGY);
+parameter AnnualMinNewCapacity(REGION_FULL,TECHNOLOGY,YEAR_FULL);
+parameter AnnualMaxNewCapacity(REGION_FULL,TECHNOLOGY,YEAR_FULL);
 
 *
 * ######### SectoralEmissions #############
@@ -179,20 +185,22 @@ parameter AnnualEmissionLimit(EMISSION,YEAR_FULL);
 parameter RegionalAnnualEmissionLimit(REGION_FULL,EMISSION,YEAR_FULL);
 parameter ModelPeriodExogenousEmission(REGION_FULL,EMISSION);
 parameter ModelPeriodEmissionLimit(EMISSION);
-parameter RegionalModelPeriodEmissionLimit(EMISSION,REGION_FULL);
+parameter RegionalModelPeriodEmissionLimit(REGION_FULL,EMISSION);
 parameter CurtailmentCostFactor;
 
 *
 * ######### Trade #############
 *
 parameter TradeRoute(REGION_FULL,FUEL,y_full,rr_full);
-parameter TradeCosts(FUEL,REGION_FULL,rr_full);
+parameter TagCanFuelBeTraded(FUEL);
+parameter TradeCostFactor(FUEL, YEAR_FULL);
+parameter TradeCosts(REGION_FULL,FUEL,YEAR_FULL,rr_full);
 parameter TradeLossFactor(FUEL, YEAR_FULL);
 parameter TradeRouteInstalledCapacity(y_full,f,r_full,rr_full);
 parameter TradeLossBetweenRegions(REGION_FULL,FUEL,y_full,RR_FULL);
 
 
-parameter CommissionedTradeCapacity(y_full,f,r_full,rr_full);
+parameter CommissionedTradeCapacity(r_full,f,y_full,rr_full);
 parameter TradeCapacity(r_full, f, y_full, rr_full);
 parameter TradeCapacityGrowthCosts(r_full, f, rr_full);
 parameter GrowthRateTradeCapacity(r_full, f, y_full, rr_full);
@@ -204,8 +212,9 @@ parameter SelfSufficiency(y_full, fuel, r_full);
 *
 parameter ModalSplitByFuelAndModalType(REGION_FULL,FUEL,MODALTYPE,YEAR_FULL);
 parameter TagTechnologyToModalType(TECHNOLOGY,MODE_OF_OPERATION,MODALTYPE);
+parameter TagModalTypeToModalGroups(MODALTYPE,*);
 
-parameter ProductionGrowthLimit(YEAR_FULL,FUEL);
+parameter ProductionGrowthLimit(FUEL,YEAR_FULL);
 
 * #####################
 * # Model Variables #
@@ -292,7 +301,7 @@ variable AnnualTechnologyEmissionPenaltyByEmission(y_full,TECHNOLOGY,EMISSION,RE
 variable AnnualTechnologyEmissionsPenalty(y_full,TECHNOLOGY,REGION_FULL);
 variable DiscountedTechnologyEmissionsPenalty(y_full,TECHNOLOGY,REGION_FULL);
 variable AnnualEmissions(y_full,EMISSION,REGION_FULL);
-variable ModelPeriodEmissions(EMISSION,REGION_FULL);
+variable ModelPeriodEmissions(REGION_FULL,EMISSION);
 variable WeightedAnnualEmissions(year_full,emission,region_full);
 
 
@@ -352,21 +361,26 @@ Parameter PhaseOut(YEAR_FULL) this is an upper limit for fossil generation based
          2040    2.5
          2045    2
          2050    2
+         2055    1.5
+         2060    1.25
 /
 PhaseIn(YEAR_FULL) this is a lower bound for renewable integration based on the previous year - to remove choose 0
 /        2020    1
          2025    0.8
-         2030    0.7
-         2035    0.7
-         2040    0.7
-         2045    0.6
-         2050    0.5
+         2030    0.8
+         2035    0.8
+         2040    0.8
+         2045    0.8
+         2050    0.6
+         2055    0.5
+         2060    0.5
 /;
 
 
 Parameter BaseYearSlack(f);
-positive Variable BaseYearBounds_TooLow(r_full,t,f,y_full);
+positive Variable BaseYearBounds_TooLow(y_full,r_full,t,f);
 positive variable BaseYearBounds_TooHigh(y_full,r_full,t,f);
+positive variable heatingslack(y_full,r_full);  
 
 $ifthen %switch_baseyear_bounds_debugging% == 0
 BaseYearBounds_TooHigh.fx(y,r,t,f) = 0;
