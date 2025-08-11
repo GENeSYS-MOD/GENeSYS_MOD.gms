@@ -180,7 +180,6 @@ PureDemandFuel(y,f,r)$
 
 *
 * ############### Capacity Adequacy A #############
-
 *
 
 equation CA1_TotalNewCapacity(YEAR_FULL,TECHNOLOGY,REGION_FULL);
@@ -834,21 +833,21 @@ SupplyJobs_annual_A(r,t,y)$(YearVal(y) > %year%).. sum(f,((UseByTechnologyAnnual
 equation SupplyJobs_annual_B(r_full,TECHNOLOGY,y_full);                                                                                                                                        
 SupplyJobs_annual_B(r,t,y)$(YearVal(y) = %year%).. sum(f,((UseByTechnologyAnnual(y,t,f,r)*EFactorFuelSupply(f,y)))*(1-DeclineRate(t,y))**YearlyDifferenceMultiplier(y)) * 1 =e= SupplyJobs(r,t,y);
 
-variable GridJobs(r_full,y_full);
-equation GridJobs_annual_A(r_full,y_full);
+variable ElGridJobsPerModelPeriod(r_full,y_full);
+equation ElGridJobs_annual_A(r_full,y_full);
 *Test_ElGridJobs_annual(r,y).. sum(t$(TagTechnologyToSubsets(t,'PowerSupply')),(TotalCapacityAnnual(y,t,r)*EFactorElGrid(r,y))) * YearlyDifferenceMultiplier(y) =e= Test_ElGridJobs(r,y);
-GridJobs_annual_A(r,y)$(YearVal(y) > %year%).. ElGrid_Jobs(r,y) * YearlyDifferenceMultiplier(y-1) =e= GridJobs(r,y);
+ElGridJobs_annual_A(r,y)$(YearVal(y) > %year%).. ElGridJobs(r,y) * YearlyDifferenceMultiplier(y-1) =e= ElGridJobsPerModelPeriod(r,y);
 
-equation GridJobs_annual_B(r_full,y_full);
+equation ElGridJobs_annual_B(r_full,y_full);
 *Test_ElGridJobs_annual(r,y).. sum(t$(TagTechnologyToSubsets(t,'PowerSupply')),(TotalCapacityAnnual(y,t,r)*EFactorElGrid(r,y))) * YearlyDifferenceMultiplier(y) =e= Test_ElGridJobs(r,y);
-GridJobs_annual_B(r,y)$(YearVal(y) = %year%).. ElGrid_Jobs(r,y) * 1 =e= GridJobs(r,y);
+ElGridJobs_annual_B(r,y)$(YearVal(y) = %year%).. ElGridJobs(r,y) * 1 =e= ElGridJobsPerModelPeriod(r,y);
 
 
 
 equation TotalJobs_annual(r_full,y_full);
 *Test_TotalJobs_annual(r,y).. Test_OMJobs(r,y) + Test_ConstructionJobs(r,y) + Test_ManufacturingJobs(r,y) + Test_SupplyJobs(r,y) + Test_GridJobs(r,y) =e= Test_TotalJobs(r,y);
 *TotalJobs_annual(r,y).. sum(t,(OMJobs(r,t,y) + ConstructionJobs(r,t,y) + ManufacturingJobs(r,t,y) + SupplyJobs(r,t,y) + GridJobs(r,y))) =e= TotalJobs(r,y);
-TotalJobs_annual(r,y).. sum(t,(OMJobs(r,t,y) + ConstructionJobs(r,t,y) + ManufacturingJobs(r,t,y) + SupplyJobs(r,t,y))) + GridJobs(r,y) =e= TotalJobs(r,y);
+TotalJobs_annual(r,y).. sum(t,(OMJobs(r,t,y) + ConstructionJobs(r,t,y) + ManufacturingJobs(r,t,y) + SupplyJobs(r,t,y))) + ElGridJobsPerModelPeriod(r,y) =e= TotalJobs(r,y);
 
 
 

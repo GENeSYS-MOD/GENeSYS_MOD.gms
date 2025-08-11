@@ -63,6 +63,17 @@ $endif
 
 *______________________________________________________________________________________________*
 
+**Equation
+equation DH_production_upperlimit_DH1(YEAR_FULL);
+DH_production_upperlimit_DH1(y).. sum(r, ProductionByTechnologyAnnual(y,"HLI_Convert_DH","Heat_Low_Industrial",r) + ProductionByTechnologyAnnual(y,"HLR_Convert_DH","Heat_Low_Residential",r)) =l= (100+ ord(y)*12)*3.6;
+
+*equation DH_capacity_upperlimit_DH2(YEAR_FULL);
+**increases by 5GW annually
+*DH_capacity_upperlimit_DH2(y).. sum(r, TotalCapacityAnnual(y,"HLI_Convert_DH",r) + TotalCapacityAnnual(y,"HLR_Convert_DH",r)) =l= (53 + 5* (ord(y)-1));
+
+
+
+
 *fix for offshore hub regions
 CapacityFactor(r,'HLR_Solar_Thermal',l,y)$(CapacityFactor(r,'RES_PV_Utility_Avg',l,y)=0) = 0.00001;
 CapacityFactor(r,'HLI_Solar_Thermal',l,y)$(CapacityFactor(r,'RES_PV_Utility_Avg',l,y)=0) = 0.00001;

@@ -22,7 +22,7 @@ $onuelxref
 scalar starttime;
 starttime = jnow;
 
-$if not set data_file                    $setglobal data_file Input_Germany_Employment_v04_phe_11_05_2025
+$if not set data_file                    $setglobal data_file Input_Germany_Employment_v05_phe_11_05_2025
 $if not set hourly_data_file             $setglobal hourly_data_file input_timeseries_DE_v03_jb_26-03-2024
 $if not set elmod_nthhour                $setglobal elmod_nthhour 484
 $if not set elmod_starthour              $setglobal elmod_starthour 8
@@ -42,7 +42,7 @@ $if not set switch_h2_waste_heat         $setglobal switch_h2_waste_heat 1
 
 $if not set switch_test_data_load        $setglobal switch_test_data_load 0
 $if not set switch_investLimit           $setglobal switch_investLimit 1
-$if not set switch_infeasibility_tech    $setglobal switch_infeasibility_tech 0
+$if not set switch_infeasibility_tech    $setglobal switch_infeasibility_tech 1
 $if not set switch_base_year_bounds      $setglobal switch_base_year_bounds 1
 
 
@@ -82,7 +82,7 @@ $if not set set_peaking_startyear        $setglobal set_peaking_startyear 2025
 $if not set set_peaking_minrun_share     $setglobal set_peaking_minrun_share 0.15
 
 $if not set model_region                 $setglobal model_region de
-$if not set employment_data_file          $setglobal employment_data_file Employment_v09_phe_29_04_2025
+$if not set employment_data_file          $setglobal employment_data_file Employment_v10_phe_29_04_2025
 $if not set threads                      $setglobal threads 8
 $if not set elmod_dunkelflaute           $setglobal elmod_dunkelflaute 0
 $if not set hydrogen_growthcost_multiplier $setglobal hydrogen_growthcost_multiplier 1
@@ -171,7 +171,7 @@ $include genesysmod_equ.gms
 *
 option
 lp = %solver%
-limrow = 0
+limrow = 1000
 limcol = 0
 solprint = off
 sysout = off
@@ -184,7 +184,7 @@ $onecho > cplex.opt
 threads %threads%
 parallelmode -1
 lpmethod 4
-*barcrossalg -1
+barcrossalg 0
 names yes
 writemps mpsfile
 *solutiontype 2
@@ -192,6 +192,7 @@ quality yes
 barobjrng 1e+075
 tilim 1000000
 mipdisplay 2
+*feasopt 1
 $offecho
 
 $onecho > gurobi.opt

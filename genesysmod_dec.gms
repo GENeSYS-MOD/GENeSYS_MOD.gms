@@ -401,7 +401,7 @@ parameter DeclineRate;
 *parameter CoalJobs;
 parameter output_energyjobs;
 parameter ConstructionTime(TECHNOLOGY,y_full);
-parameter ElGrid_Jobs;
+parameter ElGridJobs;
 $endif
 
 *$ifthen %switch_employment_constraints% == 1
