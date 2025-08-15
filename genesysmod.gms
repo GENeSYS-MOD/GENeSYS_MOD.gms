@@ -1,4 +1,4 @@
-* GENeSYS-MOD v3.1 [Global Energy System Model]  ~ March 2022
+* GENeSYS-MOD v4.0 [Global Energy System Model]  ~ August 2025
 *
 * #############################################################
 *

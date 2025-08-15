@@ -1,15 +1,6 @@
-* ###################### genesysmod_results_sensitivity.gms #######################
-*
-* GENeSYS-MOD v3.1 [Global Energy System Model]  ~ March 2022
-*
-* Based on OSEMOSYS 2011.07.07 conversion to GAMS by Ken Noble, Noble-Soft Systems - August 2012
-*
-* Updated to newest OSeMOSYS-Version (2016.08) and further improved with additional equations 2016 - 2022
-* by Konstantin L�ffler, Thorsten Burandt, Karlo Hainsch
+* GENeSYS-MOD v4.0 [Global Energy System Model]  ~ August 2025
 *
 * #############################################################
-*
-* Copyright 2020 Technische Universit�t Berlin and DIW Berlin
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
