@@ -272,9 +272,6 @@ TrC2b_TotalTradeCapacity(y,f,r,rr)$(TradeRoute(r,f,y,rr) and TagCanFuelBeTraded(
 
 equation TrC3_NewTradeCapacityLimitPowerLines(YEAR_FULL,FUEL,REGION_FULL,rr_full);
 TrC3_NewTradeCapacityLimitPowerLines(y,'Power',r,rr)$(TradeRoute(r,'Power',y,rr) > 0 and GrowthRateTradeCapacity(r,'Power',y,rr) > 0 and YearVal(y) > %year%).. (GrowthRateTradeCapacity(r,'Power',y,rr)*YearlyDifferenceMultiplier(y))*TotalTradeCapacity(y-1,'Power',r,rr) =g= NewTradeCapacity(y,'Power',r,rr);
-NewTradeCapacity.fx(y,'Power',r,rr)$(TradeRoute(r,'Power',y,rr) = 0 or GrowthRateTradeCapacity(r,'Power',y,rr) = 0) = 0;
-
-
 
 *### Trade Capacities for H2 and Natural Gas, when initially no capacities existed, so that the model has the ability to build additional capacities
 equation TrC4a_NewTradeCapacityLimitNatGas(YEAR_FULL,FUEL,REGION_FULL,rr_full);
@@ -283,7 +280,7 @@ TrC4a_NewTradeCapacityLimitNatGas(y,'Gas_Natural',r,rr)$(TradeRoute(r,'Gas_Natur
 equation TrC5a_NewTradeCapacityLimitH2(YEAR_FULL,FUEL,REGION_FULL,rr_full);
 TrC5a_NewTradeCapacityLimitH2(y,'H2',r,rr)$(TradeRoute(r,'H2',y,rr) and GrowthRateTradeCapacity(r,'H2',y,rr)).. 50$(not TradeCapacity(r,'H2',y,rr))+(GrowthRateTradeCapacity(r,'H2',y,rr)*YearlyDifferenceMultiplier(y))*TotalTradeCapacity(y-1,'H2',r,rr) =g= NewTradeCapacity(y,'H2',r,rr);
 
-NewTradeCapacity.fx(y,f,r,rr)$(not TradeRoute(r,f,y,rr)) = 0;
+NewTradeCapacity.fx(y,f,r,rr)$(TradeRoute(r,f,y,rr) = 0 or GrowthRateTradeCapacity(r,f,y,rr) = 0) = 0;
 
 
 equation TrC4_NewTradeCapacityCosts(YEAR_FULL,FUEL,REGION_FULL,rr_full);
@@ -669,10 +666,10 @@ S6_StorageActivityLimit(s,t,y,l,r,m)$(TechnologyFromStorage(t,s,m,y)>0)..
 RateOfActivity(y,l,t,m,r)/TechnologyFromStorage(t,s,m,y)*YearSplit(l,y) =l= StorageLevelTSStart(s,y,l,r);
 
 equation S7a_Add_E2PRatio_up(STORAGE,YEAR_FULL,REGION_FULL);
-S7a_Add_E2PRatio_up(s,y,r).. (sum((yy)$(OperationalLifeStorage(s) >= Yearval(y)-Yearval(yy) and Yearval(y)-Yearval(yy) >= 0), NewStorageCapacity(s,yy,r)) + ResidualStorageCapacity(r,s,y)) =l=  sum((t,m)$(TechnologyToStorage(t,s,m,y)),  TotalCapacityAnnual(y,t,r) * StorageE2PRatio(s)*%switch_e2pratio_deviationfactor%);
+S7a_Add_E2PRatio_up(s,y,r).. (sum((yy)$(OperationalLifeStorage(s) >= Yearval(y)-Yearval(yy) and Yearval(y)-Yearval(yy) >= 0), NewStorageCapacity(s,yy,r)) + ResidualStorageCapacity(r,s,y)) =l=  sum((t,m)$(TechnologyToStorage(t,s,m,y)),  TotalCapacityAnnual(y,t,r) * StorageE2PRatio(s)* 0.0036 * %switch_e2pratio_deviationfactor%);
 
 equation S7b_Add_E2PRatio_low(STORAGE,YEAR_FULL,REGION_FULL);
-S7b_Add_E2PRatio_low(s,y,r).. (sum((yy)$(OperationalLifeStorage(s) >= Yearval(y)-Yearval(yy) and Yearval(y)-Yearval(yy) >= 0), NewStorageCapacity(s,yy,r)) + ResidualStorageCapacity(r,s,y)) =g=  sum((t,m)$(TechnologyToStorage(t,s,m,y)),  TotalCapacityAnnual(y,t,r) * StorageE2PRatio(s)*(1/%switch_e2pratio_deviationfactor%));
+S7b_Add_E2PRatio_low(s,y,r).. (sum((yy)$(OperationalLifeStorage(s) >= Yearval(y)-Yearval(yy) and Yearval(y)-Yearval(yy) >= 0), NewStorageCapacity(s,yy,r)) + ResidualStorageCapacity(r,s,y)) =g=  sum((t,m)$(TechnologyToStorage(t,s,m,y)),  TotalCapacityAnnual(y,t,r) * StorageE2PRatio(s) * 0.0036 * (1/%switch_e2pratio_deviationfactor%));
 
 
 
