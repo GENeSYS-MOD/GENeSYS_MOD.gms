@@ -219,5 +219,5 @@ $endif
 
 
 loop(y,
-SpecifiedAnnualDemand(r,f,y)$(not sameas(f,'H2') and YearVal(y)>%year%) = SpecifiedAnnualDemand(r,f,y-1)*(1+SpecifiedDemandDevelopment(r,f,y)*YearlyDifferenceMultiplier(y-1))
+SpecifiedAnnualDemand(r,f,y)$(not sameas(f,'H2') and not sameas(f,'Heat_District') and YearVal(y)>%year%) = SpecifiedAnnualDemand(r,f,y-1)*(1+SpecifiedDemandDevelopment(r,f,y)*YearlyDifferenceMultiplier(y-1))
 );
