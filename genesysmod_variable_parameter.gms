@@ -63,3 +63,9 @@ ModelPeriodCostByRegion(r) = sum((y), TotalDiscountedCost.l(y,r));
 
 parameter CurtailedEnergy(y_full,TIMESLICE_FULL,f,r_full);
 CurtailedEnergy(y,l,f,r) = sum((t,m),CurtailedCapacity.l(r,l,t,y)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y)*CapacityToActivityUnit(t));
+
+parameter CCSByTechnologyAnnual(r_full,t,y_full);
+CCSByTechnologyAnnual(r,t,y) = sum((f,m,e),
+                 TotalAnnualTechnologyActivityByMode.l(y,t,m,r)*EmissionContentPerFuel(f,e)*InputActivityRatio(r,t,f,m,y)*YearlyDifferenceMultiplier(y)*(((1-EmissionActivityRatio(r,t,m,e,y))$(EmissionActivityRatio(r,t,m,e,y)>0))+
+                 ((-1)*EmissionActivityRatio(r,t,m,e,y))$(EmissionActivityRatio(r,t,m,e,y)<0))
+         );
