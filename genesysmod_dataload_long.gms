@@ -137,6 +137,9 @@ se=0
         
         par=AnnualMinNewCapacity         Rng=Par_AnnualMinNewCapacity!A2                         rdim=3        cdim=0
         par=AnnualMaxNewCapacity         Rng=Par_AnnualMaxNewCapacity!A2                         rdim=3        cdim=0
+        
+        par=DistrictHeatDemand         Rng=Par_DistrictHeatDemand!A2                         rdim=2        cdim=0
+        par=DistrictHeatSplit         Rng=Par_DistrictHeatSplit!A2                         rdim=3        cdim=0
 
 $offecho
 
@@ -158,6 +161,7 @@ $loadm Readin_ModalSplitByFuelAndModalType TagTechnologyToModalType BaseYearProd
 $loadm TagTechnologyToSector AnnualSectoralEmissionLimit TagCanFuelBeTraded AnnualMinNewCapacity AnnualMaxNewCapacity
 $loadm RegionalCCSLimit TagDemandFuelToSector TagElectricTechnology  TagModalTypeToModalGroups
 $loadm TagTechnologyToSubsets TagFuelToSubsets StorageE2PRatio  ModelPeriodEmissionLimit  RegionalModelPeriodEmissionLimit
+$loadm DistrictHeatDemand DistrictHeatSplit
 $offUNDF
 
 
