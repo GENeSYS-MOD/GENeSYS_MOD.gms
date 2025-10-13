@@ -75,51 +75,7 @@ if not exist "%SCRIPT_DIR%" (
 )
 
 REM Define Python script path
-set "PYTHON_SCRIPT=%SCRIPT_DIR%\temp_script.py"
-
-REM Delete old script if it exists
-if exist "%PYTHON_SCRIPT%" del "%PYTHON_SCRIPT%"
-
-REM Prompt user for processing option
-echo.
-echo Please choose a processing option:
-echo [1] Parameters only (default)
-echo [2] Both parameters and timeseries
-echo [3] Only timeseries
-echo.
-set /p "PROCESSING_OPTION=Enter your choice (1/2/3): "
-
-REM Set processing option based on user input
-if "%PROCESSING_OPTION%"=="2" (
-    set "PROCESSING_OPTION=both"
-) else if "%PROCESSING_OPTION%"=="3" (
-    set "PROCESSING_OPTION=timeseries_only"
-) else (
-    set "PROCESSING_OPTION=parameters_only"
-)
-
-REM Writing Python script line by line
-echo Writing temp_script.py...
-echo # -*- coding: utf-8 -*- > "%PYTHON_SCRIPT%"
-echo settings_file = 'Set_filter_file_Europe2060.xlsx' >> "%PYTHON_SCRIPT%"
-echo output_file_format = 'excel' >> "%PYTHON_SCRIPT%"
-echo output_format = 'long' >> "%PYTHON_SCRIPT%"
-echo processing_option = '%PROCESSING_OPTION%' >> "%PYTHON_SCRIPT%"
-echo scenario_option = 'Europe_EnVis_NECPEssentials' >> "%PYTHON_SCRIPT%"
-echo debugging_output = False >> "%PYTHON_SCRIPT%"
-echo data_base_region = 'DE' >> "%PYTHON_SCRIPT%"
-echo from functions.function_import import master_function >> "%PYTHON_SCRIPT%"
-echo scenarios = ["Europe_EnVis_Green","Europe_EnVis_Trinity","Europe_EnVis_REPowerEU++","Europe_EnVis_NECPEssentials"] >> "%PYTHON_SCRIPT%"
-echo for s in scenarios: >> "%PYTHON_SCRIPT%"
-echo     print("Currently performing operation for scenario: ", s) >> "%PYTHON_SCRIPT%"
-echo     master_function(settings_file, output_file_format, output_format, processing_option, s, debugging_output, data_base_region) >> "%PYTHON_SCRIPT%"
-
-REM Check if Python script was created
-if not exist "%PYTHON_SCRIPT%" (
-    echo ERROR: Failed to create temp_script.py!
-    pause
-    exit /b 1
-)
+set "PYTHON_SCRIPT=%SCRIPT_DIR%\script_middleearth.py"
 
 REM Activate Anaconda environment if needed
 if /I "%USE_ANACONDA%"=="yes" (
@@ -152,13 +108,7 @@ if %errorlevel% neq 0 (
 )
 
 REM Define file lists based on processing option
-set "FILES_TO_COPY=RegularParameters_Europe_EnVis_NECPEssentials.xlsx RegularParameters_Europe_EnVis_REPowerEU++.xlsx RegularParameters_Europe_EnVis_Trinity.xlsx RegularParameters_Europe_EnVis_Green.xlsx"
-if "%PROCESSING_OPTION%"=="both" (
-    set "FILES_TO_COPY=%FILES_TO_COPY% Timeseries_Europe_EnVis_NECPEssentials.xlsx Timeseries_Europe_EnVis_REPowerEU++.xlsx Timeseries_Europe_EnVis_Trinity.xlsx Timeseries_Europe_EnVis_Green.xlsx"
-)
-if "%PROCESSING_OPTION%"=="timeseries_only" (
-    set "FILES_TO_COPY=Timeseries_Europe_EnVis_NECPEssentials.xlsx Timeseries_Europe_EnVis_REPowerEU++.xlsx Timeseries_Europe_EnVis_Trinity.xlsx Timeseries_Europe_EnVis_Green.xlsx"
-)
+set "FILES_TO_COPY=RegularParameters_MiddleEarth.xlsx Timeseries_MiddleEarth.xlsx"
 
 REM Copy output files
 echo Copying output files...
@@ -172,18 +122,6 @@ for %%F in (%FILES_TO_COPY%) do (
 
 REM Prompt user to exit or run all_pathways_combined_dataload.bat
 echo.
-echo What would you like to do next?
-echo [1] Exit (default)
-echo [2] Run all_pathways_combined_dataload.bat
-echo.
-set /p "NEXT_ACTION=Enter your choice (1/2): "
-
-if "%NEXT_ACTION%"=="2" (
-    echo Running all_pathways_combined_dataload.bat...
-    cd /d "%BASE_DIR%"
-    call all_pathways_combined_dataload.bat
-)
-
 echo Done.
 pause
 exit /b 0

@@ -1,4 +1,4 @@
-* GENeSYS-MOD v3.1 [Global Energy System Model]  ~ March 2022
+* GENeSYS-MOD v4.0 [Global Energy System Model]  ~ August 2025    
 *
 * #############################################################
 *
@@ -73,6 +73,8 @@ output_capacity(r,se,t,'TotalCapacity','%emissionPathway%_%emissionScenario%',y)
 parameter output_emissions(*,*,*,*,*,*,*);
 output_emissions(r,se,e,t,'Emissions','%emissionPathway%_%emissionScenario%',y)$(TagTechnologyToSector(t,se))  = AnnualTechnologyEmission.l(y,t,e,r);
 output_emissions(r,'ExogenousEmissions',e,'ExogenousEmissions','ExogenousEmissions','%emissionPathway%_%emissionScenario%',y)  = AnnualExogenousEmission(r,e,y);
+output_emissions(r,'Regional Endogenous CO2 Price',e,'Regional Endogenous CO2 Price','Regional Endogenous CO2 Price','%emissionPathway%_%emissionScenario%',y)  = E8_RegionalAnnualEmissionsLimit.m(y,e,r)*(-1)*(1+GeneralDiscountRate(r))**(YearVal(y)-%year%);
+output_emissions('Total','Regional Endogenous CO2 Price',e,'Regional Endogenous CO2 Price','Regional Endogenous CO2 Price','%emissionPathway%_%emissionScenario%',y)  = sum(r,output_emissions(r,'Regional Endogenous CO2 Price',e,'Regional Endogenous CO2 Price','Regional Endogenous CO2 Price','%emissionPathway%_%emissionScenario%',y))/card(r);
 
 parameter output_model(*,*,*,*);
 output_model('Objective Value','%emissionPathway%_%emissionScenario%','%emissionPathway%','%emissionScenario%') = z.l;

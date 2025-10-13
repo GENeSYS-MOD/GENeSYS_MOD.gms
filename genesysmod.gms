@@ -1,4 +1,4 @@
-* GENeSYS-MOD v3.1 [Global Energy System Model]  ~ March 2022
+* GENeSYS-MOD v4.0 [Global Energy System Model]  ~ August 2025
 *
 * #############################################################
 *
@@ -25,7 +25,7 @@ starttime = jnow;
 $if not set data_file                    $setglobal data_file RegularParameters_None
 $if not set hourly_data_file             $setglobal hourly_data_file Timeseries_Europe_EnVis_REPowerEU++
 $if not set switch_read_data_long        $setglobal switch_read_data_long 1
-$if not set elmod_nthhour                $setglobal elmod_nthhour 484
+$if not set elmod_nthhour                $setglobal elmod_nthhour 724
 $if not set elmod_starthour              $setglobal elmod_starthour 8
 $if not set year                         $setglobal year 2018
 $if not set data_base_region             $setglobal data_base_region DE
@@ -37,7 +37,7 @@ $if not set switch_test_data_load        $setglobal switch_test_data_load 0
 $if not set switch_investLimit           $setglobal switch_investLimit 1
 $if not set switch_infeasibility_tech    $setglobal switch_infeasibility_tech 0
 $if not set switch_base_year_bounds      $setglobal switch_base_year_bounds 1
-$if not set switch_base_year_bounds_debugging      $setglobal switch_base_year_bounds_debugging 1
+$if not set switch_base_year_bounds_debugging      $setglobal switch_base_year_bounds_debugging 0
 
 
 $if not set switch_unixPath              $setglobal switch_unixPath 0
@@ -58,6 +58,7 @@ $if not set set_symmetric_transmission   $setglobal set_symmetric_transmission 0
 $if not set switch_hydrogen_blending_share      $setglobal switch_hydrogen_blending_share 1
 $if not set set_storagelevelstart_up     $setglobal set_storagelevelstart_up 0.75
 $if not set set_storagelevelstart_low    $setglobal set_storagelevelstart_low 0.25
+$if not set switch_e2pratio_deviationfactor    $setglobal switch_e2pratio_deviationfactor 2
 
 $if not set switch_peaking_capacity      $setglobal switch_peaking_capacity 1
 $if not set switch_peaking_with_trade    $setglobal switch_peaking_with_trade 1
@@ -66,7 +67,7 @@ $if not set switch_peaking_minrun        $setglobal switch_peaking_minrun 0
 $if not set set_peaking_slack            $setglobal set_peaking_slack 1.0
 *consider vRES only partially (1.0 consider vRES fully, 0.0 ignore vRES in peaking equation)
 $if not set set_peaking_res_cf           $setglobal set_peaking_res_cf 0.5
-$if not set set_peaking_min_thermal      $setglobal set_peaking_min_thermal 0.5
+$if not set set_peaking_min_thermal      $setglobal set_peaking_min_thermal 0.25
 $if not set set_peaking_startyear        $setglobal set_peaking_startyear 2030
 $if not set set_peaking_minrun_share     $setglobal set_peaking_minrun_share 0.15
 
@@ -196,7 +197,7 @@ parallelmode -1
 lpmethod 4
 names yes
 *writemps mpsfile
-*solutiontype 2
+solutiontype 2
 quality yes
 *barobjrng 1e+075
 tilim 1000000

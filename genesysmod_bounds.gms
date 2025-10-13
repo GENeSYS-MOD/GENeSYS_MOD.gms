@@ -1,4 +1,4 @@
-* GENeSYS-MOD v3.1 [Global Energy System Model]  ~ March 2022
+* GENeSYS-MOD v4.0 [Global Energy System Model]  ~ August 2025    
 *
 * #############################################################
 *
@@ -104,13 +104,6 @@ StorageLevelTSStart.fx('S_CAES',y,l,r)$(mod((ord(l)+(start_hour/hour_steps)),(48
 ** This scales the capital cost of storage according to the number of days in the model.
 CapitalCostStorage(r,s,y) = max(round(CapitalCostStorage(r,s,y)/365*8760/%elmod_nthhour%/(24/hour_steps),4),0.01);
 
-equation Add_E2PRatio_up(STORAGE,YEAR_FULL,REGION_FULL);
-Add_E2PRatio_up(s,y,r).. StorageUpperLimit(s,y,r) =l=  sum((t,m)$(TechnologyToStorage(t,s,m,y)),  TotalCapacityAnnual(y,t,r) * StorageE2PRatio(s) * 0.0036 * 3);
-
-equation Add_E2PRatio_low(STORAGE,YEAR_FULL,REGION_FULL);
-Add_E2PRatio_low(s,y,r).. StorageUpperLimit(s,y,r) =g=  sum((t,m)$(TechnologyToStorage(t,s,m,y)),  TotalCapacityAnnual(y,t,r) * StorageE2PRatio(s) * 0.0036 * 0.5);
-
-
 *
 * ####### Capacity factor for heat technologies #############
 *
@@ -133,13 +126,6 @@ NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'Transport')) = 0;
 NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'CHP')) = 0;
 
 NewCapacity.up('%year%',t,r)$(TagTechnologyToSubsets(t,'Biomass')) = +INF;
-NewCapacity.up('%year%','HB_Gas_Boiler',r) = +INF;
-NewCapacity.up('%year%','HLI_Gas_Boiler',r) = +INF;
-NewCapacity.up('%year%','HHI_BF_BOF',r) = +INF;
-NewCapacity.up('%year%','HMHI_Gas',r) = +INF;
-NewCapacity.up('%year%','HHI_Bio_BF_BOF',r) = +INF;
-NewCapacity.up('%year%','HHI_Scrap_EAF',r) = +INF;
-NewCapacity.up('%year%','HHI_DRI_EAF',r) = +INF;
 NewCapacity.up('%year%','D_Gas_Methane',r) = +INF;
 NewCapacity.up('%year%','X_SMR',r) = +INF;
 
@@ -233,5 +219,5 @@ $endif
 
 
 loop(y,
-SpecifiedAnnualDemand(r,f,y)$(not sameas(f,'H2') and YearVal(y)>%year%) = SpecifiedAnnualDemand(r,f,y-1)*(1+SpecifiedDemandDevelopment(r,f,y)*YearlyDifferenceMultiplier(y-1))
+SpecifiedAnnualDemand(r,f,y)$(not sameas(f,'H2') and not sameas(f,'Heat_District') and YearVal(y)>%year%) = SpecifiedAnnualDemand(r,f,y-1)*(1+SpecifiedDemandDevelopment(r,f,y)*YearlyDifferenceMultiplier(y-1))
 );
