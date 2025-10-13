@@ -1,0 +1,35 @@
+name: Compile GAMS Model
+
+on:
+  push:
+    paths:
+      - '**.gms'
+  pull_request:
+    paths:
+      - '**.gms'
+
+jobs:
+  compile-gams:
+    name: GAMS Syntax Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Run GAMS Compilation of Core Model (GENeSYS-MOD)
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/workspace" \
+            -w /workspace \
+            gams/gams \
+            gams genesysmod.gms lo=4 action=C --switch_only_load_gdx=1 --model_region=middleearth --switch_unixPath=1
+
+      - name: Upload listing as artifact
+        if: always()  # uploads even on failure
+        uses: actions/upload-artifact@v4
+        with:
+          name: gams-logs
+          path: | 
+            genesysmod.lst
+            genesysmod.log    
