@@ -1,5 +1,6 @@
 *.par
-*.opt
+cplex.opt
+gurobi.opt
 *.log
 *.lst
 *.lxi
@@ -9,3 +10,15 @@
 *.gdx
 *~*
 225*
+Results/output_additional_statistics.csv
+Results/output_annual_energy_balance.csv
+Results/output_capacity.csv
+Results/output_emissions.csv
+Results/output_endogenous_fuelcosts.csv
+Results/output_energy_demand_statistics.csv
+Results/output_production.csv
+Results/output_storagelevel.csv
+Results/output_technology_costs_detailed.csv
+Results/output_transmission_capacity.csv
+Inputdata/*.xlsx
+BatchFiles/settings.conf

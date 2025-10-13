@@ -1,4 +1,4 @@
-* GENeSYS-MOD v4.0 [Global Energy System Model]  ~ August 2025
+* GENeSYS-MOD v4.0 [Global Energy System Model]  ~ August 2025    
 *
 * #############################################################
 *
@@ -23,12 +23,12 @@ scalar starttime;
 starttime = jnow;
 
 $if not set data_file                    $setglobal data_file RegularParameters_None
-$if not set hourly_data_file             $setglobal hourly_data_file Timeseries_Europe_EnVis_REPowerEU++
+$if not set hourly_data_file             $setglobal hourly_data_file Timeseries_None
 $if not set switch_read_data_long        $setglobal switch_read_data_long 1
-$if not set elmod_nthhour                $setglobal elmod_nthhour 724
+$if not set elmod_nthhour                $setglobal elmod_nthhour 484
 $if not set elmod_starthour              $setglobal elmod_starthour 8
 $if not set year                         $setglobal year 2018
-$if not set data_base_region             $setglobal data_base_region DE
+$if not set data_base_region             $setglobal data_base_region Gondor
 $if not set timeseries                   $setglobal timeseries elmod
 $if not set solver                       $setglobal solver cplex
 
@@ -37,7 +37,7 @@ $if not set switch_test_data_load        $setglobal switch_test_data_load 0
 $if not set switch_investLimit           $setglobal switch_investLimit 1
 $if not set switch_infeasibility_tech    $setglobal switch_infeasibility_tech 0
 $if not set switch_base_year_bounds      $setglobal switch_base_year_bounds 1
-$if not set switch_base_year_bounds_debugging      $setglobal switch_base_year_bounds_debugging 0
+$if not set switch_base_year_bounds_debugging      $setglobal switch_base_year_bounds_debugging 1
 
 
 $if not set switch_unixPath              $setglobal switch_unixPath 0
@@ -67,18 +67,18 @@ $if not set switch_peaking_minrun        $setglobal switch_peaking_minrun 0
 $if not set set_peaking_slack            $setglobal set_peaking_slack 1.0
 *consider vRES only partially (1.0 consider vRES fully, 0.0 ignore vRES in peaking equation)
 $if not set set_peaking_res_cf           $setglobal set_peaking_res_cf 0.5
-$if not set set_peaking_min_thermal      $setglobal set_peaking_min_thermal 0.25
+$if not set set_peaking_min_thermal      $setglobal set_peaking_min_thermal 0.5
 $if not set set_peaking_startyear        $setglobal set_peaking_startyear 2030
 $if not set set_peaking_minrun_share     $setglobal set_peaking_minrun_share 0.15
 
-$if not set model_region                 $setglobal model_region europe
+$if not set model_region                 $setglobal model_region middleearth
 $if not set eployment_data_file          $setglobal employment_data_file Employment_v01_06_11_2019
 $if not set threads                      $setglobal threads 6
 $if not set elmod_dunkelflaute           $setglobal elmod_dunkelflaute 0
 $if not set hydrogen_growthcost_multiplier $setglobal hydrogen_growthcost_multiplier 1
 
 
-$if not set emissionPathway              $setglobal emissionPathway NECPEssentials
+$if not set emissionPathway              $setglobal emissionPathway middleearth
 $if not set emissionScenario             $setglobal emissionScenario globalLimit
 
 $ifthen %switch_unixPath% == 1
@@ -197,7 +197,7 @@ parallelmode -1
 lpmethod 4
 names yes
 *writemps mpsfile
-solutiontype 2
+*solutiontype 2
 quality yes
 *barobjrng 1e+075
 tilim 1000000

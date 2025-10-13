@@ -1,4 +1,4 @@
-* GENeSYS-MOD v3.1 [Global Energy System Model]  ~ March 2022
+* GENeSYS-MOD v4.0 [Global Energy System Model]  ~ August 2025    
 *
 * #############################################################
 *
@@ -22,9 +22,11 @@ $if not set model_region                 $setglobal model_region europe
 $if not set switch_unixPath              $setglobal switch_unixPath 0
 $if not set switch_threads               $setglobal switch_threads 6
 $if not set switch_test_data_load        $setglobal switch_test_data_load 0
+$if not set solver                       $setglobal solver cplex
 
 $if not set emissionPathway              $setglobal emissionPathway TechnoFriendly
 $if not set emissionScenario             $setglobal emissionScenario GlobalLimit
+$if not set dispatch_input               $setglobal dispatch_input dispatch_input
 
 **** Can be set to either "endogenous" (using value from GENeSYS-MOD run), or to a free value
 $if not set emissionsPenalty              $setglobal emissionsPenalty endogenous
@@ -32,13 +34,13 @@ $if not set emissionsPenalty              $setglobal emissionsPenalty endogenous
 
 **** Price/Quantity Curve Calculations
 **** choose between transmission or h2, or set to zero
-$if not set switch_priceQuantityCurves    $setglobal switch_priceQuantityCurves h2
+$if not set switch_priceQuantityCurves    $setglobal switch_priceQuantityCurves 0
 
 **** Offset for domestic demand to generate price/quantity curves
 **** CAUTION: use positive/negative sign before the actual value; e.g. +1 / -2
 **** Demand Offset of 0 disables it entirely
 $if not set priceQuantity_region          $setglobal priceQuantity_region AT
-$if not set priceQuantity_quantity        $setglobal priceQuantity_quantity 2
+$if not set priceQuantity_quantity        $setglobal priceQuantity_quantity 0
 
 **** Settings for transmission price quantity curves
 **** Set type for analysis; imports or exports
@@ -63,7 +65,7 @@ $ifi %switch_priceQuantityCurves%=="h2"  priceQuantityCurvesActive=1;
 $ifi %switch_priceQuantityCurves%=="transmission"  priceQuantityCurvesActive=1;
 
 
-$gdxin dispatch_input
+$gdxin %dispatch_input%
 
 $offorder
 
@@ -123,28 +125,25 @@ CHP_Gas_CCGT_Natural_CCS
 CHP_Gas_CCGT_SynGas
 CHP_Hydrogen_FuelCell
 CHP_Oil
-RES_Hydro_Large
-RES_Geothermal
-RES_Ocean
+P_Hydro_Reservoir
+P_Geothermal
+P_Ocean
 /;
 
 set VARIABLE_GENERATOR variable PP /
-RES_Hydro_Small
-RES_PV_Rooftop_Commercial
-RES_PV_Rooftop_Residential
-RES_PV_Utility_Avg
-RES_PV_Utility_Inf
-RES_PV_Utility_Opt
-RES_PV_Utility_Opt_H2
-Res_PV_Utility_Tracking
-RES_Wind_Offshore_Deep
-RES_Wind_Offshore_Shallow
-RES_Wind_Offshore_Shallow_H2
-RES_Wind_Offshore_Transitional
-RES_Wind_Onshore_Avg
-RES_Wind_Onshore_Inf
-RES_Wind_Onshore_Opt
-RES_Wind_Onshore_Opt_H2
+P_Hydro_RoR
+P_PV_Rooftop_Commercial
+P_PV_Rooftop_Residential
+P_PV_Utility_Avg
+P_PV_Utility_Inf
+P_PV_Utility_Opt
+P_PV_Utility_Tracking
+P_Wind_Offshore_Deep
+P_Wind_Offshore_Shallow
+P_Wind_Offshore_Transitional
+P_Wind_Onshore_Avg
+P_Wind_Onshore_Inf
+P_Wind_Onshore_Opt
 /;
 
 
@@ -217,7 +216,7 @@ ramping_factor('CHP_Gas_CCGT_Natural_CCS') = 0.06;
 ramping_factor('CHP_Gas_CCGT_SynGas') = 0.06;
 ramping_factor('CHP_Hydrogen_FuelCell') = 0.5;
 ramping_factor('CHP_Oil') = 0.2;
-ramping_factor('RES_Hydro_Large') = 0.25;
+ramping_factor('P_Hydro_Reservoir') = 0.25;
 
 variable_costs(r,'P_Biomass') = resourcecosts(r,'biomass','%dispatch_year%')*InputActivityRatio(r,'P_Biomass','biomass','1','%dispatch_year%');
 variable_costs(r,'P_Biomass_CCS') = resourcecosts(r,'biomass','%dispatch_year%')*InputActivityRatio(r,'P_Biomass_CCS','biomass','1','%dispatch_year%');
@@ -266,28 +265,25 @@ co2_activity_ratio('CHP_Gas_CCGT_Natural_CCS') = EmissionContentPerFuel('Gas_Nat
 co2_activity_ratio('CHP_Oil') = EmissionContentPerFuel('oil','CO2')*InputActivityRatio('%dispatch_base_region%','CHP_Oil','oil','1','%dispatch_year%');
 co2_activity_ratio(d) = co2_activity_ratio(d)*sum(t$(sameas(d,t)),EmissionActivityRatio('%dispatch_base_region%',t,'1','CO2','%dispatch_year%'));
 
-capacity_factor(r,'RES_Hydro_Small',h) = CountryData(r, h, 'hydro_ror');
-capacity_factor(r,'RES_PV_Rooftop_Commercial',h) = CountryData(r, h, 'pv_avg');
-capacity_factor(r,'RES_PV_Rooftop_Residential',h) = CountryData(r, h, 'pv_avg');
-capacity_factor(r,'RES_PV_Utility_Avg',h) = CountryData(r, h, 'pv_avg');
-capacity_factor(r,'RES_PV_Utility_Inf',h) = CountryData(r, h, 'pv_inf');
-capacity_factor(r,'RES_PV_Utility_Opt',h) = CountryData(r, h, 'pv_opt');
-*capacity_factor(r,'RES_PV_Utility_Opt_H2',h) = CountryData(r, h, 'pv');
-capacity_factor(r,'Res_PV_Utility_Tracking',h) = CountryData(r, h, 'pv_tracking');
-capacity_factor(r,'RES_Wind_Offshore_Deep',h) = CountryData(r, h, 'wind_offshore_deep');
-capacity_factor(r,'RES_Wind_Offshore_Shallow',h) = CountryData(r, h, 'wind_offshore_shallow');
-*capacity_factor(r,'RES_Wind_Offshore_Shallow_H2',h) = CountryData(r, h, 'wind_offshore_2040');
-capacity_factor(r,'RES_Wind_Offshore_Transitional',h) = CountryData(r, h, 'wind_offshore');
-capacity_factor(r,'RES_Wind_Onshore_Avg',h) = CountryData(r, h, 'wind_onshore_avg');
-capacity_factor(r,'RES_Wind_Onshore_Inf',h) = CountryData(r, h, 'wind_onshore_inf');
-capacity_factor(r,'RES_Wind_Onshore_Opt',h) = CountryData(r, h, 'wind_onshore_opt');
-*capacity_factor(r,'RES_Wind_Onshore_Opt_H2',h) = CountryData(r, h, 'pv');
+capacity_factor(r,'P_Hydro_RoR',h) = CountryData(r, h, 'hydro_ror');
+capacity_factor(r,'P_PV_Rooftop_Commercial',h) = CountryData(r, h, 'pv_avg');
+capacity_factor(r,'P_PV_Rooftop_Residential',h) = CountryData(r, h, 'pv_avg');
+capacity_factor(r,'P_PV_Utility_Avg',h) = CountryData(r, h, 'pv_avg');
+capacity_factor(r,'P_PV_Utility_Inf',h) = CountryData(r, h, 'pv_inf');
+capacity_factor(r,'P_PV_Utility_Opt',h) = CountryData(r, h, 'pv_opt');
+capacity_factor(r,'P_PV_Utility_Tracking',h) = CountryData(r, h, 'pv_tracking');
+capacity_factor(r,'P_Wind_Offshore_Deep',h) = CountryData(r, h, 'wind_offshore_deep');
+capacity_factor(r,'P_Wind_Offshore_Shallow',h) = CountryData(r, h, 'wind_offshore_shallow');
+capacity_factor(r,'P_Wind_Offshore_Transitional',h) = CountryData(r, h, 'wind_offshore');
+capacity_factor(r,'P_Wind_Onshore_Avg',h) = CountryData(r, h, 'wind_onshore_avg');
+capacity_factor(r,'P_Wind_Onshore_Inf',h) = CountryData(r, h, 'wind_onshore_inf');
+capacity_factor(r,'P_Wind_Onshore_Opt',h) = CountryData(r, h, 'wind_onshore_opt');
 
 capacity_factor(r,v,h) = capacity_factor(r,v,h)*sum(t$(sameas(v,t)),AvailabilityFactor(r,t,'%dispatch_year%'));
 
 transmission_capacity(r,rr) = TotalTradeCapacity.l('%dispatch_year%', 'power', r, rr);
 
-dispatchable_capacity_minactivity('RES_Hydro_Large') = 0.15;
+dispatchable_capacity_minactivity('P_Hydro_Reservoir') = 0.15;
 
 storage_startlevel(r,sto) = sum(TIMESLICE$(ord(TIMESLICE)=1),StorageLevelTSStart.l(sto,'%dispatch_year%',TIMESLICE,r))/3.6*1000/10;
 
@@ -326,12 +322,12 @@ $endif
 
 
 
-storage_efficiency('S_PHS') = OutputActivityRatio('%dispatch_base_region%','D_PHS_Residual', 'Power', '2', '%dispatch_year%');
+storage_efficiency('S_PHS') = OutputActivityRatio('%dispatch_base_region%','D_PHS', 'Power', '2', '%dispatch_year%');
 storage_efficiency('S_Battery_Li-Ion') = OutputActivityRatio('%dispatch_base_region%','D_Battery_Li-Ion', 'Power', '2', '%dispatch_year%');
 storage_efficiency('S_Battery_Redox') = OutputActivityRatio('%dispatch_base_region%','D_Battery_Redox', 'Power', '2', '%dispatch_year%');
 storage_efficiency('S_CAES') = OutputActivityRatio('%dispatch_base_region%','D_CAES', 'Power', '2', '%dispatch_year%');
 
-storage_capacity_p(r,'S_PHS') = TotalCapacityAnnual.l('%dispatch_year%', 'D_PHS', r) + TotalCapacityAnnual.l('%dispatch_year%', 'D_PHS_Residual', r);
+storage_capacity_p(r,'S_PHS') = TotalCapacityAnnual.l('%dispatch_year%', 'D_PHS', r);
 storage_capacity_p(r,'S_Battery_Li-Ion') = TotalCapacityAnnual.l('%dispatch_year%', 'D_Battery_Li-Ion', r);
 storage_capacity_p(r,'S_Battery_Redox') = TotalCapacityAnnual.l('%dispatch_year%', 'D_Battery_Redox', r);
 storage_capacity_p(r,'S_CAES') = TotalCapacityAnnual.l('%dispatch_year%', 'D_CAES', r);
@@ -593,6 +589,51 @@ $ifi %switch_priceQuantityCurves% == "transmission" Add_PriceQuantityConstraint
 dispatch.holdfixed = 1;
 dispatch.optfile = 1;
 
+*
+* ####### CPLEX Options #############
+*
+option
+lp = %solver%
+limrow = 0
+limcol = 0
+solprint = off
+sysout = off
+profile=2
+;
+
+$onecho > cplex.opt
+threads %threads%
+parallelmode -1
+lpmethod 4
+names yes
+*writemps mpsfile
+solutiontype 2
+quality yes
+*barobjrng 1e+075
+tilim 1000000
+datacheck 2
+eprhs 1e-09
+$offecho
+
+$onecho > gurobi.opt
+threads %threads%
+method 2
+names yes
+barhomogeneous 1
+timelimit 1000000
+*writeprob mps_GAMS.mps
+crossover 0
+$offecho
+
+
+$onecho > osigurobi.opt
+threads %threads%
+method 2
+names no
+barhomogeneous 1
+timelimit 1000000
+$offecho
+
 solve dispatch using LP min z;
 
 $ifthen %base_file_available% == 2
@@ -634,22 +675,33 @@ solve dispatch2 using LP min z;
 $endif
 
 parameter output;
+parameter stor_oper;
+parameter dual_price;
 
 output('prod',r,v,h) = VariableGeneration.l(r,v,h);
 output('prod',r,d,h) = DispatchableGeneration.l(r,d,h);
 output('dem',r,'dem',h) = demand(r,h);
 output('cur',r,'cur',h) = -Curtailment.l(r,h);
 output('inf',r,'inf',h) = InfeasibleGeneration.l(r,h);
-output('s_in',r,sto,h) = -Storage_In.l(r,sto,h);
-output('s_out',r,sto,h) = Storage_Out.l(r,sto,h);
+stor_oper(r,sto,h,'s_in') = 0;
+stor_oper(r,sto,h,'s_in') = -Storage_In.l(r,sto,h);
+stor_oper(r,sto,h,'s_out') = 0;
+stor_oper(r,sto,h,'s_out') = Storage_Out.l(r,sto,h);
+stor_oper(r,sto,h,'s_soc') = 0;
+stor_oper(r,sto,h,'s_soc') = Storage_SOC.l(r,sto,h);
+stor_oper(r,sto,h,'s_net_out') = Storage_Out.l(r,sto,h)-Storage_In.l(r,sto,h);
 output('flow',r,'flow',h) = sum(rr,PowerFlow.l(rr,r,h));
+dual_price(r,h) = 0;
+dual_price(r,h) = NEB1_EnergyBalance.m(r,h);
 
 $ifthen %priceQuantity_quantity% == 0
 execute_unload "%gdxdir%%dispatchdir%Output_dispatch_%dispatch_year%_%model_region%_%emissionPathway%_%emissionScenario%.gdx"
 output;
+execute_unload "%gdxdir%%dispatchdir%Output_stor_oper_%dispatch_year%_%model_region%_%emissionPathway%_%emissionScenario%.gdx"
+stor_oper;
 execute_unload "%gdxdir%%dispatchdir%Output_marginalcosts_%dispatch_year%_%model_region%_%emissionPathway%_%emissionScenario%.gdx"
-$ifi %switch_priceQuantityCurves%=="transmission" Add_PriceQuantityConstraint
-NEB1_EnergyBalance;
+*$ifi %switch_priceQuantityCurves%=="transmission" Add_PriceQuantityConstraint
+dual_price;
 $elseif set output_filename
 execute_unload "%gdxdir%%dispatchdir%%output_filename%.gdx"
 output
@@ -663,7 +715,9 @@ $endif
 
 $ifthen %switch_unixPath% == 0
 $ifthen %priceQuantity_quantity% == 0
-execute "gdxdump %gdxdir%%dispatchdir%Output_dispatch_%dispatch_year%_%model_region%_%emissionPathway%_%emissionScenario%.gdx output=%resultdir%%dispatchdir%Output_dispatch_%dispatch_year%_%model_region%_%emissionPathway%_%emissionScenario%.csv symb=output format=csv"
+execute "gdxdump %gdxdir%%dispatchdir%Output_dispatch_%dispatch_year%_%model_region%_%emissionPathway%_%emissionScenario%.gdx output=%resultdir%%dispatchdir%Output_dispatch_%dispatch_year%_%model_region%_%emissionPathway%_%emissionScenario%.csv symb=output format=csv";
+execute "gdxdump %gdxdir%%dispatchdir%Output_stor_oper_%dispatch_year%_%model_region%_%emissionPathway%_%emissionScenario%.gdx output=%resultdir%%dispatchdir%Output_stor_oper_%dispatch_year%_%model_region%_%emissionPathway%_%emissionScenario%.csv symb=stor_oper format=csv";
+execute "gdxdump %gdxdir%%dispatchdir%Output_marginalcosts_%dispatch_year%_%model_region%_%emissionPathway%_%emissionScenario%.gdx output=%resultdir%%dispatchdir%Output_marginalcosts_%dispatch_year%_%model_region%_%emissionPathway%_%emissionScenario%.csv symb=dual_price format=csv";
 $else
 execute "gdxdump %gdxdir%%dispatchdir%Output_dispatch_%dispatch_year%_%model_region%_%emissionPathway%_%emissionScenario%_%priceQuantity_region%_%priceQuantity_type%%priceQuantity_quantity%.gdx output=%resultdir%%dispatchdir%Output_dispatch_%dispatch_year%_%model_region%_%emissionPathway%_%emissionScenario%_%priceQuantity_region%_%priceQuantity_type%%priceQuantity_quantity%.csv symb=output format=csv"
 $endif
