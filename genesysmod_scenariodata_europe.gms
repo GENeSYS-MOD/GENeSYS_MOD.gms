@@ -54,6 +54,13 @@ ModalSplitByFuelAndModalType(r,f,mt,y)$(sameas(mt,'MT_FRT_ROAD') and YearVal(y)>
 
 $endif
 
+TagTechnologyToSubsets('X_Convert_HD','PhaseInSet') = 1;
+TagTechnologyToSubsets('X_Convert_HD','Convert') = 1;
+
+SpecifiedAnnualDemand(r,'Heat_District',y) = 0;
+SpecifiedDemandProfile(r,'Heat_District',l,y) = 0;
+
+NewCapacity.up('%year%','X_Convert_HD',r) = +INF;
 
 equation DistrictHeatProductionAnnual(r_full, FUEL, y_full);
 DistrictHeatProductionAnnual(r,f,y)$(sameas(f,'Heat_District')).. sum(t,ProductionByTechnologyAnnual(y,t,'Heat_District',r)) =g= DistrictHeatDemand(r,y)*1.2048;
