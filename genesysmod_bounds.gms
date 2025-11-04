@@ -1,4 +1,4 @@
-* GENeSYS-MOD v4.0 [Global Energy System Model]  ~ August 2025    
+* GENeSYS-MOD v4.0 [Global Energy System Model]  ~ August 2025
 *
 * #############################################################
 *
@@ -175,6 +175,7 @@ OutputActivityRatio(REGION,'Infeasibility_Natural_Gas','Gas_Natural','1',y) = 1;
 
 CapacityToActivityUnit(DummyTechnology) = 31.56;
 TotalAnnualMaxCapacity(r,DummyTechnology,y) = 999999;
+AnnualMaxNewCapacity(r,DummyTechnology,y) = 999999;  
 
 FixedCost(r,DummyTechnology,y) = 999;
 CapitalCost(r,DummyTechnology,y) = 999;
