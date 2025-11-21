@@ -62,7 +62,7 @@ $onecho >%tempdir%temp_%data_file%_par.tmp
 se=0     
 
         par=SpecifiedAnnualDemand    Rng=Par_SpecifiedAnnualDemand!A2                   rdim=3  cdim=0
-        par=SpecifiedDemandProfile   Rng=Par_SpecifiedDemandProfile!A2                  rdim=4  cdim=0
+*       par=SpecifiedDemandProfile   Rng=Par_SpecifiedDemandProfile!A2                  rdim=4  cdim=0
         par=ReserveMarginTagFuel     Rng=Par_ReserveMarginTagFuel!A2                    rdim=3  cdim=0
 
         par=EmissionsPenalty         Rng=Par_EmissionsPenalty!A2                         rdim=3  cdim=0

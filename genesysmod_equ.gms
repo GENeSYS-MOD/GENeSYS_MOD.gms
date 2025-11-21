@@ -26,14 +26,19 @@ free variable z;
 positive variable RegionalBaseYearProduction_neg(y_full,r_full,t,f);
 *RegionalBaseYearProduction_neg.fx(y,r,t,f) = 0;
 
+Parameter Alpha;
+Alpha = 0.1;
+
+Scalar wAcc /34.73078081/;
+
 equation cost;
-cost.. z =e= sum((y,r), TotalDiscountedCost(y,r))
+cost.. z =e= ((1-Alpha)*(sum((y,r), TotalDiscountedCost(y,r))
 + sum((y,r), DiscountedAnnualTotalTradeCosts(y,r))
 + sum((y,f,r,rr), DiscountedNewTradeCapacityCosts(y,f,r,rr))
 + sum((y,f,r), DiscountedAnnualCurtailmentCost(y,f,r))
 + sum((y,r,f,t),RegionalBaseYearProduction_neg(y,r,t,f)*9999)
 + sum((y,r,f,t),BaseYearOvershoot(r,t,f,y)*999)
-- sum((y,r),DiscountedSalvageValueTransmission(y,r))
+- sum((y,r),DiscountedSalvageValueTransmission(y,r))))-(Alpha*wAcc*sum((r,y),TotalAcceptanceperRegion(r,y)))
 ;
 
 * #########################

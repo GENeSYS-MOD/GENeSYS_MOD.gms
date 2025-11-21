@@ -214,10 +214,10 @@ StartingAcceptanceRegional('DE_SN','2025') = 69.8417;
 Parameter StartingAcceptanceChanged(r_full,y_full);
 StartingAcceptanceChanged(r,'2030')= (StartingAcceptanceRegional(r,'2025')+1);
 
-
+*current version as of 21.10.2025
 ****old formulation before April, 24
-equation Acceptance7_AverageRegionalAcceptanceConstraintBaseYear(r_full,y_full); 
-Acceptance7_AverageRegionalAcceptanceConstraintBaseYear(r,y)$(YearVal(y) = 2025).. TotalAcceptanceperregion_all(r,y) =e= (StartingAcceptanceRegional(r,'2025')) * TotalCapacityperRegionAcceptance(r,y);
+*equation Acceptance7_AverageRegionalAcceptanceConstraintBaseYear(r_full,y_full); 
+*Acceptance7_AverageRegionalAcceptanceConstraintBaseYear(r,y)$(YearVal(y) = 2025).. TotalAcceptanceperregion_all(r,y) =e= (StartingAcceptanceRegional(r,'2025')) * TotalCapacityperRegionAcceptance(r,y);
 
 *equation Acceptance7_1_AverageRegionalAcceptanceConstraint(r_full,y_full); 
 *Acceptance7_1_AverageRegionalAcceptanceConstraint(r,y)$(YearVal(y) = 2030).. TotalAcceptanceperregion_all(r,y) =e= (StartingAcceptanceChanged(r,'2030')) * TotalCapacityperRegionAcceptance(r,y);
