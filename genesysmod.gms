@@ -25,6 +25,7 @@ starttime = jnow;
 $if not set data_file                    $setglobal data_file RegularParameters_None
 $if not set hourly_data_file             $setglobal hourly_data_file Timeseries_Europe_EnVis_REPowerEU++
 $if not set switch_read_data_long        $setglobal switch_read_data_long 1
+$if not set elmod_nthhour                $setglobal elmod_nthhour 724
 $if not set elmod_starthour              $setglobal elmod_starthour 8
 $if not set year                         $setglobal year 2018
 $if not set data_base_region             $setglobal data_base_region DE
