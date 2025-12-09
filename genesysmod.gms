@@ -54,7 +54,7 @@ $if not set switch_employment_calculation $setglobal switch_employment_calculati
 $if not set switch_only_write_results    $setglobal switch_only_write_results 0
 
 
-$if not set set_symmetric_transmission   $setglobal set_symmetric_transmission 0
+$if not set set_symmetric_transmission   $setglobal set_symmetric_transmission 0.9
 $if not set switch_hydrogen_blending_share      $setglobal switch_hydrogen_blending_share 1
 $if not set set_storagelevelstart_up     $setglobal set_storagelevelstart_up 0.75
 $if not set set_storagelevelstart_low    $setglobal set_storagelevelstart_low 0.25
@@ -73,12 +73,12 @@ $if not set set_peaking_minrun_share     $setglobal set_peaking_minrun_share 0.1
 
 $if not set model_region                 $setglobal model_region europe
 $if not set eployment_data_file          $setglobal employment_data_file Employment_v01_06_11_2019
-$if not set threads                      $setglobal threads 6
+$if not set threads                      $setglobal threads 4
 $if not set elmod_dunkelflaute           $setglobal elmod_dunkelflaute 0
 $if not set hydrogen_growthcost_multiplier $setglobal hydrogen_growthcost_multiplier 1
 
 
-$if not set emissionPathway              $setglobal emissionPathway NECPEssentials
+$if not set emissionPathway              $setglobal emissionPathway Green
 $if not set emissionScenario             $setglobal emissionScenario globalLimit
 
 $ifthen %switch_unixPath% == 1

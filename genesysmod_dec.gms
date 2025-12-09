@@ -85,6 +85,9 @@ parameter SpecifiedDemandDevelopment(REGION_FULL,FUEL,y_full) Defines the change
 parameter SpecifiedDemandProfile(REGION_FULL,FUEL,TIMESLICE_FULL,y_full) Defines the relative demand per timeslice as a fraction of the total annual demand. Unit: Percent;
 parameter RateOfDemand(y_full,TIMESLICE_FULL,FUEL,REGION_FULL) Rate of demand in given timeslice. Unit: GW;
 parameter Demand(y_full,TIMESLICE_FULL,FUEL,REGION_FULL) Fuel demand for each timeslice. Unit: PJ (except for transport);
+parameter DistrictHeatDemand(REGION_FULL,y_full)  Defines the total demand for district heat across the year. Unit: PJ;
+parameter DistrictHeatSplit(REGION_FULL,SECTOR,y_full)  Defines the share of district heat for the Buildings and Industry sector across the year. This is a lower bound. Unit: Factor;
+
 
 *
 * ######## Technology Performance #############

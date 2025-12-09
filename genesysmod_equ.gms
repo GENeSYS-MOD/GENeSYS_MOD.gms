@@ -399,7 +399,7 @@ equation SC2_LimitAnnualCapacityAdditions(YEAR_FULL,REGION_FULL,TECHNOLOGY);
 SC2_LimitAnnualCapacityAdditions(y,r,t)$(TagTechnologyToSubsets(t,'Renewables') and YearVal(y)>2025).. NewCapacity(y,t,r) =l= YearlyDifferenceMultiplier(y-1)*NewRESCapacity*TotalAnnualMaxCapacity(r,t,y);
 
 equation SC3_SmoothingRenewableIntegration(YEAR_FULL,REGION_FULL,TECHNOLOGY,FUEL);
-SC3_SmoothingRenewableIntegration(y,r,t,f)$(Yearval(y) > %year% and TagTechnologyToSubsets(t,'PhaseInSet') and SpecifiedAnnualDemand(r,f,y-1)).. ProductionByTechnologyAnnual(y,t,f,r) =g= ProductionByTechnologyAnnual(y-1,t,f,r)*PhaseIn(y)*((SpecifiedAnnualDemand(r,f,y)/SpecifiedAnnualDemand(r,f,y-1))$(SpecifiedAnnualDemand(r,f,y))+1$(not SpecifiedAnnualDemand(r,f,y)));
+SC3_SmoothingRenewableIntegration(y,r,t,f)$(Yearval(y) > %year% and TagTechnologyToSubsets(t,'PhaseInSet') and SpecifiedAnnualDemand(r,f,y-1) and not sameas(f,'Heat_District')).. ProductionByTechnologyAnnual(y,t,f,r) =g= ProductionByTechnologyAnnual(y-1,t,f,r)*PhaseIn(y)*((SpecifiedAnnualDemand(r,f,y)/SpecifiedAnnualDemand(r,f,y-1))$(SpecifiedAnnualDemand(r,f,y))+1$(not SpecifiedAnnualDemand(r,f,y)));
 
 equation SC3_SmoothingFossilPhaseOuts(YEAR_FULL,REGION_FULL,TECHNOLOGY,FUEL);
 SC3_SmoothingFossilPhaseOuts(y,r,t,f)$(Yearval(y) > %year% and TagTechnologyToSubsets(t,'PhaseOutSet') and SpecifiedAnnualDemand(r,f,y-1)).. ProductionByTechnologyAnnual(y,t,f,r) =l= ProductionByTechnologyAnnual(y-1,t,f,r)*PhaseOut(y)*((SpecifiedAnnualDemand(r,f,y)/SpecifiedAnnualDemand(r,f,y-1))$(SpecifiedAnnualDemand(r,f,y))+1$(not SpecifiedAnnualDemand(r,f,y)));
@@ -564,13 +564,13 @@ RM3_ReserveMargin_Constraint(y,l,r)$(ReserveMargin(r,y) > 0).. DemandNeedingRese
 *
 
 equation RE1_ComputeTotalAnnualREProduction(YEAR_FULL,REGION_FULL,FUEL);
-RE1_ComputeTotalAnnualREProduction(y,r,f).. sum(t$(TagTechnologyToSubsets(t,'Renewables')),ProductionByTechnologyAnnual(y,t,f,r)) =e= TotalREProductionAnnual(y,r,f);
+RE1_ComputeTotalAnnualREProduction(y,r,f)$(REMinProductionTarget(r,f,y)).. sum(t$(TagTechnologyToSubsets(t,'Renewables')),ProductionByTechnologyAnnual(y,t,f,r)) =e= TotalREProductionAnnual(y,r,f);
 
 equation RE2_AnnualREProductionLowerLimit(YEAR_FULL,REGION_FULL,FUEL);
-RE2_AnnualREProductionLowerLimit(y,r,f).. REMinProductionTarget(r,f,y)*sum((l,t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y))*RETagFuel(f,y) =l= TotalREProductionAnnual(y,r,f);
+RE2_AnnualREProductionLowerLimit(y,r,f)$(REMinProductionTarget(r,f,y)).. REMinProductionTarget(r,f,y)*sum((l,t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y))*RETagFuel(f,y) =l= TotalREProductionAnnual(y,r,f);
 
 equation RE3_RETargetPath(YEAR_FULL,REGION_FULL,FUEL);
-RE3_RETargetPath(y,r,f)$(YearVal(y)>%year% and SpecifiedAnnualDemand(r,f,y) and SpecifiedAnnualDemand(r,f,y-1)).. TotalREProductionAnnual(y,r,f) =g= TotalREProductionAnnual(y-1,r,f)*((SpecifiedAnnualDemand(r,f,y)/SpecifiedAnnualDemand(r,f,y-1)));
+RE3_RETargetPath(y,r,f)$(YearVal(y)>%year% and SpecifiedAnnualDemand(r,f,y) and SpecifiedAnnualDemand(r,f,y-1) and REMinProductionTarget(r,f,y)).. TotalREProductionAnnual(y,r,f) =g= TotalREProductionAnnual(y-1,r,f)*((SpecifiedAnnualDemand(r,f,y)/SpecifiedAnnualDemand(r,f,y-1)));
 
 *
 * ################ Emissions Accounting ##############
