@@ -24,7 +24,7 @@ starttime = jnow;
 
 $if not set data_file                    $setglobal data_file input_Germany_H2_v11_jb_26_03_2024
 $if not set hourly_data_file             $setglobal hourly_data_file input_timeseries_DE_v03_jb_26-03-2024
-$if not set elmod_nthhour                $setglobal elmod_nthhour 964
+$if not set elmod_nthhour                $setglobal elmod_nthhour 724
 $if not set elmod_starthour              $setglobal elmod_starthour 8
 $if not set year                         $setglobal year 2018
 $if not set data_base_region             $setglobal data_base_region DE_BY
@@ -42,6 +42,7 @@ $if not set switch_base_year_bounds      $setglobal switch_base_year_bounds 1
 $if not set switch_acceptance_factor        $setglobal switch_acceptance_factor 1
 $if not set switch_acceptance_constraint    $setglobal switch_acceptance_constraint 1
 $if not set acceptance_factor_data_file     $setglobal acceptance_factor_data_file Justice_Factor_v02_joh_31_05_2024
+$if not set Alpha                           $setglobal Alpha 0.5
 
 $if not set switch_unixPath              $setglobal switch_unixPath 0
 $if not set switch_ccs                   $setglobal switch_ccs 0
@@ -197,6 +198,7 @@ names yes
 barhomogeneous 1
 timelimit 1000000
 writeprob mps_GAMS.mps
+crossover 0
 $offecho
 
 
@@ -249,7 +251,7 @@ genesys.optfile = 1;
 scalar heapSizeBeforSolve;
 heapSizeBeforSolve = heapSize;
 
-solve genesys minimizing z using lp;
+solve genesys minimizing zBi using lp;
 
 $include genesysmod_variable_parameter.gms
 

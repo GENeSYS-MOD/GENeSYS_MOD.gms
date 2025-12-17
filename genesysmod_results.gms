@@ -75,7 +75,9 @@ output_emissions(r,se,e,t,'Emissions','%emissionPathway%_%emissionScenario%',y)$
 output_emissions(r,'ExogenousEmissions',e,'ExogenousEmissions','ExogenousEmissions','%emissionPathway%_%emissionScenario%',y)  = AnnualExogenousEmission(r,e,y);
 
 parameter output_z(*,*);
-output_z('objective_value','%emissionPathway%_%emissionScenario%')=z.l;
+output_z('z_system_costs','%emissionPathway%_%emissionScenario%') = z.l;
+output_z('zBi_scalarized_objective','%emissionPathway%_%emissionScenario%') = zBi.l;
+output_z('zAcc_acceptance_objective','%emissionPathway%_%emissionScenario%') = zAcc.l;
 
 
 parameter output_model(*,*,*,*);

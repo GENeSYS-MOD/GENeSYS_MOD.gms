@@ -22,24 +22,46 @@
 * # Objective Function #
 * ######################
 
-free variable z;
+free variables
+    z      "total discounted system costs"
+    zAcc   "acceptance objective (unscaled)"
+    zBi    "scalarized objective (cost + acceptance)";
+
 positive variable RegionalBaseYearProduction_neg(y_full,r_full,t,f);
 *RegionalBaseYearProduction_neg.fx(y,r,t,f) = 0;
 
 Parameter Alpha;
-Alpha = 0.1;
+Alpha = %Alpha%;
+display "Alpha = ", Alpha;
 
 Scalar wAcc /34.73078081/;
 
-equation cost;
-cost.. z =e= ((1-Alpha)*(sum((y,r), TotalDiscountedCost(y,r))
-+ sum((y,r), DiscountedAnnualTotalTradeCosts(y,r))
-+ sum((y,f,r,rr), DiscountedNewTradeCapacityCosts(y,f,r,rr))
-+ sum((y,f,r), DiscountedAnnualCurtailmentCost(y,f,r))
-+ sum((y,r,f,t),RegionalBaseYearProduction_neg(y,r,t,f)*9999)
-+ sum((y,r,f,t),BaseYearOvershoot(r,t,f,y)*999)
-- sum((y,r),DiscountedSalvageValueTransmission(y,r))))-(Alpha*wAcc*sum((r,y),TotalAcceptanceperRegion(r,y)))
-;
+equations
+    cost   "definition of total system costs"
+    accObj "definition of acceptance objective"
+    biObj  "scalarized objective (cost + acceptance)";
+
+* --- pure total system cost in z ---
+cost..
+    z =e=
+          sum((y,r),        TotalDiscountedCost(y,r))
+        + sum((y,r),        DiscountedAnnualTotalTradeCosts(y,r))
+        + sum((y,f,r,rr),   DiscountedNewTradeCapacityCosts(y,f,r,rr))
+        + sum((y,f,r),      DiscountedAnnualCurtailmentCost(y,f,r))
+        + sum((y,r,f,t),    RegionalBaseYearProduction_neg(y,r,t,f)*9999)
+        + sum((y,r,f,t),    BaseYearOvershoot(r,t,f,y)*999)
+        - sum((y,r),        DiscountedSalvageValueTransmission(y,r));
+
+* --- acceptance objective in zAcc (unscaled) ---
+accObj..
+    zAcc =e=
+        sum((r,y)$(YearVal(y) > 2020), TotalAcceptanceperRegion_all(r,y));
+
+* --- scalarized bi-objective (same as old z expression) ---
+biObj..
+    zBi =e=
+        (1 - Alpha) * z                      
+      + Alpha * wAcc * zAcc;                 
 
 * #########################
 * # Parameter assignments #
