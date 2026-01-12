@@ -67,6 +67,18 @@ $endif
 equation DH_production_upperlimit_DH1(YEAR_FULL);
 DH_production_upperlimit_DH1(y).. sum(r, ProductionByTechnologyAnnual(y,"HLI_Convert_DH","Heat_Low_Industrial",r) + ProductionByTechnologyAnnual(y,"HLR_Convert_DH","Heat_Low_Residential",r)) =l= (100+ ord(y)*12)*3.6;
 
+**Equation
+equation DH_production_rampup_DH2(YEAR_FULL,REGION_FULL);
+DH_production_rampup_DH2(y,r)$(YearVal(y) > %year%).. ProductionByTechnologyAnnual(y,"HLI_Convert_DH","Heat_Low_Industrial",r) =l= ProductionByTechnologyAnnual(y-1,"HLI_Convert_DH","Heat_Low_Industrial",r) * 1.2;
+
+equation DH_production_rampup_DH3(YEAR_FULL);
+DH_production_rampup_DH3(y)$(YearVal(y) = %year%).. sum(r,ProductionByTechnologyAnnual(y,"HLI_Convert_DH","Heat_Low_Industrial",r)) =l= 5.5;
+
+equation DH_production_rampup_DH4(YEAR_FULL,REGION_FULL);
+DH_production_rampup_DH4(y,r)$(YearVal(y) > %year%).. ProductionByTechnologyAnnual(y,"HLI_Convert_DH","Heat_Low_Industrial",r) + ProductionByTechnologyAnnual(y,"HLR_Convert_DH","Heat_Low_Residential",r) =g= ProductionByTechnologyAnnual(y-1,"HLI_Convert_DH","Heat_Low_Industrial",r) + ProductionByTechnologyAnnual(y-1,"HLR_Convert_DH","Heat_Low_Residential",r);
+
+
+
 *equation DH_capacity_upperlimit_DH2(YEAR_FULL);
 **increases by 5GW annually
 *DH_capacity_upperlimit_DH2(y).. sum(r, TotalCapacityAnnual(y,"HLI_Convert_DH",r) + TotalCapacityAnnual(y,"HLR_Convert_DH",r)) =l= (53 + 5* (ord(y)-1));
