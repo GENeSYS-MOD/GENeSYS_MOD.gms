@@ -50,3 +50,54 @@ DistrictHeatProductionAnnual(r,f,y)$(sameas(f,'Heat_District')).. sum(t,Producti
 equation DistrictHeatProductionSplit(r_full, Sector, y_full);
 DistrictHeatProductionSplit(r,se,y)$(DistrictHeatSplit(r,se,y)).. sum((f,t)$(TagDemandFuelToSector(f,se) and TagTechnologyToSubsets(t,'Convert')),ProductionByTechnologyAnnual(y,t,f,r)) =g= DistrictHeatDemand(r,y)*DistrictHeatSplit(r,se,y);
 
+
+equation CapacityUpperLimitPV2030(y_full, r_full);
+CapacityUpperLimitPV2030(y,r).. sum(t$(TagTechnologyToSubsets(t,'Solar') and TagTechnologyToSubsets(t,'PowerSupply')), TotalCapacityAnnual('2030', t, 'FR')) =l= 54.4;
+
+equation CapacityUpperLimitPV2035(y_full, r_full);
+CapacityUpperLimitPV2035(y,r).. sum(t$(TagTechnologyToSubsets(t,'Solar') and TagTechnologyToSubsets(t,'PowerSupply')), TotalCapacityAnnual('2035', t, 'FR')) =l= 68.4;
+
+equation CapacityUpperLimitPV2050(y_full, r_full);
+CapacityUpperLimitPV2050(y,r).. sum(t$(TagTechnologyToSubsets(t,'Solar') and TagTechnologyToSubsets(t,'PowerSupply')), TotalCapacityAnnual('2050', t, 'FR')) =l= 82.4;
+*
+*parameter CO2StorageCost(REGION_FULL,YEAR_FULL);
+*CO2StorageCost(r,y) = 4.81;
+*CO2StorageCost(r,'2025') = 4.58;
+*CO2StorageCost(r,'2030') = 4.35;
+*CO2StorageCost(r,'2035') = 4.15;
+*CO2StorageCost(r,'2040') = 3.94;
+*CO2StorageCost(r,'2045') = 3.94;
+*CO2StorageCost(r,'2050') = 3.94;
+*CO2StorageCost(r,'2055') = 3.94;
+*CO2StorageCost(r,'2060') = 3.94;
+
+TagTechnologyToSubsets('P_Wind_Onshore_Inf','Onshore') = 1;
+TagTechnologyToSubsets('P_Wind_Onshore_Avg','Onshore') = 1;
+TagTechnologyToSubsets('P_Wind_Onshore_Opt','Onshore') = 1;
+
+TagTechnologyToSubsets('P_Wind_Offshore_Shallow','Offshore') = 1;
+TagTechnologyToSubsets('P_Wind_Offshore_Transitional','Offshore') = 1;
+TagTechnologyToSubsets('P_Wind_Offshore_Deep','Offshore') = 1;
+
+
+equation CapacityUpperLimitOnshore2030(y_full, r_full);
+CapacityUpperLimitOnshore2030(y,r).. sum(t$(TagTechnologyToSubsets(t,'Onshore')), TotalCapacityAnnual('2030', t, 'FR')) =l= 34.2;
+equation CapacityUpperLimitOnshore2035(y_full, r_full);
+CapacityUpperLimitOnshore2035(y,r).. sum(t$(TagTechnologyToSubsets(t,'Onshore')), TotalCapacityAnnual('2035', t, 'FR')) =l= 40.7;
+equation CapacityUpperLimitOnshore2050(y_full, r_full);
+CapacityUpperLimitOnshore2050(y,r).. sum(t$(TagTechnologyToSubsets(t,'Onshore')), TotalCapacityAnnual('2050', t, 'FR')) =l= 47.2;
+equation CapacityUpperLimitOnshore2055(y_full, r_full);
+CapacityUpperLimitOnshore2055(y,r).. sum(t$(TagTechnologyToSubsets(t,'Onshore')), TotalCapacityAnnual('2055', t, 'FR')) =l= 49.5;
+equation CapacityUpperLimitOnshore2060(y_full, r_full);
+CapacityUpperLimitOnshore2060(y,r).. sum(t$(TagTechnologyToSubsets(t,'Onshore')), TotalCapacityAnnual('2060', t, 'FR')) =l= 51.9;
+
+equation CapacityUpperLimitOffshore2030(y_full, r_full);
+CapacityUpperLimitOffshore2030(y,r).. sum(t$(TagTechnologyToSubsets(t,'Offshore')), TotalCapacityAnnual('2030', t, 'FR')) =l= 3.6;
+equation CapacityUpperLimitOffshore2035(y_full, r_full);
+CapacityUpperLimitOffshore2035(y,r).. sum(t$(TagTechnologyToSubsets(t,'Offshore')), TotalCapacityAnnual('2035', t, 'FR')) =l= 8.6;
+equation CapacityUpperLimitOffshore2050(y_full, r_full);
+CapacityUpperLimitOffshore2050(y,r).. sum(t$(TagTechnologyToSubsets(t,'Offshore')), TotalCapacityAnnual('2050', t, 'FR')) =l= 13.6;
+equation CapacityUpperLimitOffshore2055(y_full, r_full);
+CapacityUpperLimitOffshore2055(y,r).. sum(t$(TagTechnologyToSubsets(t,'Offshore')), TotalCapacityAnnual('2055', t, 'FR')) =l= 15.5;
+equation CapacityUpperLimitOffshore2060(y_full, r_full);
+CapacityUpperLimitOffshore2060(y,r).. sum(t$(TagTechnologyToSubsets(t,'Offshore')), TotalCapacityAnnual('2060', t, 'FR')) =l= 17.7;
