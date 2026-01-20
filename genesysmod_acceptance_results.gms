@@ -140,7 +140,7 @@ se=0
 
 $offecho
 
-execute 'gdxxrw.exe i=%gdxdir%Acceptance_%model_region%_%emissionPathway%_%emissionScenario%.gdx UpdLinks=3 o=%resultdir%Acceptance_Results.xlsx @%tempdir%temp_%Acceptance_data_file%.tmp';
+execute 'gdxxrw.exe i=%gdxdir%Acceptance_%model_region%_%emissionPathway%_%emissionScenario%.gdx UpdLinks=3 o=%resultdir%Acceptance_Results_%model_region%_%emissionPathway%_%emissionScenario%.xlsx @%tempdir%temp_%Acceptance_data_file%.tmp';
 
 
 $endif

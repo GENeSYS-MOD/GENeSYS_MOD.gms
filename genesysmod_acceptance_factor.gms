@@ -40,7 +40,7 @@ $ifthen %switch_acceptance_factor% == 1
 * ######Acceptance######
 
 positive variable Acceptance;
-AcceptanceFactor(r,t,y)$(AcceptanceFactor(r,t,y)=0)=78;
+*AcceptanceFactor(r,t,y)$(AcceptanceFactor(r,t,y)=0)=78;
 AcceptanceFactor(r,t,y)$(AcceptanceFactor(r,t,y)>0)=100-AcceptanceFactor(r,t,y);
 
 equation Acceptance1_Acceptance(r_full,TECHNOLOGY,y_full);

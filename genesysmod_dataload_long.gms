@@ -310,8 +310,8 @@ se=0
 
 
 
-        par=AcceptanceFactor    Rng=Par_AcceptanceFactor!A5                rdim=2        cdim=1
-        par=AcceptanceFactorPowerLines  Rng=Par_Acceptance_Powerlines!A5                rdim=3        cdim=1
+        par=AcceptanceFactor    Rng=Par_Acceptance_Factor_final!A1                rdim=2        cdim=1
+        par=AcceptanceFactorPowerLines  Rng=Par_Acceptance_Powerlines_final!A1                rdim=3        cdim=1
 
 
 

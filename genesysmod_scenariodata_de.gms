@@ -41,7 +41,7 @@ $ifthen %switch_acceptance_constraint% == 1
 
 
 ******Wind onshore inf******
-AcceptanceFactor(r,'RES_Wind_Onshore_Inf',y)$(YearVal(y)= 2025)=AcceptanceFactor(r,'RES_Wind_Onshore_Inf',y)-1;
+*AcceptanceFactor(r,'RES_Wind_Onshore_Inf',y)$(YearVal(y)= 2025)=AcceptanceFactor(r,'RES_Wind_Onshore_Inf',y)-1;
 
 *AcceptanceFactor('DE_BB','RES_Wind_Onshore_Inf',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Wind_Onshore_Inf',y)+1;
 *AcceptanceFactor('DE_BE','RES_Wind_Onshore_Inf',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BE','RES_Wind_Onshore_Inf',y)+1;
@@ -63,7 +63,7 @@ AcceptanceFactor(r,'RES_Wind_Onshore_Inf',y)$(YearVal(y)= 2025)=AcceptanceFactor
 *AcceptanceFactor('DE_Baltic','RES_Wind_Onshore_Inf',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_Baltic','RES_Wind_Onshore_Inf',y)+1;
 
 ******Wind onshore AVG******
-AcceptanceFactor(r,'RES_Wind_Onshore_Avg',y)$(YearVal(y) = 2025)=AcceptanceFactor(r,'RES_Wind_Onshore_Avg',y)-1;
+*AcceptanceFactor(r,'RES_Wind_Onshore_Avg',y)$(YearVal(y) = 2025)=AcceptanceFactor(r,'RES_Wind_Onshore_Avg',y)-1;
 
 *AcceptanceFactor('DE_BB','RES_Wind_Onshore_Avg',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Wind_Onshore_Avg',y)+1;
 *AcceptanceFactor('DE_BE','RES_Wind_Onshore_Avg',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BE','RES_Wind_Onshore_Avg',y)+1;
@@ -85,7 +85,7 @@ AcceptanceFactor(r,'RES_Wind_Onshore_Avg',y)$(YearVal(y) = 2025)=AcceptanceFacto
 *AcceptanceFactor('DE_Baltic','RES_Wind_Onshore_Avg',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_Baltic','RES_Wind_Onshore_Avg',y)+1;
 
 ******Wind onshore oPT******
-AcceptanceFactor(r,'RES_Wind_Onshore_Opt',y)$(YearVal(y) = 2025)=AcceptanceFactor(r,'RES_Wind_Onshore_Opt',y)-1;
+*AcceptanceFactor(r,'RES_Wind_Onshore_Opt',y)$(YearVal(y) = 2025)=AcceptanceFactor(r,'RES_Wind_Onshore_Opt',y)-1;
 *AcceptanceFactor('DE_BB','RES_Wind_Onshore_Opt',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BB','RES_Wind_Onshore_Opt',y)+1;
 *AcceptanceFactor('DE_BE','RES_Wind_Onshore_Opt',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BE','RES_Wind_Onshore_Opt',y)+1;
 *AcceptanceFactor('DE_BW','RES_Wind_Onshore_Opt',y)$(YearVal(y) > 2025)=AcceptanceFactor('DE_BW','RES_Wind_Onshore_Opt',y)+1;
@@ -109,7 +109,91 @@ AcceptanceFactor(r,'RES_Wind_Onshore_Opt',y)$(YearVal(y) = 2025)=AcceptanceFacto
 
 $endif
 
+*_---------------------------- Constraints for Acceptance _______
 
+*Constrant H2 import
+Equation TotalH2Import;
+TotalH2Import..
+    sum((y,r), ProductionByTechnologyAnnual(y,"Z_Import_H2","H2",r)) =l= 865;
+
+Equation TotalPowerProductionMin;
+
+TotalPowerProductionMin..
+    sum((y,r,t), ProductionByTechnologyAnnual(y,t,"Power",r)) =g= 23000;
+    
+Equation TotalGasImport;
+TotalGasImport..
+    sum((y,r), ProductionByTechnologyAnnual(y,"Z_Import_Gas","Gas_Natural",r)) =l= 7749;
+    
+Equation TotalHardCoalImport;
+TotalHardcoalImport..
+    sum((y,r), ProductionByTechnologyAnnual(y,"Z_Import_Hardcoal","Hardcoal",r)) =l= 5646;
+
+Equation TotalLNGImport;
+TotalLNGImport..
+    sum((y,r), ProductionByTechnologyAnnual(y,"Z_Import_LNG","LNG",r)) =l= 0.024;
+    
+Equation TotalOilImport;
+TotalOilImport..
+    sum((y,r), ProductionByTechnologyAnnual(y,"Z_Import_Oil","Oil",r)) =l= 5872;
+
+*Constraining 2025
+
+
+* ================================
+* Min cumulative new power capacity (global) across all years
+* User input: --MinNewCapPower=<value>
+* ================================
+
+Scalar MinNewCapPower "Min cumulative new power-sector new capacity over model horizon";
+MinNewCapPower = 550;
+display "MinNewCapPower = ", MinNewCapPower;
+*
+Equation MINCAP_Power_AllYears_Global;
+
+MINCAP_Power_AllYears_Global..
+    sum((r,y,t)$(
+          YearVal(y) > 2025
+      and TagTechnologyToSector(t,'Power') = 1
+    ), NewCapacity(y,t,r))
+    =g= MinNewCapPower;
+
+* --- forbid NEW capacity for P_H2_OCGT in DE_Baltic and DE_Nord (all years)
+*TotalAnnualMaxCapacityInvestment(r,'P_H2_OCGT',y) = 0;
+
+
+
+* ================================
+* Min utilization for Power sector technologies
+* User input: --MinRunSharePower=<value>   (e.g., 0.2 for 20%)
+* ================================
+*
+**Scalar MinRunSharePower "Minimum utilization share (e.g., 0.2 = 20%)";
+**MinRunSharePower = 0.05;
+**display "MinRunSharePower = ", MinRunSharePower;
+**
+**Equation MINRUN_Power_Utilization(YEAR_FULL,TECHNOLOGY,REGION_FULL);
+**
+**MINRUN_Power_Utilization(y,t,r)$(
+**       YearVal(y) > 2025
+**   and TagTechnologyToSector(t,'Power') = 1
+**   and TagTechnologyToSubsets(t,'Renewables') = 0    
+**   and TagDispatchableTechnology(t)     = 1
+**   and AvailabilityFactor(r,t,y)        > 0
+**   and TotalAnnualMaxCapacity(r,t,y)    > 0
+**   and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0
+**   and TotalCapacityAnnual.up(y,t,r)    > 0
+**).. 
+**    sum(l, sum(m, RateOfActivity(y,l,t,m,r)) * YearSplit(l,y))
+**    =g=
+**    MinRunSharePower
+**    * sum(l,
+**          TotalCapacityAnnual(y,t,r)
+**        * CapacityFactor(r,t,l,y)
+**        * YearSplit(l,y)
+**        * AvailabilityFactor(r,t,y)
+**        * CapacityToActivityUnit(t)
+**      );
 
 * ################### CHOOSE CALCULATED YEARS ###################
 ***  TO LEAVE OUT A CERTAIN YEAR, REMOVE COMMENT OF RESPECTIVE LINE ***
@@ -143,6 +227,7 @@ AvailabilityFactor('DE_Nord','X_Alkaline_Electrolysis',y) = 1;
 AvailabilityFactor('DE_Nord','X_PEM_Electrolysis',y) = 1;
 AvailabilityFactor('DE_Nord','X_SOEC_Electrolysis',y) = 1;
 AvailabilityFactor('DE_Nord','D_Battery_Li-Ion',y) = 1;
+
 
 ReserveMargin('DE_Nord',y) = 0;
 ReserveMargin('DE_Baltic',y) = 0;
