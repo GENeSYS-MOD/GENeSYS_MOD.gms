@@ -24,7 +24,7 @@ starttime = jnow;
 
 $if not set data_file                    $setglobal data_file input_Germany_H2_v11_jb_26_03_2024
 $if not set hourly_data_file             $setglobal hourly_data_file input_timeseries_DE_v03_jb_26-03-2024
-$if not set elmod_nthhour                $setglobal elmod_nthhour 724
+$if not set elmod_nthhour                $setglobal elmod_nthhour 1444
 $if not set elmod_starthour              $setglobal elmod_starthour 8
 $if not set year                         $setglobal year 2018
 $if not set data_base_region             $setglobal data_base_region DE_BY
@@ -163,6 +163,7 @@ $ifthen %switch_only_write_results% == 0
 
 $offlisting
 $include genesysmod_equ.gms
+$include genesysmod_augmecon.gms
 
 
 *
@@ -251,9 +252,9 @@ genesys.optfile = 1;
 scalar heapSizeBeforSolve;
 heapSizeBeforSolve = heapSize;
 
-solve genesys minimizing zBi using lp;
+$include genesysmod_augmecon_driver.gms
 
-$include genesysmod_variable_parameter.gms
+
 
 scalar heapSizeAfterSolve;
 heapSizeAfterSolve = heapSize;
@@ -267,8 +268,10 @@ $endif
 *
 * ####### Creating Result Files #############
 *
-
-$include genesysmod_results.gms
+$ifthen %switch_augmecon% == 0
+  $include genesysmod_variable_parameter.gms
+  $include genesysmod_results.gms
+$endif
 
 $ifthen %switch_acceptance_factor% == 1
 $include genesysmod_acceptance_results.gms
