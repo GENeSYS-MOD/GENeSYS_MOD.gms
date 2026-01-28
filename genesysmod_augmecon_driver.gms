@@ -1,81 +1,60 @@
-* #############################################################
-* #  GENeSYS-MOD: AUGMECON driver (payoff table + epsilon sweep)
-* #  - epsilon sweep over zAcc
-* #  - ONLY ONE GDX OUTPUT (last epsilon point)
-* #############################################################
+* ============================================================
+* GENeSYS-MOD: AUGMECON driver
+* - payoff anchors
+* - epsilon sweep
+* - per-point GDX + per-point CSV dumps
+* ============================================================
 
-$if not set switch_augmecon              $setglobal switch_augmecon 1
-$if not set augmecon_points              $setglobal augmecon_points 2
+$if not set augmecon_points $setglobal augmecon_points 3
 
-$ifthen %switch_augmecon% == 1
-
-* ------------------------------------------------------------
-* Declarations MUST be outside loop/if
-* ------------------------------------------------------------
-scalar doWrite;
-scalar zStar, zAccAtCost, zAtAccMin, zAccMin;
-scalar zAccLo, zAccHi, rangeAcc;
-
-* These are referenced by genesysmod_results.gms in YOUR file set
-* If your model already declares them, remove these two lines.
-scalar heapSizeAfterSolve;
-scalar elapsed;
-
-* GDX output file handle (MUST be declared with filename here)
-$ifthen set Info
-file gdxout / "%gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%.gdx" /;
-$else
-file gdxout / "%gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%.gdx" /;
-$endif
-
-* Ensure AUGMECON equations are OFF for payoff table
-runAug = 0;
-
-* (A) Cost-optimal anchor
-solve genesys minimizing z using lp;
-zStar      = z.l;
-zAccAtCost = zAcc.l;
-
-* (B) Acceptance-optimal anchor
-solve genesys minimizing zAcc using lp;
-zAtAccMin = z.l;
-zAccMin   = zAcc.l;
-
-zAccLo = min(zAccMin, zAccAtCost);
-zAccHi = max(zAccMin, zAccAtCost);
-
-* (C) Scaling for augmented term (if used inside augmecon.gms)
-rangeAcc = max(1e-6, zAccHi - zAccLo);
-rho      = 1e-6 * max(1, abs(zStar));
-
-display zStar, zAccAtCost, zAtAccMin, zAccMin, zAccLo, zAccHi, rangeAcc, rho;
-
-* (D) Build epsilon grid
 $eval NPOINTS %augmecon_points%
-Set k /k1*k%NPOINTS%/;
+set k /k1*k%NPOINTS%/;
 
-Parameter epsGrid(k), zP(k), zAccP(k), sAccP(k);
-Parameter ms(k), ss(k);
+parameter epsGrid(k);
 
-epsGrid(k) = zAccLo + (ord(k)-1)/(card(k)-1) * (zAccHi - zAccLo);
+scalar zStar, zAccAtCost, zAccMin;
+scalar zAccLo, zAccHi;
 
 file pareto /%resultdir%pareto_augmecon.csv/;
 put pareto;
 put "k,epsAcc,z,zAcc,sAcc,modelstat,solvestat" /;
 
-* Activate AUGMECON equations for ε-sweep
+* -------------------------------------------------
+* Anchors
+* -------------------------------------------------
+runAug = 0;
+
+solve genesys minimizing z using lp;
+zStar      = z.l;
+zAccAtCost = zAcc.l;
+
+solve genesys minimizing zAcc using lp;
+zAccMin = zAcc.l;
+
+* numeric settings for augmented objective
+zAccLo  = min(zAccMin, zAccAtCost);
+zAccHi  = max(zAccMin, zAccAtCost);
+
+rangeAcc = max(1e-6, zAccHi - zAccLo);
+rho      = 1e-6 * max(1, abs(zStar));
+
+* epsilon grid (guard for NPOINTS=1)
+epsGrid(k) = zAccLo;
+epsGrid(k)$(card(k) > 1) = zAccLo + (ord(k)-1)/(card(k)-1) * (zAccHi - zAccLo);
+
+* -------------------------------------------------
+* AUGMECON LOOP
+* -------------------------------------------------
 runAug = 1;
 
 loop(k,
+
     epsAcc = epsGrid(k);
 
     solve genesys minimizing zAug using lp;
 
-    zP(k)    = z.l;
-    zAccP(k) = zAcc.l;
-    sAccP(k) = sAcc.l;
-    ms(k)    = genesys.modelstat;
-    ss(k)    = genesys.solvestat;
+* update runtime scalar (used in genesysmod_results.gms)
+    elapsed = (jnow - starttime)*24*3600;
 
     put ord(k):0:0, ",",
         epsAcc:16:6, ",",
@@ -84,50 +63,94 @@ loop(k,
         sAcc.l:20:6, ",",
         genesys.modelstat:0:0, ",",
         genesys.solvestat:0:0 /;
+
+* --- compute derived params first, then results
+$include genesysmod_variable_parameter.gms
+$include genesysmod_results.gms
+
+* --- write GDX for this point
+    put_utility 'gdxout' /
+        "%gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_k"
+        ord(k):0:0
+        ".gdx";
+    execute_unload;
+
+* --- write CSV dumps per point (only if requested)
+$ifthen %switch_write_output% == csv
+
+* Production (timeslice)
+    put_utility 'shell' /
+        'cmd /c echo Region,Sector,Technology,Mode,Fuel,Timeslice,Type,Unit,Scenario,Year,Value> "%resultdir%Output_Production_%model_region%_%emissionPathway%_%emissionScenario%_k'
+        ord(k):0:0
+        '.csv"';
+    put_utility 'shell' /
+        'gdxdump "%gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_k'
+        ord(k):0:0
+        '.gdx" symb=output_energy_balance format=csv noHeader >> "%resultdir%Output_Production_%model_region%_%emissionPathway%_%emissionScenario%_k'
+        ord(k):0:0
+        '.csv"';
+
+* Annual Production
+    put_utility 'shell' /
+        'cmd /c echo Region,Sector,Technology,Fuel,Type,Unit,Scenario,Year,Value> "%resultdir%Output_AnnualProduction_%model_region%_%emissionPathway%_%emissionScenario%_k'
+        ord(k):0:0
+        '.csv"';
+    put_utility 'shell' /
+        'gdxdump "%gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_k'
+        ord(k):0:0
+        '.gdx" symb=output_energy_balance_annual format=csv noHeader >> "%resultdir%Output_AnnualProduction_%model_region%_%emissionPathway%_%emissionScenario%_k'
+        ord(k):0:0
+        '.csv"';
+
+* Capacity
+    put_utility 'shell' /
+        'cmd /c echo Region,Sector,Technology,Type,Scenario,Year,Value> "%resultdir%Output_Capacity_%model_region%_%emissionPathway%_%emissionScenario%_k'
+        ord(k):0:0
+        '.csv"';
+    put_utility 'shell' /
+        'gdxdump "%gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_k'
+        ord(k):0:0
+        '.gdx" symb=output_capacity format=csv noHeader >> "%resultdir%Output_Capacity_%model_region%_%emissionPathway%_%emissionScenario%_k'
+        ord(k):0:0
+        '.csv"';
+
+* Emissions
+    put_utility 'shell' /
+        'cmd /c echo Region,Sector,Emission,Technology,Type,Scenario,Year,Value> "%resultdir%Output_Emissions_%model_region%_%emissionPathway%_%emissionScenario%_k'
+        ord(k):0:0
+        '.csv"';
+    put_utility 'shell' /
+        'gdxdump "%gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_k'
+        ord(k):0:0
+        '.gdx" symb=output_emissions format=csv noHeader >> "%resultdir%Output_Emissions_%model_region%_%emissionPathway%_%emissionScenario%_k'
+        ord(k):0:0
+        '.csv"';
+
+* Objective / meta (optional but usually helpful)
+    put_utility 'shell' /
+        'cmd /c echo Name,Scenario,Value> "%resultdir%Output_Objectives_%model_region%_%emissionPathway%_%emissionScenario%_k'
+        ord(k):0:0
+        '.csv"';
+    put_utility 'shell' /
+        'gdxdump "%gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_k'
+        ord(k):0:0
+        '.gdx" symb=output_z format=csv noHeader >> "%resultdir%Output_Objectives_%model_region%_%emissionPathway%_%emissionScenario%_k'
+        ord(k):0:0
+        '.csv"';
+
+    put_utility 'shell' /
+        'cmd /c echo Name,Scenario,x,x,Value> "%resultdir%Output_ModelMeta_%model_region%_%emissionPathway%_%emissionScenario%_k'
+        ord(k):0:0
+        '.csv"';
+    put_utility 'shell' /
+        'gdxdump "%gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_k'
+        ord(k):0:0
+        '.gdx" symb=output_model format=csv noHeader >> "%resultdir%Output_ModelMeta_%model_region%_%emissionPathway%_%emissionScenario%_k'
+        ord(k):0:0
+        '.csv"';
+
+$endif
+
 );
 
 putclose pareto;
-
-* ------------------------------------------------------------
-* ONLY ONE GDX: use LAST solve status
-* ------------------------------------------------------------
-doWrite = (genesys.modelstat = 1 and genesys.solvestat = 1);
-
-* If these exist in your core model, set them here; otherwise keep 0
-heapSizeAfterSolve = 0;
-elapsed            = 0;
-
-* IMPORTANT:
-* These includes MUST be outside any loop/if,
-* because genesysmod_variable_parameter.gms declares parameters.
-$include genesysmod_variable_parameter.gms
-$include genesysmod_results.gms
-
-
-$else
-
-* ------------------------------------------------------------
-* Original weighted-sum solve
-* ------------------------------------------------------------
-scalar doWrite;
-scalar heapSizeAfterSolve;
-scalar elapsed;
-
-$ifthen set Info
-file gdxout / "%gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%.gdx" /;
-$else
-file gdxout / "%gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%.gdx" /;
-$endif
-
-runAug = 0;
-solve genesys minimizing zBi using lp;
-
-doWrite = (genesys.modelstat = 1 and genesys.solvestat = 1);
-
-heapSizeAfterSolve = 0;
-elapsed            = 0;
-
-$include genesysmod_variable_parameter.gms
-$include genesysmod_results.gms
-
-$endif

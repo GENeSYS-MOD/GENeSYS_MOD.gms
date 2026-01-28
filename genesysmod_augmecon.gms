@@ -38,3 +38,4 @@ accEps$(runAug = 1)..
 * Minimizing zAug => minimize cost, and secondarily drive sAcc -> 0 (tight epsilon)
 augObj$(runAug = 1)..
     zAug =e= z + rho * (sAcc / rangeAcc);
+
