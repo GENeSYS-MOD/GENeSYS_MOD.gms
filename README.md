@@ -1,4 +1,9 @@
+[![Documentation Status](https://app.readthedocs.org/projects/genesysmod/badge/?version=latest&style=flat-square)](https://genesysmod.readthedocs.io/en/latest/?badge=latest)
+
 # GENeSYS-MOD Readme
+
+You can find a full documentation on our [readthedocs](https://genesysmod.readthedocs.io/en/latest/index.html) page. :)
+
 ## Introduction
 ![alt text](Docs/logo_simplified_2.png "GENeSYS-MOD Logo")
 
