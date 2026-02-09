@@ -129,7 +129,11 @@ $include genesysmod_dec.gms
 
 $offlisting
 $ifthen %switch_read_data_long% == 1
+$ifthen %switch_unixPath% == 1
+$include genesysmod_dataload_long_connect.gms
+$else
 $include genesysmod_dataload_long.gms
+$endif
 $else
 $include genesysmod_dataload.gms
 $endif
