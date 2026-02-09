@@ -83,6 +83,8 @@ $offecho
 
 $ifthen %switch_unixPath% == 1
 $ifi %switch_only_load_gdx%==0 $call gams genesysmod_gams_connect.gms --task="load_timeseries" --in_file="%inputdir%%hourly_data_file%.xlsx"  --out_file="%gdxdir%%hourly_data_file%_elmod.gdx";
+$elseif %switch_dataload_engine% == gamsconnect
+$ifi %switch_only_load_gdx%==0 $call gams genesysmod_gams_connect.gms --task="load_timeseries" --in_file="%inputdir%%hourly_data_file%.xlsx"  --out_file="%gdxdir%%hourly_data_file%_elmod.gdx";
 $else
 $ifi %switch_only_load_gdx%==0 $call "gdxxrw %inputdir%%hourly_data_file%.xlsx @%tempdir%temp_%hourly_data_file%_elmod.tmp o=%gdxdir%%hourly_data_file%_elmod.gdx MaxDupeErrors=99 CheckDate";
 $endif

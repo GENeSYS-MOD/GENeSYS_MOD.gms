@@ -48,6 +48,8 @@ $offecho
 
 $ifthen %switch_unixPath% == 1
 $ifi %switch_only_load_gdx%==0 $call gams genesysmod_gams_connect.gms --task="load_sets" --in_file="%inputdir%%data_file%.xlsx"  --out_file="%gdxdir%%data_file%_sets.gdx";
+$elseif %switch_dataload_engine% == gamsconnect
+$ifi %switch_only_load_gdx%==0 $call gams genesysmod_gams_connect.gms --task="load_sets" --in_file="%inputdir%%data_file%.xlsx"  --out_file="%gdxdir%%data_file%_sets.gdx";
 $else
 $ifi %switch_only_load_gdx%==0 $call "gdxxrw %inputdir%%data_file%.xlsx @%tempdir%temp_%data_file%_sets.tmp o=%gdxdir%%data_file%_sets.gdx MaxDupeErrors=99 CheckDate ";
 $endif
@@ -149,6 +151,8 @@ $offecho
 
 $ifthen %switch_unixPath% == 1
 $ifi %switch_only_load_gdx%==0 $call gams genesysmod_gams_connect.gms --task="load_params" --in_file="%inputdir%%data_file%.xlsx"  --out_file="%gdxdir%%data_file%_par.gdx";  
+$elseif %switch_dataload_engine% == gamsconnect
+$ifi %switch_only_load_gdx%==0 $call gams genesysmod_gams_connect.gms --task="load_params" --in_file="%inputdir%%data_file%.xlsx"  --out_file="%gdxdir%%data_file%_par.gdx";
 $else
 $ifi %switch_only_load_gdx%==0 $call "gdxxrw %inputdir%%data_file%.xlsx @%tempdir%temp_%data_file%_par.tmp o=%gdxdir%%data_file%_par.gdx MaxDupeErrors=99 CheckDate ";
 $endif
