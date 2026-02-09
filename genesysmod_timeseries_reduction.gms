@@ -80,7 +80,15 @@ se=0
          par=CountryData_HeatPump_AirSource    Rng=TS_HP_AIRSOURCE!A1   rdim=1    cdim=1
          par=CountryData_Hydro_RoR                       Rng=TS_HYDRO_ROR!A1            rdim=1    cdim=1
 $offecho
+
+$ifthen %switch_unixPath% == 1
+$ifi %switch_only_load_gdx%==0 $call "gams genesysmod_gams_connect.gms --task=load_timeseries --in_file=%inputdir%%hourly_data_file%.xlsx  --out_file=%gdxdir%%hourly_data_file%_elmod.gdx";
+$elseif %switch_dataload_engine% == gamsconnect
+$ifi %switch_only_load_gdx%==0 $call "gams genesysmod_gams_connect.gms --task=load_timeseries --in_file=%inputdir%%hourly_data_file%.xlsx  --out_file=%gdxdir%%hourly_data_file%_elmod.gdx";
+$else
 $ifi %switch_only_load_gdx%==0 $call "gdxxrw %inputdir%%hourly_data_file%.xlsx @%tempdir%temp_%hourly_data_file%_elmod.tmp o=%gdxdir%%hourly_data_file%_elmod.gdx MaxDupeErrors=99 CheckDate";
+$endif
+
 $GDXin %gdxdir%%hourly_data_file%_elmod.gdx
 $onUNDF
 $load CountryData_PV_inf, CountryData_PV_avg, CountryData_PV_opt, CountryData_PV_tracking, CountryData_Wind_Onshore_inf, CountryData_Wind_Onshore_avg, CountryData_Wind_Onshore_opt, CountryData_HeatPump_GroundSource, CountryData_HeatPump_AirSource, CountryData_Load, CountryData_Wind_Offshore, CountryData_Heat_High, CountryData_Heat_Low, CountryData_Mobility_Psng, CountryData_Hydro_RoR, CountryData_Wind_Offshore_Deep, CountryData_Wind_Offshore_Shallow
