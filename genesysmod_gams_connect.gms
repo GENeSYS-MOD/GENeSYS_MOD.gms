@@ -1,6 +1,6 @@
 $if %task% == "load_sets" $goto task_sets
 $if %task% == "load_params" $goto task_params
-$if %task% == "load_time" $goto task_time
+$if %task% == "load_timeseries" $goto task_time
 
 $label task_sets
 $onEmbeddedCode Connect:
