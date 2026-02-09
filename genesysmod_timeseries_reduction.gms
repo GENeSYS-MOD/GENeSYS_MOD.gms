@@ -82,9 +82,19 @@ se=0
 $offecho
 
 $ifthen %switch_unixPath% == 1
-$ifi %switch_only_load_gdx%==0 $call "gams genesysmod_gams_connect.gms --task=load_timeseries --in_file=%inputdir%%hourly_data_file%.xlsx  --out_file=%gdxdir%%hourly_data_file%_elmod.gdx";
+$if exist gams_connect.inc $call "rm gams_connect.inc"
+$setglobal run_connect 1
+$call "gams genesysmod_gams_connect.gms --task=check_date --in_file=%inputdir%%hourly_data_file%.xlsx --out_file=%gdxdir%%hourly_data_file%_elmod.gdx";
+$if exist gams_connect.inc $include gams_connect.inc
+$ifi %run_connect% == 0 $log "Skipping GAMS Connect: %gdxdir%%hourly_data_file%_elmod.gdx is up to date."
+$ifi %switch_only_load_gdx%==0 $ifi %run_connect% == 1 $call "gams genesysmod_gams_connect.gms --task=load_timeseries --in_file=%inputdir%%hourly_data_file%.xlsx  --out_file=%gdxdir%%hourly_data_file%_elmod.gdx";
 $elseif %switch_dataload_engine% == gamsconnect
-$ifi %switch_only_load_gdx%==0 $call "gams genesysmod_gams_connect.gms --task=load_timeseries --in_file=%inputdir%%hourly_data_file%.xlsx  --out_file=%gdxdir%%hourly_data_file%_elmod.gdx";
+$if exist gams_connect.inc $call "rm gams_connect.inc"
+$setglobal run_connect 1
+$call "gams genesysmod_gams_connect.gms --task=check_date --in_file=%inputdir%%hourly_data_file%.xlsx --out_file=%gdxdir%%hourly_data_file%_elmod.gdx";
+$if exist gams_connect.inc $include gams_connect.inc
+$ifi %run_connect% == 0 $log "Skipping GAMS Connect: %gdxdir%%hourly_data_file%_elmod.gdx is up to date."
+$ifi %switch_only_load_gdx%==0 $ifi %run_connect% == 1 $call "gams genesysmod_gams_connect.gms --task=load_timeseries --in_file=%inputdir%%hourly_data_file%.xlsx  --out_file=%gdxdir%%hourly_data_file%_elmod.gdx";
 $else
 $ifi %switch_only_load_gdx%==0 $call "gdxxrw %inputdir%%hourly_data_file%.xlsx @%tempdir%temp_%hourly_data_file%_elmod.tmp o=%gdxdir%%hourly_data_file%_elmod.gdx MaxDupeErrors=99 CheckDate";
 $endif

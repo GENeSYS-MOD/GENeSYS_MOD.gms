@@ -47,11 +47,21 @@ se=0
 $offecho
 
 $ifthen %switch_unixPath% == 1
-$ifi %switch_only_load_gdx%==0 $call "gams genesysmod_gams_connect.gms --task=load_sets --in_file=%inputdir%%data_file%.xlsx --out_file=%gdxdir%%data_file%_sets.gdx";
+$if exist gams_connect.inc $call "rm gams_connect.inc"
+$setglobal run_connect 1
+$call "gams genesysmod_gams_connect.gms --task=check_date --in_file=%inputdir%%data_file%.xlsx --out_file=%gdxdir%%data_file%_sets.gdx";
+$if exist gams_connect.inc $include gams_connect.inc
+$ifi %run_connect% == 0 $log "Skipping GAMS Connect: %gdxdir%%data_file%_sets.gdx is up to date."
+$ifi %switch_only_load_gdx% == 0 $ifi %run_connect% == 1 $call "gams genesysmod_gams_connect.gms --task=load_sets --in_file=%inputdir%%data_file%.xlsx --out_file=%gdxdir%%data_file%_sets.gdx";
 $elseif %switch_dataload_engine% == gamsconnect
-$ifi %switch_only_load_gdx%==0 $call "gams genesysmod_gams_connect.gms --task=load_sets --in_file=%inputdir%%data_file%.xlsx --out_file=%gdxdir%%data_file%_sets.gdx";
+$if exist gams_connect.inc $call "rm gams_connect.inc"
+$setglobal run_connect 1
+$call "gams genesysmod_gams_connect.gms --task=check_date --in_file=%inputdir%%data_file%.xlsx --out_file=%gdxdir%%data_file%_sets.gdx";
+$if exist gams_connect.inc $include gams_connect.inc
+$ifi %run_connect% == 0 $log "Skipping GAMS Connect: %gdxdir%%data_file%_sets.gdx is up to date."
+$ifi %switch_only_load_gdx% == 0 $ifi %run_connect% == 1 $call "gams genesysmod_gams_connect.gms --task=load_sets --in_file=%inputdir%%data_file%.xlsx --out_file=%gdxdir%%data_file%_sets.gdx";
 $else
-$ifi %switch_only_load_gdx%==0 $call "gdxxrw %inputdir%%data_file%.xlsx @%tempdir%temp_%data_file%_sets.tmp o=%gdxdir%%data_file%_sets.gdx MaxDupeErrors=99 CheckDate ";
+$ifi %switch_only_load_gdx% == 0 $call "gdxxrw %inputdir%%data_file%.xlsx @%tempdir%temp_%data_file%_sets.tmp o=%gdxdir%%data_file%_sets.gdx MaxDupeErrors=99 CheckDate ";
 $endif
 $GDXin %gdxdir%%data_file%_sets.gdx
 $onUNDF
@@ -150,9 +160,17 @@ se=0
 $offecho
 
 $ifthen %switch_unixPath% == 1
-$ifi %switch_only_load_gdx%==0 $call "gams genesysmod_gams_connect.gms --task=load_params --in_file=%inputdir%%data_file%.xlsx --out_file=%gdxdir%%data_file%_par.gdx";  
+$setglobal run_connect 1
+$call "gams genesysmod_gams_connect.gms --task=check_date --in_file=%inputdir%%data_file%.xlsx --out_file=%gdxdir%%data_file%_par.gdx";
+$if exist gams_connect.inc $include gams_connect.inc
+$ifi %run_connect% == 0 $log "Skipping GAMS Connect: %gdxdir%%data_file%_par.gdx is up to date."
+$ifi %switch_only_load_gdx%==0 $ifi %run_connect% == 1 $call "gams genesysmod_gams_connect.gms --task=load_params --in_file=%inputdir%%data_file%.xlsx --out_file=%gdxdir%%data_file%_par.gdx";  
 $elseif %switch_dataload_engine% == gamsconnect
-$ifi %switch_only_load_gdx%==0 $call "gams genesysmod_gams_connect.gms --task=load_params --in_file=%inputdir%%data_file%.xlsx --out_file=%gdxdir%%data_file%_par.gdx";
+$setglobal run_connect 1
+$call "gams genesysmod_gams_connect.gms --task=check_date --in_file=%inputdir%%data_file%.xlsx --out_file=%gdxdir%%data_file%_par.gdx";
+$if exist gams_connect.inc $include gams_connect.inc
+$ifi %run_connect% == 0 $log "Skipping GAMS Connect: %gdxdir%%data_file%_par.gdx is up to date."
+$ifi %switch_only_load_gdx%==0 $ifi %run_connect% == 1 $call "gams genesysmod_gams_connect.gms --task=load_params --in_file=%inputdir%%data_file%.xlsx --out_file=%gdxdir%%data_file%_par.gdx";
 $else
 $ifi %switch_only_load_gdx%==0 $call "gdxxrw %inputdir%%data_file%.xlsx @%tempdir%temp_%data_file%_par.tmp o=%gdxdir%%data_file%_par.gdx MaxDupeErrors=99 CheckDate ";
 $endif
