@@ -1,4 +1,4 @@
-threads 6
+threads %threads%
 method 2
 names no
 barhomogeneous 1
