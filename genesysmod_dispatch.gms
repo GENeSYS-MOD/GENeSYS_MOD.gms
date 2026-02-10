@@ -1,4 +1,4 @@
-* GENeSYS-MOD v4.0 [Global Energy System Model]  ~ August 2025    
+* GENeSYS-MOD v4.0 [Global Energy System Model]  ~ August 2025
 *
 * #############################################################
 *
@@ -678,21 +678,21 @@ parameter output;
 parameter stor_oper;
 parameter dual_price;
 
-output('prod',r,v,h) = VariableGeneration.l(r,v,h);
-output('prod',r,d,h) = DispatchableGeneration.l(r,d,h);
-output('dem',r,'dem',h) = demand(r,h);
-output('cur',r,'cur',h) = -Curtailment.l(r,h);
-output('inf',r,'inf',h) = InfeasibleGeneration.l(r,h);
+output('prod',r,v,h) = round(VariableGeneration.l(r,v,h),4);
+output('prod',r,d,h) = round(DispatchableGeneration.l(r,d,h),4);
+output('dem',r,'dem',h) = round(demand(r,h),4);
+output('cur',r,'cur',h) = round(-Curtailment.l(r,h),4);
+output('inf',r,'inf',h) = round(InfeasibleGeneration.l(r,h),4);
 stor_oper(r,sto,h,'s_in') = 0;
-stor_oper(r,sto,h,'s_in') = -Storage_In.l(r,sto,h);
+stor_oper(r,sto,h,'s_in') = round(-Storage_In.l(r,sto,h),4);
 stor_oper(r,sto,h,'s_out') = 0;
-stor_oper(r,sto,h,'s_out') = Storage_Out.l(r,sto,h);
+stor_oper(r,sto,h,'s_out') = round(Storage_Out.l(r,sto,h),4);
 stor_oper(r,sto,h,'s_soc') = 0;
-stor_oper(r,sto,h,'s_soc') = Storage_SOC.l(r,sto,h);
-stor_oper(r,sto,h,'s_net_out') = Storage_Out.l(r,sto,h)-Storage_In.l(r,sto,h);
-output('flow',r,'flow',h) = sum(rr,PowerFlow.l(rr,r,h));
+stor_oper(r,sto,h,'s_soc') = round(Storage_SOC.l(r,sto,h),4);
+stor_oper(r,sto,h,'s_net_out') = round(Storage_Out.l(r,sto,h)-Storage_In.l(r,sto,h),4);
+output('flow',r,'flow',h) = round(sum(rr,PowerFlow.l(rr,r,h)),4);
 dual_price(r,h) = 0;
-dual_price(r,h) = NEB1_EnergyBalance.m(r,h);
+dual_price(r,h) = round(NEB1_EnergyBalance.m(r,h),4);
 
 $ifthen %priceQuantity_quantity% == 0
 execute_unload "%gdxdir%%dispatchdir%Output_dispatch_%dispatch_year%_%model_region%_%emissionPathway%_%emissionScenario%.gdx"
