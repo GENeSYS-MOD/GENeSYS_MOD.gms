@@ -1,6 +1,27 @@
+$if %task% == "check_date" $goto check_date
 $if %task% == "load_sets" $goto task_sets
 $if %task% == "load_params" $goto task_params
 $if %task% == "load_timeseries" $goto task_time
+
+$label check_date
+$onEmbeddedCode Python:
+import os
+
+input_file = r"%in_file%"
+output_file = r"%out_file%"
+run_connect = 1
+
+if os.path.exists(output_file) and os.path.exists(input_file):
+    t_in = os.path.getmtime(input_file)
+    t_out = os.path.getmtime(output_file)
+
+    if t_in < t_out:
+        run_connect = 0
+        
+with open("gams_connect.inc", "w") as f:
+    f.write(f"$setglobal run_connect {int(run_connect)}")
+$offEmbeddedCode
+$exit
 
 $label task_sets
 $onEmbeddedCode Connect:
