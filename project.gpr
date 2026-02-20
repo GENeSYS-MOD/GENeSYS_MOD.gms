@@ -1154,6 +1154,13 @@ PlaneRownr=-1
 11=-gdx=test -gdxCompress=1 --emissionPathway=2degree
 12=-gdx=test -gdxCompress=1 --emissionPathway=BAU
 
+[OPENWINDOW_1]
+MAXIM=0
+TOP=2
+LEFT=0
+HEIGHT=740
+WIDTH=1222
+
 [MRUFILES]
 1=C:\Users\testbed\Documents\GENeSYS_MOD.gms\Results\Man0EUvRE_Trinity_122c_new.gdx
 2=C:\Users\testbed\Documents\GENeSYS_MOD.gms\Results\test_necpessentials_2018.gdx
@@ -1162,32 +1169,3 @@ PlaneRownr=-1
 5=C:\Users\testbed\Documents\GENeSYS_MOD.gms\test_necpessentials244_dataload.gdx
 6=C:\Users\testbed\Documents\GENeSYS_MOD.gms\test_necpessentials244.gdx
 7=C:\Users\testbed\Documents\GENeSYS_MOD.gms\test_NECPEssentials_244.gdx
-
-[OPENWINDOW_1]
-FILE0=C:\Users\testbed\Documents\GENeSYS_MOD.gms\GdxFiles\Output_europe_NECPEssentials_globalLimit_reduced.gdx
-FILE1=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod.gms
-FILE2=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod.lst
-FILE3=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod_bounds.gms
-FILE4=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod_dataload.gms
-FILE5=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod_dataload_long.gms
-FILE6=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod_dec.gms
-FILE7=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod_equ.gms
-FILE8=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod_levelizedcosts.gms
-FILE9=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod_results.gms
-FILE10=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod_scenariodata_europe.gms
-FILE11=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod_settings.gms
-FILE12=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod_timeseries_reduction.gms
-FILE13=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod_variable_parameter.gms
-FILE14=C:\Users\testbed\Documents\GENeSYS_MOD.gms\Results\Man0EUvRE_Green_122c_new.gdx
-FILE15=C:\Users\testbed\Documents\GENeSYS_MOD.gms\test.gdx
-FILE16=C:\Users\testbed\Documents\GENeSYS_MOD.gms\test_repowereu_buildings.gdx
-FILE17=C:\Users\testbed\Documents\GENeSYS_MOD.gms\test_repowereu_industry.gdx
-FILE18=C:\Users\testbed\Documents\genesys-mod\Results\Large\Einstein_PlannedProjectsI3600_lin_nc_49_g40c-r.gdx
-FILE19=C:\Users\testbed\Documents\genesysmod-guadeloupe\genesysmod_results.gms
-FILE20=C:\Users\testbed\Documents\genesysmod-guadeloupe\genesysmod_variable_parameter.gms
-FILE21=C:\Users\testbed\Documents\GENeSYS_MOD.gms\genesysmod.lst
-MAXIM=0
-TOP=2
-LEFT=0
-HEIGHT=740
-WIDTH=1222

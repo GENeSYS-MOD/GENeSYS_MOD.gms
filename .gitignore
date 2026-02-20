@@ -8,6 +8,8 @@ gurobi.opt
 225a/
 *.tmp
 *.gdx
+*.gsp
+*.gpr
 *~*
 225*
 Results/output_additional_statistics.csv
