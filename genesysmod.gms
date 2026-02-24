@@ -17,48 +17,64 @@
 * #############################################################
 
 
+*********************************************
+****** begin of switches / settings *********
 
-$onuelxref
-scalar starttime;
-starttime = jnow;
+* ### settings for data file, region, startyear, scenario
 
 $if not set data_file                    $setglobal data_file RegularParameters_None
 $if not set hourly_data_file             $setglobal hourly_data_file Timeseries_Europe_EnVis_REPowerEU++
-$if not set switch_read_data_long        $setglobal switch_read_data_long 1
-$if not set elmod_nthhour                $setglobal elmod_nthhour 724
-$if not set elmod_starthour              $setglobal elmod_starthour 8
-$if not set year                         $setglobal year 2018
+$if not set model_region                 $setglobal model_region europe
 $if not set data_base_region             $setglobal data_base_region DE
-$if not set timeseries                   $setglobal timeseries elmod
+$if not set year                         $setglobal year 2018
+$if not set emissionPathway              $setglobal emissionPathway REPowerEU
+$if not set emissionScenario             $setglobal emissionScenario globalLimit
+
+* ### settings for time series reduction
+
+$if not set timeseries_method            $setglobal timeseries_method elmod
+$if not set elmod_nthhour                $setglobal elmod_nthhour 484
+$if not set elmod_starthour              $setglobal elmod_starthour 8
+$if not set elmod_dunkelflaute           $setglobal elmod_dunkelflaute 0
+
+* ### technical settings for data input/output
+
+$if not set switch_test_data_load        $setglobal switch_test_data_load 1
+$if not set switch_only_load_gdx         $setglobal switch_only_load_gdx 0
+
+$if not set switch_unixPath              $setglobal switch_unixPath 0
+$if not set switch_read_data_long        $setglobal switch_read_data_long 1
+$if not set switch_write_output          $setglobal switch_write_output gdx
+$if not set switch_only_write_results    $setglobal switch_only_write_results 0
+
+* ### other technical settings
+
 $if not set solver                       $setglobal solver cplex
+$if not set threads                      $setglobal threads 4
 
+* ### settings for debugging options
 
-$if not set switch_test_data_load        $setglobal switch_test_data_load 0
 $if not set switch_investLimit           $setglobal switch_investLimit 1
 $if not set switch_infeasibility_tech    $setglobal switch_infeasibility_tech 0
 $if not set switch_base_year_bounds      $setglobal switch_base_year_bounds 1
 $if not set switch_base_year_bounds_debugging      $setglobal switch_base_year_bounds_debugging 0
 
+* ### model settings, enabling / changing certain features
 
-$if not set switch_unixPath              $setglobal switch_unixPath 0
 $if not set switch_ccs                   $setglobal switch_ccs 1
 $if not set switch_ramping               $setglobal switch_ramping 0
 $if not set switch_short_term_storage    $setglobal switch_short_term_storage 1
 $if not set switch_all_regions           $setglobal switch_all_regions 1
-$if not set switch_only_load_gdx         $setglobal switch_only_load_gdx 0
-$if not set switch_write_output          $setglobal switch_write_output gdx
 $if not set switch_aggregate_region      $setglobal switch_aggregate_region 0
 $if not set switch_intertemporal         $setglobal switch_intertemporal 0
 $if not set switch_weighted_emissions    $setglobal switch_weighted_emissions 1
-$if not set switch_employment_calculation $setglobal switch_employment_calculation 0
-$if not set switch_only_write_results    $setglobal switch_only_write_results 0
-
-
 $if not set set_symmetric_transmission   $setglobal set_symmetric_transmission 0.9
 $if not set switch_hydrogen_blending_share      $setglobal switch_hydrogen_blending_share 1
 $if not set set_storagelevelstart_up     $setglobal set_storagelevelstart_up 0.75
 $if not set set_storagelevelstart_low    $setglobal set_storagelevelstart_low 0.25
 $if not set switch_e2pratio_deviationfactor    $setglobal switch_e2pratio_deviationfactor 2
+
+* ### settings for peaking constraints
 
 $if not set switch_peaking_capacity      $setglobal switch_peaking_capacity 1
 $if not set switch_peaking_with_trade    $setglobal switch_peaking_with_trade 1
@@ -71,15 +87,14 @@ $if not set set_peaking_min_thermal      $setglobal set_peaking_min_thermal 0.25
 $if not set set_peaking_startyear        $setglobal set_peaking_startyear 2030
 $if not set set_peaking_minrun_share     $setglobal set_peaking_minrun_share 0.15
 
-$if not set model_region                 $setglobal model_region europe
+* ### settings for employment module (optional)
+
+$if not set switch_employment_calculation $setglobal switch_employment_calculation 0
 $if not set eployment_data_file          $setglobal employment_data_file Employment_v01_06_11_2019
-$if not set threads                      $setglobal threads 4
-$if not set elmod_dunkelflaute           $setglobal elmod_dunkelflaute 0
-$if not set hydrogen_growthcost_multiplier $setglobal hydrogen_growthcost_multiplier 1
 
 
-$if not set emissionPathway              $setglobal emissionPathway Green
-$if not set emissionScenario             $setglobal emissionScenario globalLimit
+****** end of switches / settings *********
+*******************************************
 
 $ifthen %switch_unixPath% == 1
 $if not set inputdir                     $setglobal inputdir Inputdata/
@@ -115,6 +130,12 @@ $setglobal hourly_data_file Timeseries_MiddleEarth
 $setglobal data_base_region Gondor
 $setglobal emissionPathway middleearth
 $endif
+
+
+
+$onuelxref
+scalar starttime;
+starttime = jnow;
 
 *
 * ####### Declarations #############
@@ -186,7 +207,7 @@ limrow = 0
 limcol = 0
 solprint = off
 sysout = off
-profile=2
+profile = 2
 ;
 
 
@@ -236,7 +257,7 @@ display "data_base_region = %data_base_region%";
 display "data_file = %data_file%";
 display "hourly_data_file = %hourly_data_file%";
 display "solver = %solver%";
-display "timeseries = %timeseries%";
+display "timeseries_method = %timeseries_method%";
 
 display "emissionScenario = %emissionScenario%";
 display "emissionPathway = %emissionPathway%";
@@ -248,7 +269,7 @@ display "info = %info%";
 *
 model genesys /all
 $ifthen %switch_dispatch% == 1
-$elseIf %timeseries% == elmod
+$elseIf %timeseries_method% == elmod
 -def_scaling_objective
 -def_scaling_flh
 -def_scaling_min
