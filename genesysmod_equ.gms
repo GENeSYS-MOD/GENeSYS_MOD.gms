@@ -22,10 +22,22 @@
 * # Objective Function #
 * ######################
 
-free variable z;
+free variables
+    z      "total discounted system costs"
+    zAcc   "acceptance objective (unscaled)"
+    zBi    "scalarized objective (cost + acceptance)";
 
+Parameter Alpha;
+Alpha = %Alpha%;
+display "Alpha = ", Alpha;
 
-equation cost;
+Scalar wAcc /34.73078081/;
+
+equations
+    cost   "definition of total system costs"
+    accObj "definition of acceptance objective"
+    biObj  "scalarized objective (cost + acceptance)";
+
 cost.. z =e= sum((y,r), TotalDiscountedCost(y,r))
 + sum((y,r), DiscountedAnnualTotalTradeCosts(y,r))
 + sum((y,f,r,rr), DiscountedNewTradeCapacityCosts(y,f,r,rr))
@@ -34,6 +46,16 @@ cost.. z =e= sum((y,r), TotalDiscountedCost(y,r))
 + sum((y,r,f,t),BaseYearBounds_TooLow(r,t,f,y)*9999)
 - sum((y,r),DiscountedSalvageValueTransmission(y,r))
 ;
+
+accObj..
+    zAcc =e=
+        sum((r,y)$(YearVal(y) > 2020), TotalAcceptanceperRegion_all(r,y));
+
+biObj..
+    zBi =e=
+        (1 - Alpha) * z
+      + Alpha * wAcc * zAcc;
+
 
 * #########################
 * # Parameter assignments #
@@ -591,11 +613,11 @@ E13_AnnualSectorEmissionsLimit(y,e,se).. sum(r, AnnualSectoralEmissions(y,e,se,r
 
 equation S1a_StorageLevelYearStartUpperLimit(REGION_FULL, STORAGE, YEAR_FULL);
 S1a_StorageLevelYearStartUpperLimit(r,s,y).. StorageLevelYearStart(s,y,r) =l=  StorageLevelYearStartUpperLimit *
-((sum(yy$(OperationalLifeStorage(s) >= Yearval(y)-Yearval(yy) and Yearval(y)-Yearval(yy) >= 0), NewStorageCapacity(s,yy,r))) + ResidualStorageCapacity(r,s,y));
+((sum(yy$(OperationalLifeStorage(s) >= Yearval(y)-yearval(yy) and yearval(y)-yearval(yy) >= 0), NewStorageCapacity(s,yy,r))) + ResidualStorageCapacity(r,s,y));
 
 equation S1b_StorageLevelYearStartLowerLimit(REGION_FULL, STORAGE, YEAR_FULL);
 S1b_StorageLevelYearStartLowerLimit(r,s,y).. StorageLevelYearStart(s,y,r) =g=  StorageLevelYearStartLowerLimit *
-((sum(yy$(OperationalLifeStorage(s) >= Yearval(y)-Yearval(yy) and Yearval(y)-Yearval(yy) >= 0), NewStorageCapacity(s,yy,r))) + ResidualStorageCapacity(r,s,y));
+((sum(yy$(OperationalLifeStorage(s) >= Yearval(y)-yearval(yy) and yearval(y)-yearval(yy) >= 0), NewStorageCapacity(s,yy,r))) + ResidualStorageCapacity(r,s,y));
 
 equation S2_StorageLevelTSStart(REGION_FULL, STORAGE, YEAR_FULL, TIMESLICE_FULL);
 S2_StorageLevelTSStart(r,s,y, l)..  (StorageLevelTSStart(s,y,l-1,r) +
@@ -672,7 +694,7 @@ R3_RampingDownLimit(y,l,f,t,r)$(ord(l) > 1 and TagDispatchableTechnology(t)=1 an
 equation RC1_AnnualProductionChangeCosts(YEAR_FULL,FUEL,TECHNOLOGY,REGION_FULL);
 RC1_AnnualProductionChangeCosts(y,f,t,r)$(TagDispatchableTechnology(t)=1 and ProductionChangeCost(t,y) <> 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. sum(l,(ProductionUpChangeInTimeslice(y,l,f,t,r) + ProductionDownChangeInTimeslice(y,l,f,t,r))*ProductionChangeCost(t,y)) =e= AnnualProductionChangeCost(y,t,r);
 equation RC2_DiscountedAnnualProductionChangeCost(YEAR_FULL,FUEL,TECHNOLOGY,REGION_FULL);
-RC2_DiscountedAnnualProductionChangeCost(y,f,t,r)$(TagDispatchableTechnology(t)=1 and ProductionChangeCost(t,y) <> 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. AnnualProductionChangeCost(y,t,r)/((1+TechnologyDiscountRate(r,t))**(YearVal(y)-smin(yy, YearVal(yy))+0.5)) =e= DiscountedAnnualProductionChangeCost(y,t,r);
+RC2_DiscountedAnnualProductionChangeCost(y,f,t,r)$(TagDispatchableTechnology(t)=1 and ProductionChangeCost(t,y) <> 0 and AvailabilityFactor(r,t,y) > 0 and TotalAnnualMaxCapacity(r,t,y) > 0 and TotalTechnologyModelPeriodActivityUpperLimit(r,t) > 0).. AnnualProductionChangeCost(y,t,r)/((1+TechnologyDiscountRate(r,t))**(YearVal(y)-smin(yy, YearVal(yy))+0.5)) =e= DiscountedAnnualProductionChangeCost(y,f,t,r);
 
 DiscountedAnnualProductionChangeCost.fx(y,t,r)$(TagDispatchableTechnology(t) = 0 or sum((m,f), OutputActivityRatio(r,t,f,m,y)) = 0 or ProductionChangeCost(t,y) = 0 or AvailabilityFactor(r,t,y) = 0 or TotalAnnualMaxCapacity(r,t,y) = 0 or TotalTechnologyModelPeriodActivityUpperLimit(r,t) = 0) = 0;
 AnnualProductionChangeCost.fx(y,t,r)$(TagDispatchableTechnology(t) = 0 or sum((m,f), OutputActivityRatio(r,t,f,m,y)) = 0 or ProductionChangeCost(t,y) = 0 or AvailabilityFactor(r,t,y) = 0 or TotalAnnualMaxCapacity(r,t,y) = 0 or TotalTechnologyModelPeriodActivityUpperLimit(r,t) = 0) = 0;
@@ -788,5 +810,3 @@ ADD_Employment(r,y)..  sum((t,f),((NewCapacity(y,t,r)*EFactorManufacturing(t,y)*
                  +(CoalSupply(r,y)*CoalDigging('%model_region%','Coal_Export','%emissionPathway%_%emissionScenario%',y)*EFactorCoalJobs('Coal_Export',y)))
                  =e= TotalJobs(r,y);
 $endif
-
-

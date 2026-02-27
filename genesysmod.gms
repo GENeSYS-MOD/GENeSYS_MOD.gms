@@ -24,7 +24,7 @@ starttime = jnow;
 
 $if not set data_file                    $setglobal data_file input_Germany_H2_v24_nim_16_09_2024
 $if not set hourly_data_file             $setglobal hourly_data_file input_timeseries_DE_v04_nim_18-06-2024
-$if not set elmod_nthhour                $setglobal elmod_nthhour 964
+$if not set elmod_nthhour                $setglobal elmod_nthhour 1444
 $if not set elmod_starthour              $setglobal elmod_starthour 8
 $if not set year                         $setglobal year 2018
 $if not set data_base_region             $setglobal data_base_region DE_BY
@@ -34,7 +34,7 @@ $if not set solver                       $setglobal solver gurobi
 $if not set switch_FEP                   $setglobal switch_FEP 1
 $if not set switch_Policy_Scenario       $setglobal switch_Policy_Scenario 1
 $if not set switch_central_h2         $setglobal switch_central_h2 0
-$if not set switch_h2_waste_heat         $setglobal switch_h2_waste_heat 1
+$if not set switch_h2_waste_heat         $setglobal switch_h2_waste_heat 0
 
 
 *$if not set switch_import_costs_h2         $setglobal switch_import_costs_h2 1.82
@@ -49,6 +49,13 @@ $if not set switch_infeasibility_tech    $setglobal switch_infeasibility_tech 0
 $if not set switch_base_year_bounds      $setglobal switch_base_year_bounds 1
 $if not set switch_base_year_bounds_debugging      $setglobal switch_base_year_bounds_debugging 0
 
+* ============================================================
+* Acceptance (same defaults as AUGMECON version)
+* ============================================================
+$if not set switch_acceptance_factor        $setglobal switch_acceptance_factor 1
+$if not set switch_acceptance_constraint    $setglobal switch_acceptance_constraint 1
+$if not set acceptance_factor_data_file     $setglobal acceptance_factor_data_file Justice_Factor_v06_ad_01_02_2026
+$if not set Alpha                           $setglobal Alpha 0.5
 
 $if not set switch_unixPath              $setglobal switch_unixPath 0
 $if not set switch_ccs                   $setglobal switch_ccs 0
@@ -90,6 +97,12 @@ $if not set hydrogen_growthcost_multiplier $setglobal hydrogen_growthcost_multip
 
 $if not set emissionPathway              $setglobal emissionPathway GradualDevelopment
 $if not set emissionScenario             $setglobal emissionScenario globalLimit
+
+* ============================================================
+* AUGMECON controls (same as AUGMECON version)
+* ============================================================
+$if not set switch_augmecon              $setglobal switch_augmecon 1
+$if not set augmecon_points              $setglobal augmecon_points 2
 
 $ifthen %switch_unixPath% == 1
 $if not set inputdir                     $setglobal inputdir Inputdata/
@@ -150,6 +163,10 @@ $else
 display "HINT: No scenario data for region %model_region% found!";
 $endif
 
+$offlisting
+$ifthen %switch_acceptance_factor% == 1
+$include genesysmod_acceptance_factor.gms
+$endif
 
 $offlisting
 $include genesysmod_errorcheck.gms
@@ -160,12 +177,11 @@ $ifthen %switch_only_write_results% == 0
 * ####### Including Equations #############
 *
 
-
-
 $offlisting
 $include genesysmod_equ.gms
 
-
+* AUGMECON equations/vars/scalars must be compiled BEFORE driver
+$include genesysmod_augmecon.gms
 
 *
 * ####### CPLEX Options #############
@@ -178,8 +194,6 @@ solprint = off
 sysout = off
 profile=2
 ;
-
-
 
 $onecho > cplex.opt
 threads %threads%
@@ -200,7 +214,7 @@ names yes
 barhomogeneous 1
 timelimit 1000000
 *writeprob mps_GAMS.mps
-*crossover 0
+crossover 0
 $offecho
 
 
@@ -253,25 +267,38 @@ genesys.optfile = 1;
 scalar heapSizeBeforSolve;
 heapSizeBeforSolve = heapSize;
 
-solve genesys minimizing z using lp; 
+* IMPORTANT: elapsed is used inside genesysmod_results.gms (and is included in the AUGMECON loop).
+* Therefore, elapsed MUST be declared before the driver include.
+scalar elapsed;
+elapsed = 0;
+
+$ifthen %switch_augmecon% == 1
+$include genesysmod_augmecon_driver.gms
+$else
+solve genesys minimizing z using lp;
+
+elapsed = (jnow - starttime)*24*3600;
 
 $include genesysmod_variable_parameter.gms
+$include genesysmod_results.gms
+$endif
 
 scalar heapSizeAfterSolve;
 heapSizeAfterSolve = heapSize;
 
-scalar elapsed;
 elapsed = (jnow - starttime)*24*3600;
 
 display elapsed,  heapSizeBeforSolve, heapSizeAfterSolve;
 $endif
 
+$ifthen %switch_acceptance_factor% == 1
+$include genesysmod_acceptance_results.gms
+$endif
+
 *
 * ####### Creating Result Files #############
 *
-$include genesysmod_results.gms
-
-
+* (for AUGMECON: results are created inside the driver loop; for single solve: results already included above)
 
 $ifthen not %switch_write_output% == xls
 $ifthen not %switch_write_output% == csv

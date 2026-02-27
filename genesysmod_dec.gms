@@ -33,7 +33,7 @@ set REGION_FULL All regions included in the input data;
 alias (REGION_FULL,r_full,rr_full);
 
 set REGION(REGION_FULL) Subset of regions for which computation should actually happen;
-alias (REGION,r,rr)
+alias (REGION,r,rr);
 
 set TECHNOLOGY List of all available technologies
                /Infeasibility_Power,
@@ -49,12 +49,16 @@ set DummyTechnology(TECHNOLOGY) Subset of technologies that serve as infeasibili
 
 set FUEL List of all fuels or energy carriers;
 alias (f,ff,FUEL);
+
 set SECTOR List of all sectors /Infeasibility/;
-alias (se,sse,SECTOR);
+alias (se,sse,SECTOR,Sector);
+
 set EMISSION All considered emissions;
 alias (e,EMISSION);
+
 set MODE_OF_OPERATION List of possible operation modes for the different technologies;
 alias (m,MODE_OF_OPERATION);
+
 set STORAGE List of different storage technologies in GENeSYS-MOD;
 alias (s,STORAGE);
 
@@ -101,7 +105,6 @@ parameter TagElectricTechnology(TECHNOLOGY);
 parameter TagTechnologyToSubsets(TECHNOLOGY,*);
 parameter TagFuelToSubsets(FUEL,*);
 parameter TimeDepEfficiency(REGION_FULL,TECHNOLOGY,TIMESLICE_FULL,YEAR_FULL) Time dependent efficiency for technologies like heatpumps;
-
 
 parameter RegionalCCSLimit(REGION_FULL);
 
@@ -191,7 +194,6 @@ parameter TradeLossFactor(FUEL, YEAR_FULL);
 parameter TradeRouteInstalledCapacity(y_full,f,r_full,rr_full);
 parameter TradeLossBetweenRegions(REGION_FULL,FUEL,y_full,RR_FULL);
 
-
 parameter CommissionedTradeCapacity(r_full,rr_full,f,y_full);
 parameter TradeCapacity(r_full, f, y_full, rr_full);
 parameter TradeCapacityGrowthCosts(r_full, f, rr_full);
@@ -247,11 +249,10 @@ positive variable AnnualVariableOperatingCost(y_full,TECHNOLOGY,REGION_FULL);
 positive variable AnnualFixedOperatingCost(y_full,TECHNOLOGY,REGION_FULL);
 positive variable VariableOperatingCost(y_full,TIMESLICE_FULL,TECHNOLOGY,REGION_FULL);
 positive variable TotalDiscountedCost(y_full,REGION_FULL);
-positive variable TotalDiscountedCostByTechnology(y_full,TECHNOLOGY,REGION_FULL)
+positive variable TotalDiscountedCostByTechnology(y_full,TECHNOLOGY,REGION_FULL);
 
 positive variable AnnualCurtailmentCost(YEAR_FULL,FUEL,REGION_FULL);
 positive variable DiscountedAnnualCurtailmentCost(YEAR_FULL,FUEL,REGION_FULL);
-
 
 *
 * ############### Storage Variables #############
@@ -295,7 +296,6 @@ variable AnnualEmissions(y_full,EMISSION,REGION_FULL);
 variable ModelPeriodEmissions(EMISSION,REGION_FULL);
 variable WeightedAnnualEmissions(year_full,emission,region_full);
 
-
 *
 * ######### SectoralEmissions #############
 *
@@ -321,7 +321,6 @@ free variable DiscountedAnnualTotalTradeCosts(y_full,REGION_FULL);
 *
 * ######### Transportation #############
 *
-
 positive variable DemandSplitByModalType(MODALTYPE,TIMESLICE_FULL,REGION_FULL,FUEL,YEAR_FULL);
 positive variable ProductionSplitByModalType(MODALTYPE,TIMESLICE_FULL,REGION_FULL,FUEL,YEAR_FULL);
 
@@ -352,8 +351,9 @@ Parameter PhaseOut(YEAR_FULL) this is an upper limit for fossil generation based
          2040    2.5
          2045    2
          2050    2
-/
-PhaseIn(YEAR_FULL) this is a lower bound for renewable integration based on the previous year - to remove choose 0
+/;
+
+Parameter PhaseIn(YEAR_FULL) this is a lower bound for renewable integration based on the previous year - to remove choose 0
 /        2020    1
          2025    0.8
          2030    0.7
@@ -362,7 +362,6 @@ PhaseIn(YEAR_FULL) this is a lower bound for renewable integration based on the 
          2045    0.6
          2050    0.5
 /;
-
 
 Parameter BaseYearSlack(f);
 positive Variable BaseYearBounds_TooLow(r_full,t,f,y_full);
@@ -381,22 +380,17 @@ StorageLevelYearStartUpperLimit = %set_storagelevelstart_up%;
 StorageLevelYearStartLowerLimit = %set_storagelevelstart_low%;
 if((StorageLevelYearStartUpperLimit-StorageLevelYearStartLowerLimit)<0,abort "StorageLevelYearStart upper limit cannot be smaller than lower limit. Please check your values for set_storagelevelstart_up and set_storagelevelstart_low.");
 
-
-
 $ifthen %switch_employment_calculation% == 1
 set JobType  this set contains job types /ConstructionJobs,ManufacturingJobs,OMJobs,SupplyJobs/
 alias (JobType,jt);
-
-
-* ########## Declaration of Employment Parameters ##########
 
 parameter EFactorConstruction;
 parameter EFactorOM;
 parameter EFactorManufacturing;
 parameter EFactorFuelSupply;
 parameter EFactorCoalJobs;
-parameter CoalSupply
-parameter CoalDigging
+parameter CoalSupply;
+parameter CoalDigging;
 parameter RegionalAdjustmentFactor;
 parameter LocalManufacturingFactor;
 parameter DeclineRate;
@@ -409,4 +403,68 @@ parameter CoalJobs;
 parameter output_energyjobs;
 $endif
 
+$ifthen %switch_acceptance_factor% == 1
+Parameter AcceptanceFactor;
+Parameter AcceptanceFactorPowerLines;
+$endif
 
+* ==========================================================
+* Added: Declarations moved from genesysmod_variable_parameter.gms
+* ==========================================================
+parameter RateOfTotalActivity(y_full,TIMESLICE_FULL,TECHNOLOGY,REGION_FULL);
+parameter RateOfProductionByTechnologyByMode(y_full,TIMESLICE_FULL,TECHNOLOGY,MODE_OF_OPERATION,FUEL,REGION_FULL);
+parameter RateOfUseByTechnologyByMode(y_full,TIMESLICE_FULL,TECHNOLOGY,MODE_OF_OPERATION,FUEL,REGION_FULL);
+parameter RateOfProductionByTechnology(y_full,TIMESLICE_FULL,TECHNOLOGY,FUEL,REGION_FULL);
+parameter RateOfUseByTechnology(y_full,TIMESLICE_FULL,TECHNOLOGY,FUEL,REGION_FULL);
+parameter ProductionByTechnology(y_full,TIMESLICE_FULL,TECHNOLOGY,FUEL,REGION_FULL);
+parameter UseByTechnology(y_full,TIMESLICE_FULL,TECHNOLOGY,FUEL,REGION_FULL);
+parameter RateOfProduction(y_full,TIMESLICE_FULL,FUEL,REGION_FULL);
+parameter RateOfUse(y_full,TIMESLICE_FULL,FUEL,REGION_FULL);
+parameter Production(y_full,TIMESLICE_FULL,FUEL,REGION_FULL);
+parameter Use(y_full,TIMESLICE_FULL,FUEL,REGION_FULL);
+parameter ProductionAnnual(y_full,FUEL,REGION_FULL);
+parameter UseAnnual(y_full,FUEL,REGION_FULL);
+
+parameter ModelPeriodCostByRegion(REGION_FULL);
+
+parameter CurtailedEnergy(y_full,TIMESLICE_FULL,FUEL,REGION_FULL);
+
+* ==========================================================
+* Added: Declarations moved from genesysmod_results.gms
+* ==========================================================
+parameter check_tradecapacityusage(y_full,TIMESLICE_FULL,FUEL,REGION_FULL,rr_full);
+parameter check_tradecapacityfull(y_full,TIMESLICE_FULL,REGION_FULL,rr_full);
+
+parameter output_pipeline_data(*,*,*,*,*,*);
+
+parameter z_fuelcosts(FUEL,y_full,REGION_FULL);
+
+parameter output_energy_balance(*,*,*,*,*,*,*,*,*,*);
+parameter output_energy_balance_annual(*,*,*,*,*,*,*,*);
+
+parameter CapacityUsedByTechnologyEachTS(y_full,TIMESLICE_FULL,TECHNOLOGY,REGION_FULL);
+parameter PeakCapacityByTechnology(REGION_FULL,TECHNOLOGY,y_full);
+
+parameter output_capacity(*,*,*,*,*,*);
+parameter output_emissions(*,*,*,*,*,*,*);
+
+parameter output_z(*,*);
+
+parameter output_model(*,*,*,*);
+
+parameter z_maxgenerationperyear(REGION_FULL,TECHNOLOGY,y_full);
+
+parameter output_technology_costs_detailed(*,*,*,*,*,*);
+parameter output_exogenous_costs(*,*,*,*);
+parameter output_trade_capacity(*,*,*,*);
+
+parameter SelfSufficiencyRate(REGION_FULL,y_full);
+parameter ElectrificationRate(SECTOR,y_full);
+parameter output_other(*,*,*,*,*);
+
+set FinalEnergy(FUEL);
+set EU27(REGION_FULL);
+
+parameter TagFinalDemandSector(SECTOR);
+
+parameter output_energydemandstatistics(*,*,*,*,*);

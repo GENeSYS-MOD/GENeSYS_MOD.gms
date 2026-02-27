@@ -56,7 +56,6 @@ $offUNDF
 
 * Step 2: Read parameters from regional file  -> now includes World values
 
-
 $onecho >%tempdir%temp_%data_file%_par.tmp
 se=0
 
@@ -196,7 +195,6 @@ OutputActivityRatio(REGION_FULL,'X_PEM_Electrolysis',FUEL,'2',YEAR_FULL) = 0;
 
 $endif
 
-
 *_______________________________________________________________*
 
 
@@ -204,12 +202,10 @@ $endif
 * ####### Including Subsets #############
 *
 
-
 $onecho >%tempdir%temp_Tag_Subsets_par.tmp
 se=0
         par=TagTechnologyToSubsets                Rng=Par_TagTechnologyToSubsets!A2                rdim=2        cdim=0
         par=TagFuelToSubsets                      Rng=Par_TagFuelToSubsets!A2                      rdim=2        cdim=0
-
 
 $offecho
 
@@ -275,12 +271,10 @@ RegionalModelPeriodEmissionLimit(EMISSION,REGION_FULL) = 999999;
 parameter YearVal(y_full);
 YearVal(y) = y.val ;
 
-
 *
 * ####### Load from hourly Data #############
 *
 $include genesysmod_timeseries_reduction.gms
-
 
 *
 * ####### Ramping #############
@@ -293,7 +287,6 @@ se=0
         par=RampingDownFactor              Rng=Par_RampingDownFactor!A2                    rdim=2        cdim=0
         par=ProductionChangeCost           Rng=Par_ProductionChangeCost!A2                 rdim=2        cdim=0
 
-
 $offecho
 
 $ifi %switch_only_load_gdx%==0 $call "gdxxrw %inputdir%%data_file%.xlsx @%tempdir%temp_%data_file%_par2.tmp o=%gdxdir%%data_file%_par2.gdx MaxDupeErrors=99 CheckDate ";
@@ -303,12 +296,37 @@ $loadm RampingUpFactor RampingDownFactor
 $loadm ProductionChangeCost
 $offUNDF
 
-
 MinActiveProductionPerTimeslice(y,l,'Power','RES_Hydro_Large',R_FULL) = 0.1;
 MinActiveProductionPerTimeslice(y,l,'Power','RES_Hydro_Small',R_FULL) = 0.05;
 $endif
 
+*
+* ########## Dataload of Acceptance Excel (added to match AUGMECON version) ##########
+*
+$ifthen %switch_acceptance_factor% == 1
 
+$onecho >%tempdir%temp_%acceptance_factor_data_file%.tmp
+se=0
+        dset=Technology              Rng=Sets!A2                         rdim=1        cdim=0
+        set=Year                     Rng=Sets!B2                         rdim=1        cdim=0
+        set=Region                   Rng=Sets!C2                         rdim=1        cdim=0
+        set=Fuel                     Rng=Sets!D2                         rdim=1        cdim=0
+        set=Region2                  Rng=Sets!E2                         rdim=1        cdim=0
+
+        par=AcceptanceFactor         Rng=Par_Acceptance_Factor_final!A1           rdim=2        cdim=1
+        par=AcceptanceFactorPowerLines  Rng=Par_Acceptance_Powerlines_final!A1    rdim=3        cdim=1
+
+$offecho
+
+$ifi %switch_only_load_gdx%==0 $call "gdxxrw %inputdir%%acceptance_factor_data_file%.xlsx @%tempdir%temp_%acceptance_factor_data_file%.tmp o=%gdxdir%%acceptance_factor_data_file%.gdx MaxDupeErrors=999 ";
+$GDXin %gdxdir%%acceptance_factor_data_file%.gdx
+$onUNDF
+*$loadm Region
+$loadm AcceptanceFactor
+$loadm AcceptanceFactorPowerLines
+$offUNDF
+
+$endif
 
 *
 * ########## Dataload of Employment Excel ##########
@@ -321,20 +339,16 @@ se=0
         set=Year                     Rng=Sets!B2                         rdim=1        cdim=0
         set=Region                   Rng=Sets!C2                         rdim=1        cdim=0
 
-
         par=EFactorConstruction      Rng=Par_EFactorConstruction!A5                rdim=1        cdim=1
         par=EFactorOM                Rng=Par_EFactorOM!A5                          rdim=1        cdim=1
         par=EFactorManufacturing     Rng=Par_EFactorManufacturing!A5               rdim=1        cdim=1
         par=EFactorFuelSupply        Rng=Par_EFactorFuelSupply!A5                  rdim=1        cdim=1
         par=EFactorCoalJobs          Rng=Par_EFactorCoalJobs!A5                    rdim=1        cdim=1
-        par=CoalSupply               Rng=Par_CoalSupply!A5                    rdim=1        cdim=1
-        par=CoalDigging              Rng=Par_CoalDigging!A5                    rdim=3        cdim=1
-        par=RegionalAdjustmentFactor          Rng=Par_RegionalAdjustmentFactor!A5                    rdim=1        cdim=1
-        par=LocalManufacturingFactor          Rng=Par_LocalManufacturingFactor!A5                    rdim=1        cdim=1
-        par=DeclineRate                       Rng=Par_DeclineRate!A5                                 rdim=1        cdim=1
-
-
-
+        par=CoalSupply               Rng=Par_CoalSupply!A5                         rdim=1        cdim=1
+        par=CoalDigging              Rng=Par_CoalDigging!A5                        rdim=3        cdim=1
+        par=RegionalAdjustmentFactor Rng=Par_RegionalAdjustmentFactor!A5           rdim=1        cdim=1
+        par=LocalManufacturingFactor Rng=Par_LocalManufacturingFactor!A5           rdim=1        cdim=1
+        par=DeclineRate              Rng=Par_DeclineRate!A5                        rdim=1        cdim=1
 
 $offecho
 
@@ -352,12 +366,6 @@ $loadm CoalDigging
 $loadm RegionalAdjustmentFactor
 $loadm LocalManufacturingFactor
 $loadm DeclineRate
-
 $offUNDF
+
 $endif
-
-
-
-
-
-
