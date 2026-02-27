@@ -1,4 +1,6 @@
 [![Documentation Status](https://app.readthedocs.org/projects/genesysmod/badge/?version=latest&style=flat-square)](https://genesysmod.readthedocs.io/en/latest/?badge=latest)
+[![CI](https://github.com/GENeSYS-MOD/GENeSYSMOD.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/GENeSYS-MOD/GENeSYS_MOD.gms/actions/workflows/gams-compile.yml)
+[![status](https://joss.theoj.org/papers/c5ecbff41e8464c9d43f5c76879befb4/status.svg)](https://joss.theoj.org/papers/c5ecbff41e8464c9d43f5c76879befb4)
 
 # GENeSYS-MOD Readme
 
