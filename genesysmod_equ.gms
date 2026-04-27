@@ -150,8 +150,8 @@ TagTimeIndependentFuel(y,'Nuclear',r) = 1;
 TagTimeIndependentFuel(y,'Oil',r) = 1;
 TagTimeIndependentFuel(y,'Air',r) = 1;
 TagTimeIndependentFuel(y,'DAC_Dummy',r) = 1;
-TagTimeIndependentFuel(y,'ETS',r) = 1;
-TagTimeIndependentFuel(y,'ETS_Source',r) = 1;
+*TagTimeIndependentFuel(y,'ETS',r) = 1;
+*TagTimeIndependentFuel(y,'ETS_Source',r) = 1;
 $endif
 $ifthen %Info% == "reduced2"
 TagTimeIndependentFuel(y,'Lignite',r) = 1;
@@ -163,8 +163,8 @@ TagTimeIndependentFuel(y,'Nuclear',r) = 1;
 TagTimeIndependentFuel(y,'Oil',r) = 1;
 TagTimeIndependentFuel(y,'Air',r) = 1;
 TagTimeIndependentFuel(y,'DAC_Dummy',r) = 1;
-TagTimeIndependentFuel(y,'ETS',r) = 1;
-TagTimeIndependentFuel(y,'ETS_Source',r) = 1;
+*TagTimeIndependentFuel(y,'ETS',r) = 1;
+*TagTimeIndependentFuel(y,'ETS_Source',r) = 1;
 TagTimeIndependentFuel(y,'LNG',r) = 1;
 TagTimeIndependentFuel(y,'LBG',r) = 1;
 $endif

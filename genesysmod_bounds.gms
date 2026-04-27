@@ -20,8 +20,8 @@
 * ###### Eventually move to input data file ######
 *
 
-TradeCosts(r,'ETS',y,rr)$(not TradeCosts(r,'ETS',y,rr)) = 0.01;
-TradeCosts(r,'Power',y,rr)$(not TradeCosts(r,'Power',y,rr)) = 0.001;
+*TradeCosts(r,'ETS',y,rr)$(not TradeCosts(r,'ETS',y,rr)) = 0.01;
+TradeCosts(r,'Power',y,rr)$(not TradeCosts(r,'Power',y,rr)) = 0.01*TradeRoute(r,'Power',y,rr);
 VariableCost(r,t,m,y)$(not VariableCost(r,t,m,y)) = 0.01;
 
 *
@@ -154,6 +154,7 @@ DummyTechnology('Infeasibility_Power') = yes;
 DummyTechnology('Infeasibility_Mob_Passenger') = yes;
 DummyTechnology('Infeasibility_Mob_Freight') = yes;
 DummyTechnology('Infeasibility_Natural_Gas') = yes;
+DummyTechnology('Infeasibility_HD') = yes;
 TagTechnologyToSector(DummyTechnology,'Infeasibility') = 1;
 AvailabilityFactor(r,DummyTechnology,y) = 0;
 
@@ -172,6 +173,7 @@ OutputActivityRatio(REGION,'Infeasibility_Power','Power','1',y) = 1;
 OutputActivityRatio(REGION,'Infeasibility_Mob_Passenger','Mobility_Passenger','1',y) = 1 ;
 OutputActivityRatio(REGION,'Infeasibility_Mob_Freight','Mobility_Freight','1',y) = 1 ;
 OutputActivityRatio(REGION,'Infeasibility_Natural_Gas','Gas_Natural','1',y) = 1;
+OutputActivityRatio(REGION,'Infeasibility_HD','Heat_District','1',y) = 1;
 
 CapacityToActivityUnit(DummyTechnology) = 31.56;
 TotalAnnualMaxCapacity(r,DummyTechnology,y) = 999999;

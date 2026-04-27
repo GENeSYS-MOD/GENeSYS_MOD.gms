@@ -2,13 +2,14 @@ AvailabilityFactor(r,'X_DAC_HT',y) = 0;
 AvailabilityFactor(r,'X_DAC_LT',y) = 0;
 
 
+
 parameter warning_TotalAnnualMinCapacityTooHigh;
 warning_TotalAnnualMinCapacityTooHigh(r,t,y)$(TotalAnnualMaxCapacity(r,t,y)<TotalAnnualMinCapacity(r,t,'2025')) = 1;
 
 TotalAnnualMaxCapacity(r,t,y)$(TotalAnnualMaxCapacity(r,t,y)<TotalAnnualMinCapacity(r,t,'2025')) = TotalAnnualMinCapacity(r,t,'2025');
 
 * Limit capacity expansion in 2025 to only actually (historically) installed capacities
-NewCapacity.up('2025',t,r)$(TagTechnologyToSubsets(t,'PowerSupply') and not TotalAnnualMinCapacity(r,t,'2025') and not sameas(t,'P_Nuclear')) = TotalAnnualMinCapacity(r,t,'2025');
+NewCapacity.up('2025',t,r)$(TagTechnologyToSubsets(t,'PowerSupply') and not AnnualMinNewCapacity(r,t,'2025') and not TotalAnnualMinCapacity(r,t,'2025')) = TotalAnnualMinCapacity(r,t,'2025');
 
 ProductionByTechnologyAnnual.up(y,'CHP_WasteToEnergy','Heat_District',r) = RegionalBaseYearProduction(r,'CHP_WasteToEnergy','Heat_District','2018');
 OutputActivityRatio(r,'CHP_WasteToEnergy',f,'1',y) = 0;
@@ -41,16 +42,55 @@ $elseif %emissionPathway% == Trinity
 ProductionByTechnologyAnnual.up(y,'HHI_Scrap_EAF','Heat_High_Industrial',r) = SpecifiedAnnualDemand(r,'Heat_High_Industrial',y)*0.5;
 ModalSplitByFuelAndModalType(r,f,mt,y)$(sameas(mt,'MT_PSNG_ROAD') and YearVal(y)>2025 and ModalSplitByFuelAndModalType(r,f,mt,y)) = ModalSplitByFuelAndModalType(r,f,mt,'2025')-0.001*(YearVal(y)-2025);
 ModalSplitByFuelAndModalType(r,f,mt,y)$(sameas(mt,'MT_FRT_ROAD') and YearVal(y)>2025 and ModalSplitByFuelAndModalType(r,f,mt,y)) = ModalSplitByFuelAndModalType(r,f,mt,'2025')-0.001*(YearVal(y)-2025);
+TradeCosts(r,'Power',y,rr)$(not TradeCosts(r,'Power',y,rr) and YearVal(y) > 2025) = 0.01*TradeRoute(r,'Power',y,rr);
 
 $endif
 
-equation DistrictHeatProductionAnnual(r_full, FUEL, y_full);
-DistrictHeatProductionAnnual(r,f,y)$(sameas(f,'Heat_District')).. sum(t,ProductionByTechnologyAnnual(y,t,'Heat_District',r)) =g= DistrictHeatDemand(r,y)*1.2048;
+*RegionalBaseYearProduction('FR', 'HB_Gas_Boiler', 'Heat_Buildings', '2018') = 631;
+*RegionalBaseYearProduction('FR', t, 'Heat_Low_Industrial', '2018') = 0;
+*RegionalBaseYearProduction('FR', t, 'Heat_District', '2018') = 0;
+*RegionalBaseYearProduction('FR', t, f, '2018') = 0;
+
+*InputactivityRatio('FR','HB_Biomass','Biomass',m,y) = 0;
+*TagTechnologyToSubsets('HB_Biomass','PhaseInSet') = 0;
+
+*WICHTIG, löst numerical problem!!!
+*TagTechnologyToSubsets('X_Convert_HD','PhaseInSet') = 0;
+
+
+ProductionByTechnologyAnnual.lo('2025','HB_Oil_Boiler','Heat_Buildings',r) = RegionalBaseYearProduction(r,'HB_Oil_Boiler','Heat_Buildings','2018')*0.3;
+
+
+equation DistrictHeatProductionAnnualLowerLimit(r_full, FUEL, y_full);
+DistrictHeatProductionAnnualLowerLimit(r,f,y)$(sameas(f,'Heat_District') and DistrictHeatDemand(r,y)).. sum(t,ProductionByTechnologyAnnual(y,t,'Heat_District',r)) =g= DistrictHeatDemand(r,y)*InputActivityRatio(r,'X_Convert_HD',f,'1',y)*0.95;
+
+equation DistrictHeatProductionAnnualUpperLimit(r_full, FUEL, y_full);
+DistrictHeatProductionAnnualUpperLimit(r,f,y)$(sameas(f,'Heat_District') and DistrictHeatDemand(r,y)).. sum(t,ProductionByTechnologyAnnual(y,t,'Heat_District',r)) =l= DistrictHeatDemand(r,y)*InputActivityRatio(r,'X_Convert_HD',f,'1',y)*1.05;
 
 equation DistrictHeatProductionSplit(r_full, Sector, y_full);
 DistrictHeatProductionSplit(r,se,y)$(DistrictHeatSplit(r,se,y)).. sum((f,t)$(TagDemandFuelToSector(f,se) and TagTechnologyToSubsets(t,'Convert')),ProductionByTechnologyAnnual(y,t,f,r)) =g= DistrictHeatDemand(r,y)*DistrictHeatSplit(r,se,y);
 
 
+ProductionGrowthLimit('H2','2030') = 0.5;
+
+NewCapacity.up('%year%',t,'ES')$(TagTechnologyToSubsets(t,'Transport')) = +INF;
+
+*NewCapacity.up(y,'X_Convert_HD',r) = +INF;
+*NewCapacity.up('2018','HB_Heatpump_Aerial','FR') = +INF;
+*NewCapacity.up('2018','HB_Heatpump_Ground','FR') = +INF;
+*NewCapacity.up('2018','HMLI_Heatpump',r) = +INF;
+*NewCapacity.up('2018','HLI_Solar_Thermal',r) = 0;
+*NewCapacity.up('2018','HLI_Geothermal',r) = 0;
+*NewCapacity.up('2018','HLI_Lignite',r) = 0;
+*NewCapacity.up('2018','HLI_H2_Boiler',r) = 0;
+*NewCapacity.up('2018','HHI_Molten_Electrolysis',r) = 0;
+*ResidualCapacity(r,t,y)$(TagTechnologyToSubsets(t,'Industry')) = ResidualCapacity(r,t,y)*1.05;
+
+CurtailmentCostFactor = 45;
+
+$ifthen %emissionPathway% == NECPEssentials
+
+ResidualCapacity('ES', 'P_CSP', y) = 1;
 TagTechnologyToSubsets('P_Wind_Onshore_Inf','Onshore') = 1;
 TagTechnologyToSubsets('P_Wind_Onshore_Avg','Onshore') = 1;
 TagTechnologyToSubsets('P_Wind_Onshore_Opt','Onshore') = 1;
@@ -59,66 +99,137 @@ TagTechnologyToSubsets('P_Wind_Offshore_Shallow','Offshore') = 1;
 TagTechnologyToSubsets('P_Wind_Offshore_Transitional','Offshore') = 1;
 TagTechnologyToSubsets('P_Wind_Offshore_Deep','Offshore') = 1;
 
+set subset / Solar, Onshore, Offshore/;
+alias(subset, sub);
+
+parameter NECPCapacityPlans(r_full, subset, y_full);
+
+NECPCapacityPlans('ES', 'Solar', '2025') = 44.197;
+NECPCapacityPlans('ES', 'Solar', '2030') = 71.473;
+NECPCapacityPlans('ES', 'Onshore', '2025') = 36.149;
+NECPCapacityPlans('ES', 'Onshore', '2030') = 62.054;
+
+NECPCapacityPlans('FR', 'Solar', '2025') = 26.9;
+NECPCapacityPlans('FR', 'Solar', '2030') = 54.4;
+NECPCapacityPlans('FR', 'Solar', '2035') = 68.4;
+NECPCapacityPlans('FR', 'Solar', '2050') = 82.4;
+NECPCapacityPlans('FR', 'Solar', '2055') = 86.4;
+NECPCapacityPlans('FR', 'Solar', '2060') = 90.4;
+NECPCapacityPlans('FR', 'Onshore', '2025') = 25.2;
+NECPCapacityPlans('FR', 'Onshore', '2030') = 34.2;
+NECPCapacityPlans('FR', 'Onshore', '2035') = 40.7;
+NECPCapacityPlans('FR', 'Onshore', '2050') = 47.2;
+NECPCapacityPlans('FR', 'Onshore', '2055') = 49.5;
+NECPCapacityPlans('FR', 'Onshore', '2060') = 51.9;
+NECPCapacityPlans('FR', 'Offshore', '2025') = 3.003;
+NECPCapacityPlans('FR', 'Offshore', '2030') = 3.6;
+NECPCapacityPlans('FR', 'Offshore', '2035') = 8.6;
+NECPCapacityPlans('FR', 'Offshore', '2050') = 13.6;
+NECPCapacityPlans('FR', 'Offshore', '2055') = 15.5;
+NECPCapacityPlans('FR', 'Offshore', '2060') = 17.7;
+
+NECPCapacityPlans('GR', 'Solar', '2025') = 8.5;
+NECPCapacityPlans('GR', 'Solar', '2030') = 13.5;
+NECPCapacityPlans('GR', 'Solar', '2035') = 18.5;
+NECPCapacityPlans('GR', 'Solar', '2040') = 26;
+NECPCapacityPlans('GR', 'Solar', '2045') = 30;
+NECPCapacityPlans('GR', 'Solar', '2050') = 35.1;
+NECPCapacityPlans('GR', 'Onshore', '2025') = 7;
+NECPCapacityPlans('GR', 'Onshore', '2030') = 8.9;
+NECPCapacityPlans('GR', 'Onshore', '2035') = 9.5;
+NECPCapacityPlans('GR', 'Onshore', '2040') = 11;
+NECPCapacityPlans('GR', 'Onshore', '2045') = 13;
+NECPCapacityPlans('GR', 'Onshore', '2050') = 13;
+NECPCapacityPlans('GR', 'Offshore', '2025') = 0;
+NECPCapacityPlans('GR', 'Offshore', '2030') = 1.9;
+NECPCapacityPlans('GR', 'Offshore', '2035') = 3.9;
+NECPCapacityPlans('GR', 'Offshore', '2040') = 5.8;
+NECPCapacityPlans('GR', 'Offshore', '2045') = 8.2;
+NECPCapacityPlans('GR', 'Offshore', '2050') = 11.8;
+
+NECPCapacityPlans('DE', 'Solar', '2025') = 117.7;
+NECPCapacityPlans('DE', 'Solar', '2030') = 215;
+NECPCapacityPlans('DE', 'Solar', '2040') = 400;
+NECPCapacityPlans('DE', 'Onshore', '2025') = 64;
+NECPCapacityPlans('DE', 'Onshore', '2030') = 115;
+NECPCapacityPlans('DE', 'Onshore', '2040') = 160;
+NECPCapacityPlans('DE', 'Offshore', '2025') = 9.215;
+NECPCapacityPlans('DE', 'Offshore', '2030') = 30;
+NECPCapacityPlans('DE', 'Offshore', '2035') = 40;
+NECPCapacityPlans('DE', 'Offshore', '2045') = 70;
 
 
-equation CapacityPlansPV2025(y_full, r_full);
-CapacityPlansPV2025(y,r).. sum(t$(TagTechnologyToSubsets(t,'Solar') and TagTechnologyToSubsets(t,'PowerSupply')), TotalCapacityAnnual('2025', t, 'ES')) =e= 44.197;
-CapacityPlansPV2025(y,r).. sum(t$(TagTechnologyToSubsets(t,'Solar') and TagTechnologyToSubsets(t,'PowerSupply')), TotalCapacityAnnual('2025', t, 'FR')) =e= 26.9;
 
-equation CapacityPlansPV2030(y_full, r_full);
-CapacityPlansPV2030(y,r).. sum(t$(TagTechnologyToSubsets(t,'Solar') and TagTechnologyToSubsets(t,'PowerSupply')), TotalCapacityAnnual('2030', t, 'ES')) =e= 71.473;
-CapacityPlansPV2030(y,r).. sum(t$(TagTechnologyToSubsets(t,'Solar') and TagTechnologyToSubsets(t,'PowerSupply')), TotalCapacityAnnual('2030', t, 'FR')) =e= 54.4;
 
-equation CapacityPlansPV2035(y_full, r_full);
-CapacityPlansPV2035(y,r).. sum(t$(TagTechnologyToSubsets(t,'Solar') and TagTechnologyToSubsets(t,'PowerSupply')), TotalCapacityAnnual('2035', t, 'FR')) =e= 68.4;
+NewCapacity.up('2025',t,r)$(TagTechnologyToSubsets(t,'PowerSupply') and sum(sub, TagTechnologyToSubsets(t,sub)) and sum(subset, NECPCapacityPlans(r,subset,'2025'))) = +INF;
 
-equation CapacityPlansPV2050(y_full, r_full);
-CapacityPlansPV2050(y,r).. sum(t$(TagTechnologyToSubsets(t,'Solar') and TagTechnologyToSubsets(t,'PowerSupply')), TotalCapacityAnnual('2050', t, 'FR')) =e= 82.4;
 
-equation CapacityPlansPV2055(y_full, r_full);
-CapacityPlansPV2055(y,r).. sum(t$(TagTechnologyToSubsets(t,'Solar') and TagTechnologyToSubsets(t,'PowerSupply')), TotalCapacityAnnual('2055', t, 'FR')) =l= 86.4;
-
-equation CapacityPlansPV2060(y_full, r_full);
-CapacityPlansPV2060(y,r).. sum(t$(TagTechnologyToSubsets(t,'Solar') and TagTechnologyToSubsets(t,'PowerSupply')), TotalCapacityAnnual('2060', t, 'FR')) =l= 90.4;
+equation NECPCapacityExpansion(r_full, subset, y_full);
+NECPCapacityExpansion(r,sub,y)$(NECPCapacityPlans(r,sub,y))..
+sum(t$(TagTechnologyToSubsets(t,sub) and TagTechnologyToSubsets(t,'PowerSupply')), TotalCapacityAnnual(y, t, r)) =e= NECPCapacityPlans(r,sub,y);
 
 
 
-equation CapacityPlansOnshore2025(y_full, r_full);
-CapacityPlansOnshore2025(y,r).. sum(t$(TagTechnologyToSubsets(t,'Onshore')), TotalCapacityAnnual('2025', t, 'ES')) =e= 36.149;
-CapacityPlansOnshore2025(y,r).. sum(t$(TagTechnologyToSubsets(t,'Onshore')), TotalCapacityAnnual('2025', t, 'FR')) =e= 25.2;
+*equation CapacityPlansPV2025(y_full, r_full);
+*CapacityPlansPV2025(y,'ES').. sum(t$(TagTechnologyToSubsets(t,'Solar') and TagTechnologyToSubsets(t,'PowerSupply')), TotalCapacityAnnual('2025', t, 'ES')) =e= 44.197;
+*CapacityPlansPV2025(y,'FR').. sum(t$(TagTechnologyToSubsets(t,'Solar') and TagTechnologyToSubsets(t,'PowerSupply')), TotalCapacityAnnual('2025', t, 'FR')) =e= 26.9;
+*
+*equation CapacityPlansPV2030(y_full, r_full);
+*CapacityPlansPV2030(y,r).. sum(t$(TagTechnologyToSubsets(t,'Solar') and TagTechnologyToSubsets(t,'PowerSupply')), TotalCapacityAnnual('2030', t, 'ES')) =e= 71.473;
+*CapacityPlansPV2030(y,r).. sum(t$(TagTechnologyToSubsets(t,'Solar') and TagTechnologyToSubsets(t,'PowerSupply')), TotalCapacityAnnual('2030', t, 'FR')) =e= 54.4;
+*
+*equation CapacityPlansPV2035(y_full, r_full);
+*CapacityPlansPV2035(y,r).. sum(t$(TagTechnologyToSubsets(t,'Solar') and TagTechnologyToSubsets(t,'PowerSupply')), TotalCapacityAnnual('2035', t, 'FR')) =e= 68.4;
+*
+*equation CapacityPlansPV2050(y_full, r_full);
+*CapacityPlansPV2050(y,r).. sum(t$(TagTechnologyToSubsets(t,'Solar') and TagTechnologyToSubsets(t,'PowerSupply')), TotalCapacityAnnual('2050', t, 'FR')) =e= 82.4;
+*
+*equation CapacityPlansPV2055(y_full, r_full);
+*CapacityPlansPV2055(y,r).. sum(t$(TagTechnologyToSubsets(t,'Solar') and TagTechnologyToSubsets(t,'PowerSupply')), TotalCapacityAnnual('2055', t, 'FR')) =l= 86.4;
+*
+*equation CapacityPlansPV2060(y_full, r_full);
+*CapacityPlansPV2060(y,r).. sum(t$(TagTechnologyToSubsets(t,'Solar') and TagTechnologyToSubsets(t,'PowerSupply')), TotalCapacityAnnual('2060', t, 'FR')) =l= 90.4;
+*
+*
+*
+*equation CapacityPlansOnshore2025(y_full, r_full);
+*CapacityPlansOnshore2025(y,r).. sum(t$(TagTechnologyToSubsets(t,'Onshore')), TotalCapacityAnnual('2025', t, 'ES')) =e= 36.149;
+*CapacityPlansOnshore2025(y,r).. sum(t$(TagTechnologyToSubsets(t,'Onshore')), TotalCapacityAnnual('2025', t, 'FR')) =e= 25.2;
+*
+*equation CapacityPlansOnshore2030(y_full, r_full);
+*CapacityPlansOnshore2030(y,r).. sum(t$(TagTechnologyToSubsets(t,'Onshore')), TotalCapacityAnnual('2030', t, 'ES')) =e= 62.054;
+*CapacityPlansOnshore2030(y,r).. sum(t$(TagTechnologyToSubsets(t,'Onshore')), TotalCapacityAnnual('2030', t, 'FR')) =e= 34.2;
+*
+*equation CapacityPlansOnshore2035(y_full, r_full);
+*CapacityPlansOnshore2035(y,r).. sum(t$(TagTechnologyToSubsets(t,'Onshore')), TotalCapacityAnnual('2035', t, 'FR')) =e= 40.7;
+*
+*equation CapacityPlansOnshore2050(y_full, r_full);
+*CapacityPlansOnshore2050(y,r).. sum(t$(TagTechnologyToSubsets(t,'Onshore')), TotalCapacityAnnual('2050', t, 'FR')) =e= 47.2;
+*
+*equation CapacityPlansOnshore2055(y_full, r_full);
+*CapacityPlansOnshore2055(y,r).. sum(t$(TagTechnologyToSubsets(t,'Onshore')), TotalCapacityAnnual('2055', t, 'FR')) =l= 49.5;
+*
+*equation CapacityPlansOnshore2060(y_full, r_full);
+*CapacityPlansOnshore2060(y,r).. sum(t$(TagTechnologyToSubsets(t,'Onshore')), TotalCapacityAnnual('2060', t, 'FR')) =l= 51.9;
+*
+*
+*
+*equation CapacityPlansOffshore2025(y_full, r_full);
+*CapacityPlansOffshore2025(y,r).. sum(t$(TagTechnologyToSubsets(t,'Offshore')), TotalCapacityAnnual('2025', t, 'FR')) =e= 3.003;
+*
+*equation CapacityPlansOffshore2030(y_full, r_full);
+*CapacityPlansOffshore2030(y,r).. sum(t$(TagTechnologyToSubsets(t,'Offshore')), TotalCapacityAnnual('2030', t, 'FR')) =e= 3.6;
+*
+*equation CapacityPlansOffshore2035(y_full, r_full);
+*CapacityPlansOffshore2035(y,r).. sum(t$(TagTechnologyToSubsets(t,'Offshore')), TotalCapacityAnnual('2035', t, 'FR')) =e= 8.6;
+*
+*equation CapacityPlansOffshore2050(y_full, r_full);
+*CapacityPlansOffshore2050(y,r).. sum(t$(TagTechnologyToSubsets(t,'Offshore')), TotalCapacityAnnual('2050', t, 'FR')) =e= 13.6;
+*
+*equation CapacityPlansOffshore2055(y_full, r_full);
+*CapacityPlansOffshore2055(y,r).. sum(t$(TagTechnologyToSubsets(t,'Offshore')), TotalCapacityAnnual('2055', t, 'FR')) =l= 15.5;
+*
+*equation CapacityPlansOffshore2060(y_full, r_full);
+*CapacityPlansOffshore2060(y,r).. sum(t$(TagTechnologyToSubsets(t,'Offshore')), TotalCapacityAnnual('2060', t, 'FR')) =l= 17.7;
 
-equation CapacityPlansOnshore2030(y_full, r_full);
-CapacityPlansOnshore2030(y,r).. sum(t$(TagTechnologyToSubsets(t,'Onshore')), TotalCapacityAnnual('2030', t, 'ES')) =e= 62.054;
-CapacityPlansOnshore2030(y,r).. sum(t$(TagTechnologyToSubsets(t,'Onshore')), TotalCapacityAnnual('2030', t, 'FR')) =e= 34.2;
-
-equation CapacityPlansOnshore2035(y_full, r_full);
-CapacityPlansOnshore2035(y,r).. sum(t$(TagTechnologyToSubsets(t,'Onshore')), TotalCapacityAnnual('2035', t, 'FR')) =e= 40.7;
-
-equation CapacityPlansOnshore2050(y_full, r_full);
-CapacityPlansOnshore2050(y,r).. sum(t$(TagTechnologyToSubsets(t,'Onshore')), TotalCapacityAnnual('2050', t, 'FR')) =e= 47.2;
-
-equation CapacityPlansOnshore2055(y_full, r_full);
-CapacityPlansOnshore2055(y,r).. sum(t$(TagTechnologyToSubsets(t,'Onshore')), TotalCapacityAnnual('2055', t, 'FR')) =l= 49.5;
-
-equation CapacityPlansOnshore2060(y_full, r_full);
-CapacityPlansOnshore2060(y,r).. sum(t$(TagTechnologyToSubsets(t,'Onshore')), TotalCapacityAnnual('2060', t, 'FR')) =l= 51.9;
-
-
-
-equation CapacityPlansOffshore2025(y_full, r_full);
-CapacityPlansOffshore2025(y,r).. sum(t$(TagTechnologyToSubsets(t,'Offshore')), TotalCapacityAnnual('2025', t, 'FR')) =e= 3.003;
-
-equation CapacityPlansOffshore2030(y_full, r_full);
-CapacityPlansOffshore2030(y,r).. sum(t$(TagTechnologyToSubsets(t,'Offshore')), TotalCapacityAnnual('2030', t, 'FR')) =e= 3.6;
-
-equation CapacityPlansOffshore2035(y_full, r_full);
-CapacityPlansOffshore2035(y,r).. sum(t$(TagTechnologyToSubsets(t,'Offshore')), TotalCapacityAnnual('2035', t, 'FR')) =e= 8.6;
-
-equation CapacityPlansOffshore2050(y_full, r_full);
-CapacityPlansOffshore2050(y,r).. sum(t$(TagTechnologyToSubsets(t,'Offshore')), TotalCapacityAnnual('2050', t, 'FR')) =e= 13.6;
-
-equation CapacityPlansOffshore2055(y_full, r_full);
-CapacityPlansOffshore2055(y,r).. sum(t$(TagTechnologyToSubsets(t,'Offshore')), TotalCapacityAnnual('2055', t, 'FR')) =l= 15.5;
-
-equation CapacityPlansOffshore2060(y_full, r_full);
-CapacityPlansOffshore2060(y,r).. sum(t$(TagTechnologyToSubsets(t,'Offshore')), TotalCapacityAnnual('2060', t, 'FR')) =l= 17.7;
+$endIf
