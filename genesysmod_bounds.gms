@@ -20,8 +20,7 @@
 * ###### Eventually move to input data file ######
 *
 
-*TradeCosts(r,'ETS',y,rr)$(not TradeCosts(r,'ETS',y,rr)) = 0.01;
-TradeCosts(r,'Power',y,rr)$(not TradeCosts(r,'Power',y,rr)) = 0.01*TradeRoute(r,'Power',y,rr);
+TradeCosts(r,'ETS',y,rr)$(not TradeCosts(r,'ETS',y,rr)) = 0.01;
 VariableCost(r,t,m,y)$(not VariableCost(r,t,m,y)) = 0.01;
 
 *

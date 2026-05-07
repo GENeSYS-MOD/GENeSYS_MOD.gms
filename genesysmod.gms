@@ -27,19 +27,19 @@ $if not set hourly_data_file             $setglobal hourly_data_file Timeseries_
 $if not set model_region                 $setglobal model_region europe
 $if not set data_base_region             $setglobal data_base_region DE
 $if not set year                         $setglobal year 2018
-$if not set emissionPathway              $setglobal emissionPathway REPowerEU
+$if not set emissionPathway              $setglobal emissionPathway NECPEssentials
 $if not set emissionScenario             $setglobal emissionScenario globalLimit
 
 * ### settings for time series reduction
 
 $if not set timeseries_method            $setglobal timeseries_method elmod
-$if not set elmod_nthhour                $setglobal elmod_nthhour 484
+$if not set elmod_nthhour                $setglobal elmod_nthhour 724
 $if not set elmod_starthour              $setglobal elmod_starthour 8
 $if not set elmod_dunkelflaute           $setglobal elmod_dunkelflaute 0
 
 * ### technical settings for data input/output
 
-$if not set switch_test_data_load        $setglobal switch_test_data_load 1
+$if not set switch_test_data_load        $setglobal switch_test_data_load 0
 $if not set switch_only_load_gdx         $setglobal switch_only_load_gdx 0
 
 $if not set switch_unixPath              $setglobal switch_unixPath 0
