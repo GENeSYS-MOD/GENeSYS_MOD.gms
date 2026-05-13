@@ -42,6 +42,7 @@ set TECHNOLOGY List of all available technologies
                 Infeasibility_HMI,
                 Infeasibility_HHI,
                 Infeasibility_HRI,
+                Infeasibility_HD,
                 Infeasibility_Mob_Passenger,
                 Infeasibility_Mob_Freight,
                 Infeasibility_Natural_Gas /;
