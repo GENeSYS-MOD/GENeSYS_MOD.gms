@@ -22,9 +22,9 @@ $onuelxref
 scalar starttime;
 starttime = jnow;
 
-$if not set data_file                    $setglobal data_file input_Germany_H2_v24_nim_16_09_2024
+$if not set data_file                    $setglobal data_file input_Germany_H2_v25_joh_02_03_2026
 $if not set hourly_data_file             $setglobal hourly_data_file input_timeseries_DE_v04_nim_18-06-2024
-$if not set elmod_nthhour                $setglobal elmod_nthhour 964
+$if not set elmod_nthhour                $setglobal elmod_nthhour 724
 $if not set elmod_starthour              $setglobal elmod_starthour 8
 $if not set year                         $setglobal year 2018
 $if not set data_base_region             $setglobal data_base_region DE_BY
@@ -54,8 +54,11 @@ $if not set switch_base_year_bounds_debugging      $setglobal switch_base_year_b
 * ============================================================
 $if not set switch_acceptance_factor        $setglobal switch_acceptance_factor 1
 $if not set switch_acceptance_constraint    $setglobal switch_acceptance_constraint 1
-$if not set acceptance_factor_data_file     $setglobal acceptance_factor_data_file Justice_Factor_v06_ad_01_02_2026
-$if not set Alpha                           $setglobal Alpha 0.5
+* NOTE: switch_acceptance_constraint=1 is the default but all constraint equations
+* in genesysmod_acceptance_factor.gms are commented out. Acceptance is controlled
+* exclusively via AUGMECON (genesysmod_augmecon_driver.gms). This switch is kept
+* for potential future use only.
+$if not set acceptance_factor_data_file     $setglobal acceptance_factor_data_file Justice_Factor_v07_ad_03_03_2026
 
 $if not set switch_unixPath              $setglobal switch_unixPath 0
 $if not set switch_ccs                   $setglobal switch_ccs 0
@@ -90,7 +93,7 @@ $if not set set_peaking_minrun_share     $setglobal set_peaking_minrun_share 0.1
 
 $if not set model_region                 $setglobal model_region de
 $if not set eployment_data_file          $setglobal employment_data_file Employment_v01_06_11_2019
-$if not set threads                      $setglobal threads 6
+$if not set threads                      $setglobal threads 14
 $if not set elmod_dunkelflaute           $setglobal elmod_dunkelflaute 0
 $if not set hydrogen_growthcost_multiplier $setglobal hydrogen_growthcost_multiplier 1
 
@@ -102,7 +105,7 @@ $if not set emissionScenario             $setglobal emissionScenario globalLimit
 * AUGMECON controls (same as AUGMECON version)
 * ============================================================
 $if not set switch_augmecon              $setglobal switch_augmecon 1
-$if not set augmecon_points              $setglobal augmecon_points 15
+$if not set augmecon_points              $setglobal augmecon_points 2
 
 $ifthen %switch_unixPath% == 1
 $if not set inputdir                     $setglobal inputdir Inputdata/
@@ -183,6 +186,8 @@ $include genesysmod_equ.gms
 * AUGMECON equations/vars/scalars must be compiled BEFORE driver
 $include genesysmod_augmecon.gms
 
+
+$include genesysmod_augmecon_baseline_guard.gms
 *
 * ####### CPLEX Options #############
 *
@@ -214,7 +219,7 @@ names yes
 barhomogeneous 1
 timelimit 1000000
 *writeprob mps_GAMS.mps
-*crossover 0
+crossover 1
 $offecho
 
 

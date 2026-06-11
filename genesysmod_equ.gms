@@ -16,27 +16,17 @@
 *
 * #############################################################
 
-
-
 * ######################
 * # Objective Function #
 * ######################
 
 free variables
     z      "total discounted system costs"
-    zAcc   "acceptance objective (unscaled)"
-    zBi    "scalarized objective (cost + acceptance)";
-
-Parameter Alpha;
-Alpha = %Alpha%;
-display "Alpha = ", Alpha;
-
-Scalar wAcc /34.73078081/;
+    zAcc   "acceptance objective (sector-balanced if wAccSector is set)";
 
 equations
     cost   "definition of total system costs"
-    accObj "definition of acceptance objective"
-    biObj  "scalarized objective (cost + acceptance)";
+    accObj "definition of acceptance objective";
 
 cost.. z =e= sum((y,r), TotalDiscountedCost(y,r))
 + sum((y,r), DiscountedAnnualTotalTradeCosts(y,r))
@@ -47,15 +37,46 @@ cost.. z =e= sum((y,r), TotalDiscountedCost(y,r))
 - sum((y,r),DiscountedSalvageValueTransmission(y,r))
 ;
 
+$ifthen %switch_acceptance_factor% == 1
+
+* ============================================================
+* Acceptance objective options:
+* - switch_acc_sector_select = 0 : original total acceptance (all sectors)
+* - switch_acc_sector_select = 1 : ONLY selected sectors (accOptSector=1)
+*   (still sector-normalized using wAccSector)
+* ============================================================
+
+* ============================================================
+* Acceptance objective (single unified formulation)
+*
+* zAcc = sum of capacity-weighted, sector-normalized resistance
+*        across all selected sectors and regions.
+*
+* - accOptSector(se) = 1/0 controls which sectors are included
+*   (set in genesysmod_augmecon_driver.gms)
+* - wAccSector(se,y) = SectorAcceptanceWeight(se) / RefTotalCapYearSector(se,y)
+*   normalizes by baseline capacity and re-scales by user weight
+*   (computed in driver after Anchor 1 solve)
+* - switch_acc_sector_select is no longer needed for the objective
+*   formulation; sector selection is fully controlled via accOptSector
+* ============================================================
 accObj..
     zAcc =e=
-        sum((r,y)$(YearVal(y) > 2020), TotalAcceptanceperRegion_all(r,y));
+        sum((r,y,se,t)$(
+                YearVal(y) > 2020
+            and TagTechnologyToSector(t,se) = 1
+            and wAccSector(se,y) <> 0
+            and accOptSector(se) = 1
+        ), Acceptance(r,t,y) * wAccSector(se,y))
+      + sum((r,y)$(
+                YearVal(y) > 2020
+            and wAccSector('Power',y) <> 0
+            and accOptSector('Power') = 1
+        ), TotalAcceptanceperRegion_Powerlines(r,y) * wAccSector('Power',y));
 
-biObj..
-    zBi =e=
-        (1 - Alpha) * z
-      + Alpha * wAcc * zAcc;
-
+$else
+accObj.. zAcc =e= 0;
+$endif
 
 * #########################
 * # Parameter assignments #

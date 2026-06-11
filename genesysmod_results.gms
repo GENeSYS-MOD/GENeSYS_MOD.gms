@@ -133,10 +133,9 @@ output_emissions(r,'ExogenousEmissions',e,'ExogenousEmissions','ExogenousEmissio
     AnnualExogenousEmission(r,e,y);
 
 * -------------------------------
-* Objectives (FULL, incl zBi)
+* Objectives
 * -------------------------------
 output_z('z_system_costs','%emissionPathway%_%emissionScenario%') = z.l;
-output_z('zBi_scalarized_objective','%emissionPathway%_%emissionScenario%') = zBi.l;
 output_z('zAcc_acceptance_objective','%emissionPathway%_%emissionScenario%') = zAcc.l;
 
 * -------------------------------

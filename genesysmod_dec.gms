@@ -406,6 +406,23 @@ $endif
 $ifthen %switch_acceptance_factor% == 1
 Parameter AcceptanceFactor;
 Parameter AcceptanceFactorPowerLines;
+parameter wAccSector(SECTOR,y_full);
+* Effective weight for sector se in year y in the acceptance objective.
+* = SectorAcceptanceWeight(se) / RefTotalCapYearSector(se,y)
+* Combines capacity normalization with user-defined relative sector importance.
+
+parameter SectorAcceptanceWeight(SECTOR);
+* User-defined relative weight between sectors AFTER capacity normalization.
+* Default = 1 for all sectors (equal weighting post-normalization).
+* Override in genesysmod_augmecon_driver.gms if sector-specific weights are needed.
+SectorAcceptanceWeight(SECTOR) = 1;
+
+* 0/1 selector: which sectors contribute to the acceptance objective zAcc
+parameter accOptSector(SECTOR);
+
+* Baseline NewCapacity per technology/region/year for non-acceptance sectors.
+* Used in guard to fix technology mix and prevent cascading demand effects.
+parameter RefNewCap(y_full,TECHNOLOGY,REGION_FULL);
 $endif
 
 * ==========================================================

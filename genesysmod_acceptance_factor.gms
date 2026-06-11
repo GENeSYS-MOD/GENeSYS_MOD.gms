@@ -41,7 +41,19 @@ $ifthen %switch_acceptance_factor% == 1
 
 positive variable Acceptance;
 *AcceptanceFactor(r,t,y)$(AcceptanceFactor(r,t,y)=0)=78;
-AcceptanceFactor(r,t,y)$(AcceptanceFactor(r,t,y)>0)=100-AcceptanceFactor(r,t,y);
+* ------------------------------------------------------------
+* Technologies without survey data (AcceptanceFactor = 0) receive
+* the mean acceptance value of all known technologies (63.2).
+* This is calculated from the v07 acceptance dataset as the average
+* across all technologies and regions with empirical data.
+* Using the mean rather than an arbitrary value (e.g. 50) ensures
+* that missing technologies contribute the same average resistance
+* to zAcc as known ones - neither penalizing nor favoring them.
+* After inversion below, resistance = 100 - 63.2 = 36.8.
+* ------------------------------------------------------------
+scalar meanAcceptance /63.2/;
+AcceptanceFactor(r,t,y)$(AcceptanceFactor(r,t,y) = 0) = meanAcceptance;
+AcceptanceFactor(r,t,y)$(AcceptanceFactor(r,t,y) > 0) = 100 - AcceptanceFactor(r,t,y);
 
 equation Acceptance1_Acceptance(r_full,TECHNOLOGY,y_full);
 Acceptance1_Acceptance(r,t,y)..
