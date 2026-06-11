@@ -8,7 +8,7 @@ $if not set augmecon_points $setglobal augmecon_points 3
 * Result: run_gdx = same name as -gdx= argument, without extension.
 * anchor1 and k-outputs are then named: <gdx>_anchor1.gdx, <gdx>_k1.gdx etc.
 $setNames "%gams.gdx%" gdx_fp gdx_fn gdx_fe
-$if not set run_gdx $setglobal run_gdx "%gdx_fp%%gdx_fn%"
+$if not set run_gdx $setglobal run_gdx "%gdxdir%%gdx_fn%"
 $if not set anchor1_gdx $setglobal anchor1_gdx "%run_gdx%_anchor1"
 * Example: -gdx=myrun_netzero produces myrun_netzero_anchor1.gdx, myrun_netzero_k1.gdx
 $if not set switch_acc_sector_select $setglobal switch_acc_sector_select 0
