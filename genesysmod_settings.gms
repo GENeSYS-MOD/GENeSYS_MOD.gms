@@ -49,3 +49,7 @@ scalar StorageLimitOffset /0.015/;
 BaseYearSlack(f) = 0.035;
 BaseYearSlack('Power') = 0.035;
 
+* derive the group label sets from the loaded subset tags (for TCC3 and TCC4)
+option TechGroup < TagTechnologyToSubsets;
+option RegionGroup < TagRegionToSubsets;
+

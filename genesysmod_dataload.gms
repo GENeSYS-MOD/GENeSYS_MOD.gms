@@ -93,6 +93,8 @@ se=0
         par=TotalAnnualMaxCapacity   Rng=Par_TotalAnnualMaxCapacity!A1                   rdim=2        cdim=1
         par=NewCapacityExpansionStop   Rng=Par_NewCapacityExpansionStop!A1                   rdim=2        cdim=0
         par=TotalAnnualMinCapacity   Rng=Par_TotalAnnualMinCapacity!A1                   rdim=2        cdim=1
+        par=GroupTotalAnnualMaxCapacity   Rng=Par_GroupTotalAnnualMaxCapacity!A1         rdim=2        cdim=1
+        par=GroupTotalAnnualMinCapacity   Rng=Par_GroupTotalAnnualMinCapacity!A1         rdim=2        cdim=1
         par=Readin_TotalTechnologyModelPeriodActivityUpperLimit   Rng=Par_ModelPeriodActivityMaxLimit!A2         rdim=2        cdim=0
 
         par=TotalTechnologyAnnualActivityUpperLimit   Rng=Par_TotalAnnualMaxActivity!A1                   rdim=2        cdim=1
@@ -122,6 +124,7 @@ se=0
         par=TagElectricTechnology       Rng=Par_TagElectricTechnology!A2                       rdim=1        cdim=0
 
         par=TagTechnologyToSubsets                Rng=Par_TagTechnologyToSubsets!A2                rdim=2        cdim=0
+        par=TagRegionToSubsets                    Rng=Par_TagRegionToSubsets!A2                    rdim=2        cdim=0
         par=TagFuelToSubsets                      Rng=Par_TagFuelToSubsets!A2                      rdim=2        cdim=0
         par=TagModalTypeToModalGroups                Rng=Par_TagModalTypeToModalGroups!A2          rdim=2        cdim=0
         par=StorageE2PRatio                      Rng=Par_StorageE2PRatio!A2                      rdim=1          cdim=0
@@ -145,6 +148,7 @@ $loadm EmissionsPenalty ReserveMargin AnnualExogenousEmission AnnualEmissionLimi
 $loadm ReserveMarginTagFuel Readin_TradeRoute Readin_TradeCapacity GrowthRateTradeCapacity TradeCapacityGrowthCosts TradeCostFactor Readin_CommissionedTradeCapacity
 $loadm InputActivityRatio OutputActivityRatio FixedCost CapitalCost VariableCost ResidualCapacity   EmissionsPenaltyTagTechnology
 $loadm AvailabilityFactor CapacityFactor EmissionActivityRatio OperationalLife TotalAnnualMaxCapacity TotalAnnualMinCapacity EmissionContentPerFuel
+$loadm GroupTotalAnnualMaxCapacity GroupTotalAnnualMinCapacity
 $loadm TotalTechnologyAnnualActivityLowerLimit TotalTechnologyAnnualActivityUpperLimit ModelPeriodExogenousEmission AnnualExogenousEmission
 $loadm Readin_TotalTechnologyModelPeriodActivityUpperLimit SpecifiedDemandDevelopment ProductionGrowthLimit
 $loadm TechnologyToStorage TechnologyFromStorage StorageLevelStart MinStorageCharge REMinProductionTarget
@@ -153,7 +157,7 @@ $loadm ResidualStorageCapacity CapacityToActivityUnit TagCanFuelBeTraded
 $loadm ModalSplitByFuelAndModalType TagTechnologyToModalType BaseYearProduction RegionalBaseYearProduction
 $loadm TagTechnologyToSector AnnualSectoralEmissionLimit AnnualMinNewCapacity AnnualMaxNewCapacity
 $loadm RegionalCCSLimit TagDemandFuelToSector TagElectricTechnology TagModalTypeToModalGroups
-$loadm TagTechnologyToSubsets TagFuelToSubsets  RegionalModelPeriodEmissionLimit  ModelPeriodEmissionLimit StorageE2PRatio
+$loadm TagTechnologyToSubsets TagRegionToSubsets TagFuelToSubsets  RegionalModelPeriodEmissionLimit  ModelPeriodEmissionLimit StorageE2PRatio
 $offUNDF
 
 *
