@@ -56,6 +56,7 @@ $if not set threads                      $setglobal threads 4
 
 $if not set switch_investLimit           $setglobal switch_investLimit 1
 $if not set switch_infeasibility_tech    $setglobal switch_infeasibility_tech 0
+$if not set switch_errorcheck            $setglobal switch_errorcheck 2
 $if not set switch_base_year_bounds      $setglobal switch_base_year_bounds 1
 $if not set switch_base_year_bounds_debugging      $setglobal switch_base_year_bounds_debugging 0
 
