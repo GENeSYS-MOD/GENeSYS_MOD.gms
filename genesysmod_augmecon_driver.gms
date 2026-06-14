@@ -11,7 +11,7 @@ $setNames "%gams.gdx%" gdx_fp gdx_fn gdx_fe
 $if not set run_gdx $setglobal run_gdx "%gdxdir%%gdx_fn%"
 $if not set anchor1_gdx $setglobal anchor1_gdx "%run_gdx%_anchor1"
 * Example: -gdx=myrun_netzero produces myrun_netzero_anchor1.gdx, myrun_netzero_k1.gdx
-$if not set switch_acc_sector_select $setglobal switch_acc_sector_select 0
+$if not set switch_acc_sector_select $setglobal switch_acc_sector_select 1
 
 $eval NPOINTS %augmecon_points%
 set k /k1*k%NPOINTS%/;
@@ -45,14 +45,30 @@ $endif.initAcc
 $ifthen.sel %switch_acc_sector_select% == 1
 *accOptSector(se) = 0;
     accOptSector('Power') = 1;
-    accOptSector('Industry') = 0;        
+    accOptSector('Industry') = 0;
     accOptSector('Buildings') = 0;
     accOptSector('Transportation') = 0;
-    accOptSector('Resources') = 0;
+    accOptSector('Resources') = 1;
     accOptSector('Storages') = 0;
     accOptSector('Transformation') = 0;
     accOptSector('CHP') = 0;
 $endif.sel
+
+* -------------------------------------------------
+* [BLOCK 1] Guard mode selection
+* 0 = Capacity-Guard (default, original behaviour):
+*       FIX_TotalCapacityAnnual_Sector keeps total installed capacity
+*       per sector equal to the cost-optimal baseline.
+* 1 = Dispatch-Guard (new):
+*       RateOfActivity is fixed for all non-opt-sector technologies
+*       via .fx bounds (applied below after Anchor 1).
+*       Opt-sector (e.g. Power) capacity is FREE to adjust between
+*       technologies and regions; total output per timeslice is
+*       implicitly fixed by the energy balance because all non-opt
+*       sector consumption and all imports are frozen.
+* -------------------------------------------------
+* *** TO SWITCH MODES: change the value on the next line (0 or 1) ***
+switch_guard_mode = 0;
 
 * -------------------------------------------------
 * Anchors
@@ -80,11 +96,64 @@ RefTotalCapYearSector(se,y) =
     sum((r,t)$(TagTechnologyToSector(t,se) = 1), TotalCapacityAnnual.l(y,t,r));
 
 * Save NewCapacity for non-acceptance-optimized sectors (technology-level fix).
-* This prevents cascading demand effects (e.g. EV→electricity) from
+* This prevents cascading demand effects (e.g. EV->electricity) from
 * indirectly reshaping sectors that ARE in the acceptance objective.
 RefNewCap(y,t,r)$(
     sum(se$(TagTechnologyToSector(t,se)=1 and accOptSector(se)=0), 1) > 0
 ) = NewCapacity.l(y,t,r);
+
+* -------------------------------------------------
+* [BLOCK 2] DISPATCH-GUARD ANCHOR1 CAPTURE
+* Only executed when switch_guard_mode = 1.
+* Must happen BEFORE wAccSector normalisation so that .l values
+* from Anchor 1 are still in memory.
+* -------------------------------------------------
+if(switch_guard_mode = 1,
+
+*   Step 1: save RateOfActivity from Anchor 1 for non-opt-sector technologies.
+*   Storages sector is EXCLUDED: S2_StorageLevelTSStart is a time-sequential
+*   balance (StorageLevel(t+1) = StorageLevel(t) + charge.fx - discharge.fx).
+*   Fixing both charge and discharge per timeslice fully determines the storage
+*   level trajectory; even tiny floating-point differences from Anchor1 .l values
+*   can push StorageLevel outside its bounds, causing GAMS to flag
+*   "Equation infeasible due to rhs value" at equation-generation time.
+*   Storage capacity is still constrained via FIX_NewCapacity_NonOpt.
+    RefRateOfActivity(y,l,t,m,r)$(
+        sum(se$(TagTechnologyToSector(t,se)=1
+                and accOptSector(se)=0
+                and not sameas(se,'Storages')), 1) > 0
+        and not sum(se$(TagTechnologyToSector(t,se)=1
+                        and sameas(se,'Storages')), 1) > 0
+    ) = RateOfActivity.l(y,l,t,m,r);
+
+*   Step 2: fix RateOfActivity to Anchor1 values for non-opt, non-Storage sectors.
+*   .fx sets BOTH lower and upper bound simultaneously.
+*   Gurobi presolve removes these variables before factorisation →
+*   the LP matrix SHRINKS (better Barrier convergence, fewer iterations).
+*   These bounds remain active for both Anchor 2 and the AUGMECON loop.
+*   Storage dispatch remains free — determined by energy balance + storage
+*   constraints (S2, S3, S5, S6) with fixed capacity from FIX_NewCapacity_NonOpt.
+    RateOfActivity.fx(y,l,t,m,r)$(
+        sum(se$(TagTechnologyToSector(t,se)=1
+                and accOptSector(se)=0
+                and not sameas(se,'Storages')), 1) > 0
+        and not sum(se$(TagTechnologyToSector(t,se)=1
+                        and sameas(se,'Storages')), 1) > 0
+    ) = RefRateOfActivity(y,l,t,m,r);
+
+*   Note on opt-sector behaviour in Dispatch-Guard mode:
+*   After fixing non-opt (excl. Storages) RateOfActivity, the electricity
+*   balance EB2_EnergyBalanceEachTS has:
+*     Power_production(free) + Storage_dispatch(free) - fixed_loads = Demand(exog.)
+*   The opt sector (Power, Resources) and storage dispatch are FREE to choose
+*   any technology/region combination. Storage provides timeslice flexibility
+*   for the Power sector reallocation.
+*   Acceptance reallocation within the opt sector is therefore driven purely
+*   by the zAcc objective — not by capacity bounds imposed by the guard.
+);
+* -------------------------------------------------
+* END BLOCK 2
+* -------------------------------------------------
 
 $ifthen.accW %switch_acceptance_factor% == 1
     wAccSector(se,y) = 0;
