@@ -59,6 +59,10 @@ TotalTechnologyAnnualActivityUpperLimit(r,t,y)$(TotalTechnologyAnnualActivityUpp
 
 GrowthRateTradeCapacity(r,'Power',y,rr)$(GrowthRateTradeCapacity(r,'Power',y,rr) = 0) = GrowthRateTradeCapacity(r,'Power',y-1,rr);
 
+$ifThen %switch_vertical_integration% == 1
+GrowthRateExogenousTradeCapacity(r,exr,'Power',y)$(GrowthRateExogenousTradeCapacity(r,exr,'Power',y) = 0) = GrowthRateExogenousTradeCapacity(r,exr,'Power',y-1);
+$endIf
+
 $ifthen %switch_employment_calculation% == 1
 EFactorConstruction(t,y)$(EFactorConstruction(t,y) = 0) = (EFactorConstruction(t,y-1)+EFactorConstruction(t,y+1))/2;
 EFactorOM(t,y)$(EFactorOM(t,y) = 0) = (EFactorOM(t,y-1)+EFactorOM(t,y+1))/2;

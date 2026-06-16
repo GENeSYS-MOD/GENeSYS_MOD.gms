@@ -21,7 +21,13 @@
 *
 
 TradeCosts(r,'ETS',y,rr)$(not TradeCosts(r,'ETS',y,rr)) = 0.01;
+TradeCosts(r,'Power',y,rr)$(not TradeCosts(r,'Power',y,rr)) = 0.001;
 VariableCost(r,t,m,y)$(not VariableCost(r,t,m,y)) = 0.01;
+
+$ifthen %switch_vertical_integration% == 1
+ExogenousTradeCosts(y,'ETS',r,exr)$(not ExogenousTradeCosts(y,'ETS',r,exr)) = 0.01;
+ExogenousTradeCosts(y,'Power',r,exr)$(not ExogenousTradeCosts(y,'Power',r,exr)) = 0.001;
+$endIf
 
 *
 * ##############################################################
@@ -118,12 +124,11 @@ CapacityFactor(r,'HD_Solar_Thermal',l,y) = CapacityFactor(r,'P_PV_Utility_Avg',l
 * ####### No new capacity construction in 2015 #############
 *
 NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'Transformation')) = 0;
+NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'CHP')) = 0;
 NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'PowerSupply')) = 0;
 NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'SectorCoupling')) = 0;
 NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'StorageDummies')) = 0;
 NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'Transport')) = 0;
-NewCapacity.fx('%year%',t,r)$(TagTechnologyToSubsets(t,'CHP')) = 0;
-
 NewCapacity.up('%year%',t,r)$(TagTechnologyToSubsets(t,'Biomass')) = +INF;
 NewCapacity.up('%year%','D_Gas_Methane',r) = +INF;
 NewCapacity.up('%year%','X_SMR',r) = +INF;
@@ -153,7 +158,6 @@ DummyTechnology('Infeasibility_Power') = yes;
 DummyTechnology('Infeasibility_Mob_Passenger') = yes;
 DummyTechnology('Infeasibility_Mob_Freight') = yes;
 DummyTechnology('Infeasibility_Natural_Gas') = yes;
-DummyTechnology('Infeasibility_HD') = yes;
 TagTechnologyToSector(DummyTechnology,'Infeasibility') = 1;
 AvailabilityFactor(r,DummyTechnology,y) = 0;
 
@@ -172,7 +176,6 @@ OutputActivityRatio(REGION,'Infeasibility_Power','Power','1',y) = 1;
 OutputActivityRatio(REGION,'Infeasibility_Mob_Passenger','Mobility_Passenger','1',y) = 1 ;
 OutputActivityRatio(REGION,'Infeasibility_Mob_Freight','Mobility_Freight','1',y) = 1 ;
 OutputActivityRatio(REGION,'Infeasibility_Natural_Gas','Gas_Natural','1',y) = 1;
-OutputActivityRatio(REGION,'Infeasibility_HD','Heat_District','1',y) = 1;
 
 CapacityToActivityUnit(DummyTechnology) = 31.56;
 TotalAnnualMaxCapacity(r,DummyTechnology,y) = 999999;

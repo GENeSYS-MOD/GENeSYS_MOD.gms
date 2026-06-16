@@ -30,10 +30,17 @@ parameter error_TradeCostsMissingFromTradeRoute(r_full,f,rr_full);
 error_TradeCostsMissingFromTradeRoute(r,f,rr)$(sum(y,TradeRoute(r,f,y,rr)) and TagCanFuelBeTraded(f) and not sum(y,TradeCosts(r,f,y,rr))) = 1;
 if(sum((f,r,rr),error_TradeCostsMissingFromTradeRoute(r,f,rr)),abort "TradeCosts are missing from a defined TradeRoute. Please check your TradeCosts to include all defined TradeRoutes. Missing TradeCosts are listed in the parameter error_TradeCostsMissingFromTradeRoute.");
 
+$ifThen %switch_vertical_integration% == 1
+parameter error_TradeCostsMissingFromExogenousTradeRoute(r_full,f,exr_full);
+error_TradeCostsMissingFromExogenousTradeRoute(r,f,exr)$(ExogenousTradeRoute(r,exr,f) and TagCanFuelBeTraded(f) and not sum(y,ExogenousTradeCosts(y,f,r,exr))) = 1;
+if(sum((f,r,exr),error_TradeCostsMissingFromExogenousTradeRoute(r,f,exr)),abort "TradeCosts are missing from a defined ExogenousTradeRoute. Please check your EgogenousTradeCosts to include all defined ExogenousTradeRoutes. Missing ExogenousTradeCosts are listed in the parameter error_TradeCostsMissingFromExogenousTradeRoute.");
+$endIf
+
 * Check for errors in ModalSplit definitions -> if yes, then exit
 parameter error_ModalSplitByModalTypeDefinition(f,*,r_full,y_full);
 error_ModalSplitByModalTypeDefinition(f,'Error in ModalGroup',r,y)$(round(sum(mt$(TagModalTypeToModalGroups(mt,'TransportModes')),ModalSplitByFuelAndModalType(r,f,mt,y)),4)>1) = 1;
 error_ModalSplitByModalTypeDefinition(f,'Error in SubGroup',r,y)$(round(sum(mt$(TagModalTypeToModalGroups(mt,'ModalSubgroups')),ModalSplitByFuelAndModalType(r,f,mt,y)),4)>1) = 1;
+display error_ModalSplitByModalTypeDefinition;
 if(sum((f,r,y),error_ModalSplitByModalTypeDefinition(f,'Error in ModalGroup',r,y)),abort "ModalSplit is wrongly defined for a ModalGroup (e.g., MT_FRT_Road). The sum of ModalTypes cannot exceed 1. Please check your data. Problematic regions and years are listed in the parameter error_ModalSplitByModalTypeDefinition.");
 if(sum((f,r,y),error_ModalSplitByModalTypeDefinition(f,'Error in SubGroup',r,y)),abort "ModalSplit is wrongly defined for a subgroup in the ModalSplit (e.g., MT_FRT_Road_RE). The sum of ModalTypes cannot exceed 1. Please check your data. Problematic regions and years are listed in the parameter error_ModalSplitByModalTypeDefinition.");
 
@@ -44,11 +51,13 @@ error_OperationalLifeMissing(t)$(not OperationalLife(t) and not TagTechnologyToS
 $else
 error_OperationalLifeMissing(t)$(not OperationalLife(t)) = 1;
 $endif
+display error_OperationalLifeMissing;
 if(sum((t),error_OperationalLifeMissing(t)),abort "OperationalLife is missing from a Technology. Please check your OperationalLife data to account for all technologies. Missing values are listed in the parameter error_OperationalLifeMissing.");
 
 * Check for errors in CapacityFactor data -> if yes, then exit
 parameter error_CapacityFactorDataMissing(r_full,t,y_full);
 error_CapacityFactorDataMissing(r,t,y)$(not sum(l,CapacityFactor(r,t,l,y)) and AvailabilityFactor(r,t,y) and TotalAnnualMaxCapacity(r,t,y)) = 1;
+display error_CapacityFactorDataMissing;
 if(sum((r,t,y),error_CapacityFactorDataMissing(r,t,y)),abort "CapacityFactor is missing from a Technology. Please check your Hourly data file to account for all technologies. Technologies where values are missing are listed in the parameter error_CapacityFactorDataMissing.");
 
 * Check for missing entries in CapacityToActivityUnit -> if yes, then exit
@@ -62,9 +71,17 @@ error_TradeCapacityMismatch('TradeCapacity',r,f,y,rr)$(TradeCapacity(r,f,y,rr) a
 error_TradeCapacityMismatch('CommissionedTradeCapacity',r,f,y,rr)$(CommissionedTradeCapacity(r,f,y,rr) and not TradeRoute(r,f,y,rr))  = 1;
 if(sum((r,f,y,rr),error_TradeCapacityMismatch('TradeCapacity',r,f,y,rr)+error_TradeCapacityMismatch('CommissionedTradeCapacity',r,f,y,rr)),abort "TradeRoute is missing for some trade connections where a TradeCapacity has been set. Please check your TradeRoute and TradeCapacity data in Excel. Technologies where values are missing are listed in the parameter error_TradeCapacityMismatch.");
 
+$ifThen %switch_vertical_integration% == 1
+parameter error_ExogenousTradeCapacityMismatch(*,r_full,f,y_full,exr_full);
+error_ExogenousTradeCapacityMismatch('ExogenousTradeCapacity',r,f,y,exr)$(ResidualExogenousTradeCapacity(r,exr,f,y) and not ExogenousTradeRoute(r,exr,f))  = 1;
+error_ExogenousTradeCapacityMismatch('CommissionedExogenousTradeCapacity',r,f,y,exr)$(CommissionedExogenousTradeCapacity(r,exr,f,y) and not ExogenousTradeRoute(r,exr,f))  = 1;
+if(sum((r,f,y,exr),error_ExogenousTradeCapacityMismatch('ExogenousTradeCapacity',r,f,y,exr)+error_ExogenousTradeCapacityMismatch('CommissionedExogenousTradeCapacity',r,f,y,exr)),abort "ExogenousTradeRoute missing for trade connections with ResidualExogenousTradeCapacity. Check ExogenousTradeRoute & ResidualExogenousTradeCapacity data in Excel. Technologies with missing values are listed in parameter error_ExogenousTradeCapacityMismatch.");
+$endIf
+
 * Check for missing entries in AvailabilityFactor -> if yes, then exit
 parameter error_AvailabilityFactorMissing(r_full,t,y_full);
 error_AvailabilityFactorMissing(r,t,y)$(ResidualCapacity(r,t,y) and not AvailabilityFactor(r,t,y)) = 1;
+display error_AvailabilityFactorMissing;
 if(sum((r,t,y),error_AvailabilityFactorMissing(r,t,y)),display "WARNING: AvailabilityFactor is missing from a Technology. Please check your AvailabilityFactor data in Excel to account for all technologies. Technologies where values are missing are listed in the parameter error_AvailabilityFactorMissing.");
 
 
@@ -78,6 +95,11 @@ warning_TechnologyEfficiencies(r,t,m,y)$(not sum(se,TagTechnologyToSector(t,'Res
 
 parameter error_tradelines(r_full,rr_full,f);
 error_tradelines(r,rr,f)$(TradeRoute(r,f,'2018',rr)-TradeRoute(r,f,'2018',rr))=1
+
+$ifThen %switch_vertical_integration% == 1
+parameter error_Exogenoustradelines(r_full,exr_full,f);
+error_Exogenoustradelines(r,exr,f)$(ExogenousTradeRoute(r,exr,f)-ExogenousTradeRoute(r,exr,f))=1
+$endIf
 
 * If residual capacity is greater than max allowed annual capacity, set max capacity to residual capacity
 parameter ToSmallResidualCapacity;

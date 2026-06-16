@@ -246,6 +246,10 @@ additional_production(r,'InputDemand','Heat_High_Industrial_Demand','1','Heat_Hi
 *additional_production(r,'Trade','Trade','1',f,y,l,'NetTrade','PJ','%EmissionPathway%_%sensitivity%') = - NetTrade.l(y,l,f,r) ;
 additional_production(r,'Trade','Trade','1',f,y,l,'NetTrade','TWh','%EmissionPathway%_%sensitivity%') = - NetTrade.l(y,l,f,r)* 0.2778 ;
 
+$ifThen %switch_vertical_integration% == 1
+additional_production(r,'ExogenousTrade','ExogenousTrade','1',f,y,l,'ExogenousNetTrade','TWh','%EmissionPathway%_%sensitivity%') = - ExogenousNetTrade.l(y,l,f,r)* 0.2778 ;
+$endIf
+
 additional_production(r,'Storage Losses',StorageDummies,m,f,y,l,'Use','TWh','%EmissionPathway%_%EmissionScenario%')$(OutputActivityRatio(r,StorageDummies,f,m,y)) = -(ProductionByTechnology.l(y,l,StorageDummies,f,r)*(1-OutputActivityRatio(r,StorageDummies,f,m,y)))/3.6;
 
 

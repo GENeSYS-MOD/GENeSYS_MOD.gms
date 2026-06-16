@@ -34,6 +34,7 @@ cost.. z =e= sum((y,r), TotalDiscountedCost(y,r))
 + sum((y,r,f,t),BaseYearBounds_TooLow(y,r,t,f)*9999)
 + sum((r,y),heatingslack(y,r)*9999)
 - sum((y,r),DiscountedSalvageValueTransmission(y,r))
++ AllDiscountedExogenousTradeCosts
 ;
 
 * #########################
@@ -240,11 +241,21 @@ Import.fx(y,l,f,r,rr)$(TradeRoute(r,f,y,rr) = 0 or TagCanFuelBeTraded(f) = 0) = 
 Export.fx(y,l,f,rr,r)$(TradeRoute(r,f,y,rr) = 0 or TagCanFuelBeTraded(f) = 0) = 0;
 NetTrade.fx(y,l,f,r)$(sum(rr,TradeRoute(r,f,y,rr)) = 0 or TagCanFuelBeTraded(f) = 0) = 0;
 
+$ifthen %switch_vertical_integration% == 0
 equation EB2_EnergyBalanceEachTS(YEAR_FULL,TIMESLICE_FULL,FUEL,REGION_FULL);
 EB2_EnergyBalanceEachTS(y,l,f,r)$(TagTimeIndependentFuel(y,f,r) = 0).. sum((t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y))*YearSplit(l,y) =e= Demand(y,l,f,r) + sum((t,m)$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*InputActivityRatio(r,t,f,m,y)*TimeDepEfficiency(r,t,l,y))*YearSplit(l,y) + NetTrade(y,l,f,r);
 
 equation EB3_EnergyBalanceEachYear(YEAR_FULL,FUEL,REGION_FULL);
 EB3_EnergyBalanceEachYear(y,f,r)$(TagTimeIndependentFuel(y,f,r)).. sum((l,t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y)) =g= sum((l,t,m)$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*InputActivityRatio(r,t,f,m,y)*YearSplit(l,y)*TimeDepEfficiency(r,t,l,y)) + NetTradeAnnual(y,f,r);
+$endIf
+$ifthen %switch_vertical_integration% == 1
+equation EB2_EnergyBalanceEachTS(YEAR_FULL,TIMESLICE_FULL,FUEL,REGION_FULL);
+EB2_EnergyBalanceEachTS(y,l,f,r)$(TagTimeIndependentFuel(y,f,r) = 0).. sum((t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y))*YearSplit(l,y) =e= Demand(y,l,f,r) + sum((t,m)$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*InputActivityRatio(r,t,f,m,y)*TimeDepEfficiency(r,t,l,y))*YearSplit(l,y) + NetTrade(y,l,f,r) + ExogenousNetTrade(y,l,f,r);
+
+equation EB3_EnergyBalanceEachYear(YEAR_FULL,FUEL,REGION_FULL);
+EB3_EnergyBalanceEachYear(y,f,r)$(TagTimeIndependentFuel(y,f,r)).. sum((l,t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y)) =g= sum((l,t,m)$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*InputActivityRatio(r,t,f,m,y)*YearSplit(l,y)*TimeDepEfficiency(r,t,l,y)) + NetTradeAnnual(y,f,r) + ExogenousNetTradeAnnual(y,f,r);
+$endIf
+
 
 equation EB4_NetTradeBalance(YEAR_FULL,TIMESLICE_FULL,FUEL,REGION_FULL);
 EB4_NetTradeBalance(y,l,f,r)$(sum(rr,TradeRoute(r,f,y,rr)) and TagCanFuelBeTraded(f)).. sum(rr$(TradeRoute(r,f,y,rr)), Export(y,l,f,r,rr)*(1+TradeLossBetweenRegions(r,f,y,rr)) - Import(y,l,f,r,rr)) =e= NetTrade(y,l,f,r);
@@ -298,8 +309,6 @@ equation TrC7_TradeCapacityLimitNonPower(YEAR_FULL,FUEL,REGION_FULL,rr_full);
 TrC7_TradeCapacityLimitNonPower(y,f,r,rr)$(TradeCapacityGrowthCosts(r,f,rr) and not sameas(f,'Power')).. sum(l,Import(y,l,f,rr,r)) =l= TotalTradeCapacity(y,f,r,rr);
 
 
-
-
 equation TrPl1aa_TradeCapacityPipelinesLines(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,rr_full);
 TrPl1aa_TradeCapacityPipelinesLines(y,l,r,rr).. Import(y,l,'H2',rr,r) =l= TotalTradeCapacity(y,'H2',r,rr)*YearSplit(l,y);
 
@@ -345,11 +354,19 @@ $endif.equ_hydrogen_tradecapacity
 * ######## Gas-specific import restrictions over the year
 *
 
-equation TrPA2a_FlatH2Imports(y_full,l_full,r_full);
-TrPA2a_FlatH2Imports(y,l,r)..   RateOfActivity(y,l,'Z_Import_H2','1',r)  =l= sum(ll,RateOfActivity(y,ll,'Z_Import_H2','1',r))*YearSplit(l,y)*1.05;
+*equation TrPA2a_FlatH2Imports(y_full,l_full,r_full);
+*TrPA2a_FlatH2Imports(y,l,r)..   RateOfActivity(y,l,'Z_Import_H2','1',r)  =l= sum(ll,RateOfActivity(y,ll,'Z_Import_H2','1',r))*YearSplit(l,y)*1.05;
 
-equation TrPA2b_FlatGasImports(y_full,l_full,r_full);
-TrPA2b_FlatGasImports(y,l,r)..   RateOfActivity(y,l,'Z_Import_Gas','1',r)  =l= sum(ll,RateOfActivity(y,ll,'Z_Import_Gas','1',r))*YearSplit(l,y)*1.05;
+*equation TrPA2b_FlatGasImports(y_full,l_full,r_full);
+*TrPA2b_FlatGasImports(y,l,r)..   RateOfActivity(y,l,'Z_Import_Gas','1',r)  =l= sum(ll,RateOfActivity(y,ll,'Z_Import_Gas','1',r))*YearSplit(l,y)*1.05;
+
+RateOfActivity.fx(y,l,'Z_ETS_Buy','1',r) = 0;
+RateOfActivity.fx(y,l,'Z_ETS_Sell','1',r) = 0;
+RateOfActivity.fx(y,l,'Z_Import_Gas','1',r) = 0;
+RateOfActivity.fx(y,l,'Z_Import_H2','1',r) = 0;
+RateOfActivity.fx(y,l,'Z_Import_Hardcoal','1',r) = 0;
+RateOfActivity.fx(y,l,'Z_Import_LNG','1',r) = 0;
+RateOfActivity.fx(y,l,'Z_Import_Oil','1',r) = 0;
 
 
 *
@@ -836,4 +853,121 @@ ADD_Employment(r,y)..  sum((t,f),((NewCapacity(y,t,r)*EFactorManufacturing(t,y)*
                  =e= TotalJobs(r,y);
 $endif
 
+*
+* ######### Exogenous trade #############
+*
+$ifthen %switch_vertical_integration% == 0
+AllDiscountedExogenousTradeCosts.fx = 0;
+$endIf
+$ifthen %switch_vertical_integration% == 1
+* # Sum of all related trade costs
+equation ET0_SumAllDiscountedExogenousTradeCosts;
+ET0_SumAllDiscountedExogenousTradeCosts.. AllDiscountedExogenousTradeCosts =e= sum((y,r),DiscountedAnnualTotalExogenousTradeCosts(y,r)) + sum((y,f,r,exr), DiscountedNewExogenousTradeCapacityCosts(y,f,r,exr));
 
+* # Trade flow
+* Forcing the model to trade to the exogenous regions, the trade should in total be exactly as the supermodel run
+equation ET1a_ForceExogenousExport(YEAR_FULL,TIMESLICE_FULL,FUEL,EXOGENOUS_REGION_FULL);
+ET1a_ForceExogenousExport(y,l,f,exr)$(ExogenousDemand(y,l,f,exr) > 0).. sum(r$(ExogenousTradeRoute(r,exr,f)),ExogenousExport(y,l,f,r,exr)) =g= ExogenousDemand(y,l,f,exr);
+ExogenousExport.fx(y,l,f,r,exr)$(not ExogenousTradeRoute(r,exr,f)) = 0;
+ExogenousExport.fx(y,l,f,r,exr)$(ExogenousDemand(y,l,f,exr) = 0) = 0;
+equation ET1b_ForceExogenousImport(YEAR_FULL,TIMESLICE_FULL,FUEL,EXOGENOUS_REGION_FULL);
+ET1b_ForceExogenousImport(y,l,f,exr)$(ExogenousProduction(y,l,f,exr) > 0).. sum(r$(ExogenousTradeRoute(r,exr,f)),ExogenousImport(y,l,f,r,exr)) =l= ExogenousProduction(y,l,f,exr);
+ExogenousImport.fx(y,l,f,r,exr)$(not ExogenousTradeRoute(r,exr,f)) = 0;
+ExogenousImport.fx(y,l,f,r,exr)$(ExogenousProduction(y,l,f,exr) = 0) = 0;
+
+* # Trade capacity
+TotalExogenousTradeCapacity.fx(y,f,r,exr)$(not ExogenousTradeRoute(r,exr,f)) = 0;
+
+* Ensuring that enough new trade capacity is built in relation to the desired total capacity across model regions
+equation ET3a_TotalExogenousTradeCapacityStartYear(YEAR_FULL,FUEL,REGION_FULL,EXOGENOUS_REGION_FULL);
+ET3a_TotalExogenousTradeCapacityStartYear(y,f,r,exr)$(ExogenousTradeRoute(r,exr,f) and TagCanFuelBeTraded(f) and YearVal(y) = %year%).. TotalExogenousTradeCapacity(y,f,r,exr) =e= ResidualExogenousTradeCapacity(r,exr,f,y);
+equation ET3b_TotalExogenousTradeCapacity(YEAR_FULL,FUEL,REGION_FULL,EXOGENOUS_REGION_FULL);
+ET3b_TotalExogenousTradeCapacity(y,f,r,exr)$(ExogenousTradeRoute(r,exr,f) and TagCanFuelBeTraded(f) and YearVal(y) > %year%).. TotalExogenousTradeCapacity(y,f,r,exr) =e= TotalExogenousTradeCapacity(y-1,f,r,exr) + NewExogenousTradeCapacity(y,f,r,exr) + CommissionedExogenousTradeCapacity(r,exr,f,y);
+
+* Limit growth rate of trade capacity
+Equation ET4a_NewExogenousTradeCapacityLimitPower(YEAR_FULL,FUEL,REGION_FULL,EXOGENOUS_REGION_FULL);
+ET4a_NewExogenousTradeCapacityLimitPower(y,'Power',r,exr)$(ExogenousTradeRoute(r,exr,'Power') > 0 and GrowthRateExogenousTradeCapacity(r,exr,'Power',y) > 0 and YearVal(y) > %year%).. GrowthRateExogenousTradeCapacity(r,exr,'Power',y)*YearlyDifferenceMultiplier(y)*TotalExogenousTradeCapacity(y-1,'Power',r,exr) =g= NewExogenousTradeCapacity(y,'Power',r,exr);
+Equation ET4b_NewExogenousTradeCapacityLimitNatGas(YEAR_FULL,FUEL,REGION_FULL,EXOGENOUS_REGION_FULL);
+ET4b_NewExogenousTradeCapacityLimitNatGas(y,'Gas_Natural',r,exr)$(ExogenousTradeRoute(r,exr,'Gas_Natural') and GrowthRateExogenousTradeCapacity(r,exr,'Gas_Natural',y)).. 100$(not ResidualExogenousTradeCapacity(r,exr,'Gas_Natural',y)) + (GrowthRateExogenousTradeCapacity(r,exr,'Gas_Natural',y)*YearlyDifferenceMultiplier(y))*TotalExogenousTradeCapacity(y-1,'Gas_Natural',r,exr) =g= NewExogenousTradeCapacity(y,'Gas_Natural',r,exr);
+Equation ET4c_NewExogenousTradeCapacityLimitH2(YEAR_FULL,FUEL,REGION_FULL,EXOGENOUS_REGION_FULL);
+ET4c_NewExogenousTradeCapacityLimitH2(y,'H2',r,exr)$(ExogenousTradeRoute(r,exr,'H2') and GrowthRateExogenousTradeCapacity(r,exr,'H2',y)).. 50$(not ResidualExogenousTradeCapacity(r,exr,'H2',y))+(GrowthRateExogenousTradeCapacity(r,exr,'H2',y)*YearlyDifferenceMultiplier(y))*TotalExogenousTradeCapacity(y-1,'H2',r,exr) =g= NewExogenousTradeCapacity(y,'H2',r,exr);
+
+* Setting remaining new exogenous trade capacity to zero
+NewExogenousTradeCapacity.fx(y,f,r,exr)$(ExogenousTradeRoute(r,exr,f) = 0 or GrowthRateExogenousTradeCapacity(r,exr,f,y) = 0) = 0;
+
+* # Trade flow limits
+* Power
+equation ET5a_ExogenousTradeCapacityPowerLinesImport(YEAR_FULL,TIMESLICE_FULL,FUEL,REGION_FULL,EXOGENOUS_REGION_FULL);
+ET5a_ExogenousTradeCapacityPowerLinesImport(y,l,'Power',r,exr)$(ExogenousTradeRoute(r,exr,'Power') > 0).. (ExogenousImport(y,l,'Power',r,exr)) =l= TotalExogenousTradeCapacity(y,'Power',r,exr)*YearSplit(l,y)*31.536;
+equation ET5b_ExogenousTradeCapacityPowerLinesExport(YEAR_FULL,TIMESLICE_FULL,FUEL,REGION_FULL,EXOGENOUS_REGION_FULL);
+ET5b_ExogenousTradeCapacityPowerLinesExport(y,l,'Power',r,exr)$(ExogenousTradeRoute(r,exr,'Power') > 0).. (ExogenousExport(y,l,'Power',r,exr)) =l= TotalExogenousTradeCapacity(y,'Power',r,exr)*YearSplit(l,y)*31.536;
+
+* H2
+equation ET6a_ExogenousTradeCapacityPipelinesLinesImport(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,EXOGENOUS_REGION_FULL);
+ET6a_ExogenousTradeCapacityPipelinesLinesImport(y,l,r,exr).. ExogenousImport(y,l,'H2',r,exr) =l= TotalExogenousTradeCapacity(y,'H2',r,exr)*YearSplit(l,y);
+equation ET6b_ExogenousTradeCapacityPipelinesLinesExport(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,EXOGENOUS_REGION_FULL);
+ET6b_ExogenousTradeCapacityPipelinesLinesExport(y,l,r,exr).. ExogenousExport(y,l,'H2',r,exr) =l= TotalExogenousTradeCapacity(y,'H2',r,exr)*YearSplit(l,y);
+
+* LH2 Trucks
+equation ET9a_ExogenousTradeCapacityTrucksImport(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,EXOGENOUS_REGION_FULL);
+ET9a_ExogenousTradeCapacityTrucksImport(y,l,r,exr).. ExogenousImport(y,l,'LH2',r,exr) =l= TotalExogenousTradeCapacity(y,'LH2',r,exr)*YearSplit(l,y);
+equation ET9b_ExogenousTradeCapacityTrucksExport(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,EXOGENOUS_REGION_FULL);
+ET9b_ExogenousTradeCapacityTrucksExport(y,l,r,exr).. ExogenousExport(y,l,'LH2',r,exr) =l= TotalExogenousTradeCapacity(y,'LH2',r,exr)*YearSplit(l,y);
+
+* Other
+equation ET8a_ExogenousTradeCapacityLimitNonPowerImport(YEAR_FULL,FUEL,REGION_FULL,EXOGENOUS_REGION_FULL);
+ET8a_ExogenousTradeCapacityLimitNonPowerImport(y,f,r,exr)$(ExogenousTradeCapacityGrowthCosts(r,exr,f) and not sameas(f,'Power')).. sum(l,ExogenousImport(y,l,f,r,exr)) =l= TotalExogenousTradeCapacity(y,f,r,exr);
+equation ET8b_ExogenousTradeCapacityLimitNonPowerExport(YEAR_FULL,FUEL,REGION_FULL,EXOGENOUS_REGION_FULL);
+ET8b_ExogenousTradeCapacityLimitNonPowerExport(y,f,r,exr)$(ExogenousTradeCapacityGrowthCosts(r,exr,f) and not sameas(f,'Power')).. sum(l,ExogenousExport(y,l,f,r,exr)) =l= TotalExogenousTradeCapacity(y,f,r,exr);
+
+* # Other trade balance
+equation ET9_ExogenousNetTradeBalance(YEAR_FULL,TIMESLICE_FULL,FUEL,REGION_FULL);
+ET9_ExogenousNetTradeBalance(y,l,f,r)$(sum(exr,ExogenousTradeRoute(r,exr,f)) and TagCanFuelBeTraded(f)).. sum(exr$(ExogenousTradeRoute(r,exr,f)), ExogenousExport(y,l,f,r,exr)*(1+ExogenousTradeLossBetweenRegions(y,f,r,exr)) - ExogenousImport(y,l,f,r,exr)) =e= ExogenousNetTrade(y,l,f,r);
+ExogenousNetTrade.fx(y,l,f,r)$(sum(exr,ExogenousTradeRoute(r,exr,f)) = 0 or TagCanFuelBeTraded(f) = 0) = 0;
+
+equation ET10_AnnualExogenousNetTradeBalance(YEAR_FULL,FUEL,REGION_FULL);
+ET10_AnnualExogenousNetTradeBalance(y,f,r)$(sum(exr,ExogenousTradeRoute(r,exr,f)) and TagCanFuelBeTraded(f)).. sum(l, (ExogenousNetTrade(y,l,f,r))) =e= ExogenousNetTradeAnnual(y,f,r);
+ExogenousNetTradeAnnual.fx(y,f,r)$(sum(exr,ExogenousTradeRoute(r,exr,f)) = 0 or TagCanFuelBeTraded(f) = 0) = 0;
+
+* # Trade costs
+* Capacity costs
+equation ET11_NewExogenousTradeCapacityCosts(YEAR_FULL,FUEL,REGION_FULL,EXOGENOUS_REGION_FULL);
+ET11_NewExogenousTradeCapacityCosts(y,f,r,exr)$(ExogenousTradeRoute(r,exr,f) and ExogenousTradeCapacityGrowthCosts(r,exr,f))..  NewExogenousTradeCapacity(y,f,r,exr)*ExogenousTradeCapacityGrowthCosts(r,exr,f)*ExogenousTradeRoute(r,exr,f) =e= NewExogenousTradeCapacityCosts(y,f,r,exr);
+equation ET12_DiscountedNewExogenousTradeCapacityCosts(YEAR_FULL,FUEL,REGION_FULL,EXOGENOUS_REGION_FULL);
+ET12_DiscountedNewExogenousTradeCapacityCosts(y,f,r,exr)$(ExogenousTradeRoute(r,exr,f) and ExogenousTradeCapacityGrowthCosts(r,exr,f)).. NewExogenousTradeCapacityCosts(y,f,r,exr)/((1+GeneralDiscountRate(r))**(YearVal(y)-smin(yy, YearVal(yy))+0.5)) =e= DiscountedNewExogenousTradeCapacityCosts(y,f,r,exr);
+DiscountedNewExogenousTradeCapacityCosts.fx(y,f,r,exr)$(ExogenousTradeRoute(r,exr,f) = 0 or not ExogenousTradeCapacityGrowthCosts(r,exr,f)) = 0;
+
+* Trade flow costs
+equation ET13_AnnualExogenousTradeCosts(YEAR_FULL,REGION_FULL);
+ET13_AnnualExogenousTradeCosts(y,r)$(sum((f,exr),ExogenousTradeRoute(r,exr,f))).. sum((l,f,exr)$(ExogenousTradeRoute(r,exr,f)),ExogenousImport(y,l,f,r,exr) * ExogenousTradeCosts(y,f,r,exr)) + sum((l,f,exr)$(ExogenousTradeRoute(r,exr,f)),ExogenousExport(y,l,f,r,exr) * ExogenousTradeCosts(y,f,r,exr)) =e= AnnualTotalExogenousTradeCosts(y,r);
+AnnualTotalExogenousTradeCosts.fx(y,r)$(sum((f,exr),ExogenousTradeRoute(r,exr,f)) = 0) = 0;
+equation ET14_DiscountedAnnualExogenousTradeCosts(YEAR_FULL,REGION_FULL);
+ET14_DiscountedAnnualExogenousTradeCosts(y,r)..  AnnualTotalExogenousTradeCosts(y,r)/((1+GeneralDiscountRate(r))**(YearVal(y)-smin(yy, YearVal(yy))+0.5)) =e= DiscountedAnnualTotalExogenousTradeCosts(y,r);
+
+* # Pipeline-specific Capacity Accounting
+$ifthen.equ_hydrogen_tradecapacity %switch_hydrogen_blending_share% == 0
+
+equation ET15aa_ExogenousTradeCapacityPipelineAccountingImport(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,EXOGENOUS_REGION_FULL);
+ET15aa_ExogenousTradeCapacityPipelineAccountingImport(y,l,r,exr).. sum(f$(not sameas(f,'H2_blend') and TagFuelToSubsets(f,'GasFuels')), ExogenousImport(y,l,f,r,exr)) =l= TotalExogenousTradeCapacity(y,'Gas_Natural',r,exr)*YearSplit(l,y);
+equation ET15ab_ExogenousTradeCapacityPipelineAccountingExport(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,EXOGENOUS_REGION_FULL);
+ET15ab_ExogenousTradeCapacityPipelineAccountingExport(y,l,r,exr).. sum(f$(not sameas(f,'H2_blend') and TagFuelToSubsets(f,'GasFuels')), ExogenousExport(y,l,f,r,exr)) =l= TotalExogenousTradeCapacity(y,'Gas_Natural',r,exr)*YearSplit(l,y);
+
+$else.equ_hydrogen_tradecapacity
+
+equation ET15ba_ExogenousTradeCapacityPipelineAccountingGasFuelsImport(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,EXOGENOUS_REGION_FULL);
+ET15ba_ExogenousTradeCapacityPipelineAccountingGasFuelsImport(y,l,r,exr)$(%switch_hydrogen_blending_share%>0 and %switch_hydrogen_blending_share%<1).. sum(f$(not sameas(f,'H2_blend') and TagFuelToSubsets(f,'GasFuels')), ExogenousImport(y,l,f,r,exr)) + ExogenousImport(y,l,'H2_blend',r,exr)*(11.4/3.0) =l= TotalExogenousTradeCapacity(y,'gas_natural',r,exr)*YearSplit(l,y);
+equation ET15bb_ExogenousTradeCapacityPipelineAccountingGasFuelsExport(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,EXOGENOUS_REGION_FULL);
+ET15bb_ExogenousTradeCapacityPipelineAccountingGasFuelsExport(y,l,r,exr)$(%switch_hydrogen_blending_share%>0 and %switch_hydrogen_blending_share%<1).. sum(f$(not sameas(f,'H2_blend') and TagFuelToSubsets(f,'GasFuels')), ExogenousExport(y,l,f,r,exr)) + ExogenousExport(y,l,'H2_blend',r,exr)*(11.4/3.0) =l= TotalExogenousTradeCapacity(y,'gas_natural',r,exr)*YearSplit(l,y);
+
+equation ET15ca_ExogenousTradeCapacityPipelineAccountingH2BlendImport(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,EXOGENOUS_REGION_FULL);
+ET15ca_ExogenousTradeCapacityPipelineAccountingH2BlendImport(y,l,r,exr)$(%switch_hydrogen_blending_share%>0 and %switch_hydrogen_blending_share%<1).. ExogenousImport(y,l,'H2_blend',r,exr) =l= (%switch_hydrogen_blending_share%/((1-%switch_hydrogen_blending_share%)*(11.4/3.0))) * sum(f$(not sameas(f,'H2_blend') and TagFuelToSubsets(f,'GasFuels')), ExogenousImport(y,l,f,r,exr));
+equation ET15cb_ExogenousTradeCapacityPipelineAccountingH2BlendExport(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,EXOGENOUS_REGION_FULL);
+ET15cb_ExogenousTradeCapacityPipelineAccountingH2BlendExport(y,l,r,exr)$(%switch_hydrogen_blending_share%>0 and %switch_hydrogen_blending_share%<1).. ExogenousExport(y,l,'H2_blend',r,exr) =l= (%switch_hydrogen_blending_share%/((1-%switch_hydrogen_blending_share%)*(11.4/3.0))) * sum(f$(not sameas(f,'H2_blend') and TagFuelToSubsets(f,'GasFuels')), ExogenousExport(y,l,f,r,exr));
+
+equation ET15da_ExogenousTradeCapacityPipelineAccountingCombinedImport(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,EXOGENOUS_REGION_FULL);
+ET15da_ExogenousTradeCapacityPipelineAccountingCombinedImport(y,l,r,exr)$(%switch_hydrogen_blending_share% = 1).. sum(f$(not sameas(f,'H2_blend') and TagFuelToSubsets(f,'GasFuels')), ExogenousImport(y,l,f,r,exr)) + ExogenousImport(y,l,'H2_blend',r,exr)*(11.4/3.0) =l= TotalExogenousTradeCapacity(y,'Gas_Natural',r,exr)*YearSplit(l,y);
+equation ET15db_ExogenousTradeCapacityPipelineAccountingCombinedExport(YEAR_FULL,TIMESLICE_FULL,REGION_FULL,EXOGENOUS_REGION_FULL);
+ET15db_ExogenousTradeCapacityPipelineAccountingCombinedExport(y,l,r,exr)$(%switch_hydrogen_blending_share% = 1).. sum(f$(not sameas(f,'H2_blend') and TagFuelToSubsets(f,'GasFuels')), ExogenousExport(y,l,f,r,exr)) + ExogenousExport(y,l,'H2_blend',r,exr)*(11.4/3.0) =l= TotalExogenousTradeCapacity(y,'Gas_Natural',r,exr)*YearSplit(l,y);
+
+$endif.equ_hydrogen_tradecapacity
+$endIf

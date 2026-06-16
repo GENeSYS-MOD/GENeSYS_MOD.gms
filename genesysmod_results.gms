@@ -29,6 +29,36 @@ output_pipeline_data('Percentage used of Pipeline network',f,'Yearly Average',r,
 parameter output_pipeline_data;
 output_pipeline_data('Percentage used of Pipeline network','Unused','Yearly Average',r,rr,y)$(TotalTradeCapacity.l(y,'Gas_Natural',r,rr)) = 1-(sum((l,f)$(TagFuelToSubsets(f,'GasFuels')),Import.l(y,l,f,rr,r))/sum(l,(TotalTradeCapacity.l(y,'Gas_Natural',r,rr)*YearSplit(l,y))));
 
+$ifThen %switch_vertical_integration% == 1
+parameter check_ExogenousImportcapacityusage;
+check_ExogenousImportcapacityusage(y,l,f,r,exr)$(ExogenousImport.l(y,l,f,r,exr) and TagFuelToSubsets(f,'GasFuels')) = (TotalExogenousTradeCapacity.l(y,f,r,exr)*YearSplit(l,y))-ExogenousImport.l(y,l,f,r,exr);
+parameter check_ExogenousExportcapacityusage;
+check_ExogenousExportcapacityusage(y,l,f,r,exr)$(ExogenousExport.l(y,l,f,r,exr) and TagFuelToSubsets(f,'GasFuels')) = (TotalExogenousTradeCapacity.l(y,f,r,exr)*YearSplit(l,y))-ExogenousExport.l(y,l,f,r,exr);
+
+parameter check_ExogenousImportcapacityfull;
+check_ExogenousImportcapacityfull(y,l,r,exr)$(sum(f$(TagFuelToSubsets(f,'GasFuels')),ExogenousImport.l(y,l,f,r,exr))=(TotalExogenousTradeCapacity.l(y,'Gas_Natural',r,exr)*YearSplit(l,y)) and TotalExogenousTradeCapacity.l(y,'Gas_Natural',r,exr)) = 1;
+parameter check_ExogenousExportcapacityfull;
+check_ExogenousExportcapacityfull(y,l,r,exr)$(sum(f$(TagFuelToSubsets(f,'GasFuels')),ExogenousExport.l(y,l,f,r,exr))=(TotalExogenousTradeCapacity.l(y,'Gas_Natural',r,exr)*YearSplit(l,y)) and TotalExogenousTradeCapacity.l(y,'Gas_Natural',r,exr)) = 1;
+
+
+parameter output_ExogenousPipeline_ImportData;
+output_ExogenousPipeline_ImportData('Percentage used of ExogenousPipeline network for import',f,l,r,exr,y)$(TotalExogenousTradeCapacity.l(y,'Gas_Natural',r,exr) and TagFuelToSubsets(f,'GasFuels')) = 1-(ExogenousImport.l(y,l,f,r,exr)/(TotalExogenousTradeCapacity.l(y,'Gas_Natural',r,exr)*YearSplit(l,y)));
+parameter output_ExogenousPipeline_ImportData;
+output_ExogenousPipeline_ImportData('Percentage used of ExogenousPipeline network for import','Unused',l,r,exr,y)$(TotalExogenousTradeCapacity.l(y,'Gas_Natural',r,exr)) = 1-sum(f$(TagFuelToSubsets(f,'GasFuels')),(ExogenousImport.l(y,l,f,r,exr)/(TotalExogenousTradeCapacity.l(y,'Gas_Natural',r,exr)*YearSplit(l,y))));
+parameter output_ExogenousPipeline_ImportData;
+output_ExogenousPipeline_ImportData('Percentage used of ExogenousPipeline network for import',f,'Yearly Average',r,exr,y)$(TotalExogenousTradeCapacity.l(y,'Gas_Natural',r,exr) and TagFuelToSubsets(f,'GasFuels')) = sum(l,ExogenousImport.l(y,l,f,r,exr))/sum(l,(TotalExogenousTradeCapacity.l(y,'Gas_Natural',r,exr)*YearSplit(l,y)));
+parameter output_ExogenousPipeline_ImportData;
+output_ExogenousPipeline_ImportData('Percentage used of ExogenousPipeline network for import','Unused','Yearly Average',r,exr,y)$(TotalExogenousTradeCapacity.l(y,'Gas_Natural',r,exr)) = 1-(sum((l,f)$(TagFuelToSubsets(f,'GasFuels')),ExogenousImport.l(y,l,f,r,exr))/sum(l,(TotalExogenousTradeCapacity.l(y,'Gas_Natural',r,exr)*YearSplit(l,y))));
+
+parameter output_ExogenousPipeline_ExportData;
+output_ExogenousPipeline_ExportData('Percentage used of ExogenousPipeline network for export',f,l,r,exr,y)$(TotalExogenousTradeCapacity.l(y,'Gas_Natural',r,exr) and TagFuelToSubsets(f,'GasFuels')) = 1-(ExogenousExport.l(y,l,f,r,exr)/(TotalExogenousTradeCapacity.l(y,'Gas_Natural',r,exr)*YearSplit(l,y)));
+parameter output_ExogenousPipeline_ExportData;
+output_ExogenousPipeline_ExportData('Percentage used of ExogenousPipeline network for export','Unused',l,r,exr,y)$(TotalExogenousTradeCapacity.l(y,'Gas_Natural',r,exr)) = 1-sum(f$(TagFuelToSubsets(f,'GasFuels')),(ExogenousExport.l(y,l,f,r,exr)/(TotalExogenousTradeCapacity.l(y,'Gas_Natural',r,exr)*YearSplit(l,y))));
+parameter output_ExogenousPipeline_ExportData;
+output_ExogenousPipeline_ExportData('Percentage used of ExogenousPipeline network for export',f,'Yearly Average',r,exr,y)$(TotalExogenousTradeCapacity.l(y,'Gas_Natural',r,exr) and TagFuelToSubsets(f,'GasFuels')) = sum(l,ExogenousExport.l(y,l,f,r,exr))/sum(l,(TotalExogenousTradeCapacity.l(y,'Gas_Natural',r,exr)*YearSplit(l,y)));
+parameter output_ExogenousPipeline_ExportData;
+output_ExogenousPipeline_ExportData('Percentage used of ExogenousPipeline network for export','Unused','Yearly Average',r,exr,y)$(TotalExogenousTradeCapacity.l(y,'Gas_Natural',r,exr)) = 1-(sum((l,f)$(TagFuelToSubsets(f,'GasFuels')),ExogenousExport.l(y,l,f,r,exr))/sum(l,(TotalExogenousTradeCapacity.l(y,'Gas_Natural',r,exr)*YearSplit(l,y))));
+$endIf
 
 $ifthen %switch_only_write_results% == 0
 parameter z_fuelcosts;
@@ -49,6 +79,12 @@ output_energy_balance(r,'Demand','Demand','1',f,l,'Use','PJ','%emissionPathway%_
 output_energy_balance(r,'Demand','Demand','1',f,l,'Use','billion km','%emissionPathway%_%emissionScenario%',y)$(Demand(y,l,f,r) > 0 and TagDemandFuelToSector(f,'Transportation')) = round(- Demand(y,l,f,r),4) ;
 output_energy_balance(r,'Trade','Trade','1',f,l,'Import','PJ','%emissionPathway%_%emissionScenario%',y) = round(sum(rr, Import.l(y,l,f,r,rr)),4) ;
 output_energy_balance(r,'Trade','Trade','1',f,l,'Export','PJ','%emissionPathway%_%emissionScenario%',y) = round(- sum(rr, Export.l(y,l,f,r,rr)),4) ;
+
+$ifThen %switch_vertical_integration% == 1
+output_energy_balance(r,'ExogenousTrade','ExogenousTrade','1',f,l,'ExogenousImport','PJ','%emissionPathway%_%emissionScenario%',y) = round(sum(exr, ExogenousImport.l(y,l,f,r,exr)),4) ;
+output_energy_balance(r,'ExogenousTrade','ExogenousTrade','1',f,l,'ExogenousExport','PJ','%emissionPathway%_%emissionScenario%',y) = round(- sum(exr, ExogenousExport.l(y,l,f,r,exr)),4) ;
+$endif
+
 $include genesysmod_baseyear_2020.gms
 
 parameter output_energy_balance_annual(*,*,*,*,*,*,*,*);
@@ -59,6 +95,11 @@ output_energy_balance_annual(r,'Demand','Demand',f,'Use','PJ','%emissionPathway%
 output_energy_balance_annual(r,'Demand','Demand',f,'Use','billion km','%emissionPathway%_%emissionScenario%',y)$(sum(l,Demand(y,l,f,r) > 0) and TagDemandFuelToSector(f,'Transportation')) = sum(l,output_energy_balance(r,'Demand','Demand','1',f,l,'Use','billion km','%emissionPathway%_%emissionScenario%',y)) ;
 output_energy_balance_annual(r,'Trade','Trade',f,'Import','PJ','%emissionPathway%_%emissionScenario%',y) = sum(l, output_energy_balance(r,'Trade','Trade','1',f,l,'Import','PJ','%emissionPathway%_%emissionScenario%',y)) ;
 output_energy_balance_annual(r,'Trade','Trade',f,'Export','PJ','%emissionPathway%_%emissionScenario%',y) = sum(l, output_energy_balance(r,'Trade','Trade','1',f,l,'Export','PJ','%emissionPathway%_%emissionScenario%',y)) ;
+
+$ifThen %switch_vertical_integration% == 1
+output_energy_balance_annual(r,'ExogenousTrade','ExogenousTrade',f,'ExogenousImport','PJ','%emissionPathway%_%emissionScenario%',y) = sum(l, output_energy_balance(r,'ExogenousTrade','ExogenousTrade','1',f,l,'ExogenousImport','PJ','%emissionPathway%_%emissionScenario%',y)) ;
+output_energy_balance_annual(r,'ExogenousTrade','ExogenousTrade',f,'ExogenousExport','PJ','%emissionPathway%_%emissionScenario%',y) = sum(l, output_energy_balance(r,'ExogenousTrade','ExogenousTrade','1',f,l,'ExogenousExport','PJ','%emissionPathway%_%emissionScenario%',y)) ;
+$endif
 
 parameter CapacityUsedByTechnologyEachTS, PeakCapacityByTechnology;
 CapacityUsedByTechnologyEachTS(y,l,t,r)$(AvailabilityFactor(r,t,y) <> 0 and CapacityToActivityUnit(t) <> 0 and CapacityFactor(r,t,l,y) <> 0) = RateOfProductionByTechnology(y,l,t,'Power',r)*YearSplit(l,y)/(AvailabilityFactor(r,t,y)*CapacityToActivityUnit(t)*CapacityFactor(r,t,l,y));
@@ -113,9 +154,10 @@ output_technology_costs_detailed(r,t,'none','Levelized Costs [Generation]','MEUR
 output_technology_costs_detailed(r,t,'none','Levelized Costs [Total]','MEUR/PJ',y)$(TagTechnologyToSector(t,'Power') and  not sum((f,m),InputActivityRatio(r,t,f,m,y))) = output_technology_costs_detailed(r,t,'none','Levelized Costs [Generation]','MEUR/PJ',y)+output_technology_costs_detailed(r,t,'none','Levelized Costs [Capex]','MEUR/PJ',y);
 output_technology_costs_detailed(r,t,'none','Levelized Costs [Total w/o Emissions]','MEUR/PJ',y)$(TagTechnologyToSector(t,'Power') and  not sum((f,m),InputActivityRatio(r,t,f,m,y))) = output_technology_costs_detailed(r,t,'none','Levelized Costs [Generation]','MEUR/PJ',y)+output_technology_costs_detailed(r,t,'none','Levelized Costs [Capex]','MEUR/PJ',y);
 output_technology_costs_detailed(r,t,'none','Levelized Costs [Total]','EUR/MWh',y)$(TagTechnologyToSector(t,'Power') and not sum((f,m),InputActivityRatio(r,t,f,m,y))) = output_technology_costs_detailed(r,t,'none','Levelized Costs [Total]','MEUR/PJ',y)*3.6;
+output_technology_costs_detailed(r,t,'none','Levelized Costs [Total]','EUR/MWh',y)$(TagTechnologyToSector(t,'Power') and not sum((f,m),InputActivityRatio(r,t,f,m,y))) = output_technology_costs_detailed(r,t,'none','Levelized Costs [Total]','MEUR/PJ',y)*3.6;
 output_technology_costs_detailed(r,t,'none','Levelized Costs [Total w/o Emissions]','EUR/MWh',y)$(TagTechnologyToSector(t,'Power') and not sum((f,m),InputActivityRatio(r,t,f,m,y))) = output_technology_costs_detailed(r,t,'none','Levelized Costs [Total w/o Emissions]','MEUR/PJ',y)*3.6;
 
-
+* Not to be confused with 'exogenous' trade related costs
 parameter output_exogenous_costs;
 output_exogenous_costs(r,t,'Capital Costs',y) = CapitalCost(r,t,y);
 output_exogenous_costs(r,t,'Fixed Costs',y) = FixedCost(r,t,y);
@@ -128,6 +170,21 @@ output_trade(r,rr,f,'Transmission Expansion Costs in MEUR/GW',y) = TradeCapacity
 output_trade('General','General',f,'Transmission Expansion Costs in MEUR/GW/km',y) = TradeCapacityGrowthCosts('%data_base_region%',f,'%data_base_region%');
 output_trade(r,rr,f,'Export',y) = sum(l,Export.l(y,l,f,r,rr));
 output_trade(r,rr,f,'Import',y) = sum(l,Import.l(y,l,f,r,rr));
+
+
+
+
+$ifThen %switch_vertical_integration% == 1
+output_trade(r,exr,f,'Exogenous Transmissions Capacity',y) = TotalExogenousTradeCapacity.l(y, f, r, exr);
+output_trade(r,exr,f,'Exogenous Transmission Expansion Costs in MEUR/GW',y) = ExogenousTradeCapacityGrowthCosts(r,exr,f)*ExogenousTradeRoute(r,exr,f);
+output_trade(r,exr,f,'ExogenousExport',y) = sum(l,ExogenousExport.l(y,l,f,r,exr));
+output_trade(r,exr,f,'ExogenousImport',y) = sum(l,ExogenousImport.l(y,l,f,r,exr));
+parameter output_ExogenousTrade;
+output_ExogenousTrade(r,exr,f,'ExogenousTransmissions Capacity',y) = TotalExogenousTradeCapacity.l(y, f, r, exr);
+output_ExogenousTrade(r,exr,f,'ExogenousTransmissions Expansion Costs in MEUR/GW',y) = ExogenousTradeCapacityGrowthCosts(r,exr,f)*ExogenousTradeRoute(r,exr,f);
+output_ExogenousTrade(r,exr,f,'ExogenousExport',y) = sum(l,ExogenousExport.l(y,l,f,r,exr));
+output_ExogenousTrade(r,exr,f,'ExogenousImport',y) = sum(l,ExogenousImport.l(y,l,f,r,exr));
+$endIf
 
 parameters SelfSufficiencyRate,ElectrificationRate,output_other;
 SelfSufficiencyRate(r,y) = ProductionAnnual(y,'Power',r)/(SpecifiedAnnualDemand(r,'Power',y)+UseAnnual(y,'Power',r));
@@ -215,7 +272,6 @@ output_energydemandstatistics('Import Share of Primary Energy [%]','Total',r,f,y
 output_energydemandstatistics('Import Share of Primary Energy [%]','Total','Total',f,y)$(sum((t,m,r)$(TagTechnologyToSubsets(t,'ImportTechnology')),OutputActivityRatio(r,t,f,m,y))) = (sum((t,r),ProductionByTechnologyAnnual.l(y,t,f,r))/3.6)/sum(ff,output_energydemandstatistics('Primary Energy [TWh]','Total','Total',ff,y));
 output_energydemandstatistics('Import Share of Primary Energy [%]','Total','EU27',f,y)$(sum((t,m,EU27)$(TagTechnologyToSubsets(t,'ImportTechnology')),OutputActivityRatio(EU27,t,f,m,y))) = (sum((t,EU27),ProductionByTechnologyAnnual.l(y,t,f,EU27))/3.6)/sum(ff,output_energydemandstatistics('Primary Energy [TWh]','Total','EU27',ff,y));
 
-
 $ifthen set Info
 execute_unload "%gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%.gdx"
 $else
@@ -229,6 +285,9 @@ output_model
 output_technology_costs_detailed
 output_exogenous_costs
 output_trade
+$ifthen %switch_vertical_integration% == 1
+output_ExogenousTrade
+$endif
 output_other
 output_energydemandstatistics
 output_fuelcosts
@@ -245,13 +304,13 @@ execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenar
 execute "echo 'Region','Sector','Technology','Mode','Fuel','Type','Unit','PathwayScenario','Year','Value' > %resultdir%Output_AnnualProdcution_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
 execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%.gdx symb=output_energy_balance_annual format=csv noHeader >> %resultdir%Output_AnnualProdcution_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
 
-execute "echo 'File','Region','Sector','Technology','Type','PathwayScenario','Year','Value' > %resultdir%Output_Capacity_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
+execute "echo 'Region','Sector','Technology','Type','PathwayScenario','Year','Value' > %resultdir%Output_Capacity_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
 execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%.gdx symb=output_capacity format=csv noHeader >> %resultdir%Output_Capacity_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
 
-execute "echo 'File','Region','Sector','Emission','Technology','Type','PathwayScenario','Year','Value' > %resultdir%Output_Emission_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
+execute "echo 'Region','Sector','Emission','Technology','Type','PathwayScenario','Year','Value' > %resultdir%Output_Emission_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
 execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%.gdx symb=output_emissions format=csv noHeader >> %resultdir%Output_Emission_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
 
-execute "echo 'File','Name','Region','Sector/Technology','Fuel','Year','Value' > %resultdir%Output_Other_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
+execute "echo 'Name','Region','Sector/Technology','Fuel','Year','Value' > %resultdir%Output_Other_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
 execute "gdxdump %gdxdir%Output_%model_region%_%emissionPathway%_%emissionScenario%_%info%.gdx symb=output_other format=csv noHeader >> %resultdir%Output_Other_%model_region%_%emissionPathway%_%emissionScenario%_%info%.csv"
 
 $else

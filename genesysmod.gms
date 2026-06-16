@@ -33,7 +33,7 @@ $if not set emissionScenario             $setglobal emissionScenario globalLimit
 * ### settings for time series reduction
 
 $if not set timeseries_method            $setglobal timeseries_method elmod
-$if not set elmod_nthhour                $setglobal elmod_nthhour 724
+$if not set elmod_nthhour                $setglobal elmod_nthhour 244
 $if not set elmod_starthour              $setglobal elmod_starthour 8
 $if not set elmod_dunkelflaute           $setglobal elmod_dunkelflaute 0
 
@@ -42,7 +42,7 @@ $if not set elmod_dunkelflaute           $setglobal elmod_dunkelflaute 0
 $if not set switch_test_data_load        $setglobal switch_test_data_load 0
 $if not set switch_only_load_gdx         $setglobal switch_only_load_gdx 0
 
-$if not set switch_unixPath              $setglobal switch_unixPath 0
+$if not set switch_unixPath              $setglobal switch_unixPath 1
 $if not set switch_read_data_long        $setglobal switch_read_data_long 1
 $if not set switch_write_output          $setglobal switch_write_output gdx
 $if not set switch_only_write_results    $setglobal switch_only_write_results 0
@@ -92,6 +92,9 @@ $if not set set_peaking_minrun_share     $setglobal set_peaking_minrun_share 0.1
 $if not set switch_employment_calculation $setglobal switch_employment_calculation 0
 $if not set eployment_data_file          $setglobal employment_data_file Employment_v01_06_11_2019
 
+* ### settings for vertically integrated model run
+
+$if not set switch_vertical_integration  $setglobal switch_vertical_integration 0
 
 ****** end of switches / settings *********
 *******************************************
@@ -122,7 +125,12 @@ $setglobal hourly_data_file Timeseries_Europe_EnVis_Green
 $elseif %emissionPathway% == Trinity
 $setglobal data_file RegularParameters_Europe_EnVis_Trinity
 $setglobal hourly_data_file Timeseries_Europe_EnVis_Trinity
+$elseif %emissionPathway% == NECPEssentials_Sweden
+$setglobal data_file RegularParameters_Sweden_EnVis_NECPEssentials
+$setglobal hourly_data_file Timeseries_Sweden
 $endif
+
+
 
 $ifthen %model_region% == middleearth
 $setglobal data_file RegularParameters_MiddleEarth
@@ -150,7 +158,11 @@ $include genesysmod_dec.gms
 
 $offlisting
 $ifthen %switch_read_data_long% == 1
+$ifthen %switch_vertical_integration% == 1
+$include genesysmod_dataload_long_vertical_integration.gms
+$else
 $include genesysmod_dataload_long.gms
+$endIf
 $else
 $include genesysmod_dataload.gms
 $endif
@@ -222,6 +234,7 @@ solutiontype 2
 quality yes
 *barobjrng 1e+075
 tilim 1000000
+iis 0
 $offecho
 
 $onecho > gurobi.opt

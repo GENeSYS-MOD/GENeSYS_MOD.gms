@@ -53,6 +53,12 @@ $loadm DiscountedCapitalInvestment DiscountedTechnologyEmissionsPenalty Discount
 $loadm CapitalInvestment AnnualTechnologyEmissionsPenalty NewTradeCapacityCosts TradeCosts Import GeneralDiscountRate  DiscountedSalvageValue SalvageValue
 $loadm ElectrificationRate  ProductionAnnual ProductionByTechnologyAnnual  UseByTechnologyAnnual UseAnnual
 $loadm TotalCapacityAnnual TotalTradeCapacity NetTradeAnnual AnnualTechnologyEmission AnnualTotalTradeCosts
+** Exogenous Trade
+$ifThen %switch_vertical_integration% == 1
+$loadm GrowthRateExogenousTradeCapacity ExogenousTradeRoute DiscountedNewExogenousTradeCapacityCosts DiscountedAnnualTotalExogenousTradeCosts NewExogenousTradeCapacityCosts
+$loadm ExogenousTradeCosts TotalExogenousTradeCapacity ExogenousNetTradeAnnual AnnualTotalExogenousTradeCosts
+$endif
+
 ** Marginals from Equations
 equation E8_RegionalAnnualEmissionsLimit(YEAR_FULL,EMISSION,REGION_FULL);
 equation E9_AnnualEmissionsLimit(YEAR_FULL,EMISSION);
@@ -108,6 +114,22 @@ output_systemcosts('Discounted Power Costs','Transmission','Europe',y) = sum(r,(
 
 output_systemcosts('Discounted System Costs','Power','Europe_AT',y)$(output_systemcosts('Discounted System Costs','Power','Europe_AT',y) = 0) = na;
 
+$ifThen %switch_vertical_integration% == 1
+output_systemcosts('Discounted System Costs','ExogenousTrade',r,y) = DiscountedAnnualTotalExogenousTradeCosts.l(y,r)+sum((f,exr),DiscountedNewExogenousTradeCapacityCosts.l(y,f,r,exr));
+output_systemcosts('Discounted System Costs','ExogenousTrade','Europe',y) = sum(r,output_systemcosts('Discounted System Costs','ExogenousTrade',r,y));
+
+output_systemcosts('Discounted System Cost Split','ExogenousTrade',r,y) = DiscountedAnnualTotalExogenousTradeCosts.l(y,r)+sum((f,exr),DiscountedNewExogenousTradeCapacityCosts.l(y,f,r,exr));
+output_systemcosts('Discounted System Cost Split','ExogenousTrade','Europe',y) = sum(r,DiscountedAnnualTotalExogenousTradeCosts.l(y,r)+sum((f,exr),DiscountedNewExogenousTradeCapacityCosts.l(y,f,r,exr)));
+
+output_systemcosts('Discounted Power Costs','ExogenousTrade',r,y) = sum((l,exr)$(ExogenousTradeRoute(r,exr,'Power')),ExogenousImport.l(y,l,'Power',r,exr)*ExogenousTradeCosts(y,'Power',r,exr))/((1+GeneralDiscountRate(r))**(YearVal(y)-smin(yy, YearVal(yy))+0.5))+sum((exr),DiscountedNewExogenousTradeCapacityCosts.l(y,'Power',r,exr));
+output_systemcosts('Discounted Power Costs','ExogenousTrade','Europe',y) = sum(r,sum((l,exr)$(ExogenousTradeRoute(r,exr,'Power')),ExogenousImport.l(y,l,'Power',r,exr)*ExogenousTradeCosts(y,'Power',r,exr))/((1+GeneralDiscountRate(r))**(YearVal(y)-smin(yy, YearVal(yy))+0.5))+sum((exr),DiscountedNewExogenousTradeCapacityCosts.l(y,'Power',r,exr)));
+
+output_systemcosts('Discounted Power Costs','ExogenousTransmission',r,y) = (sum((l,exr)$(ExogenousTradeRoute(r,exr,'Power')),ExogenousImport.l(y,l,'Power',r,exr) * ExogenousTradeCosts(y,'Power',r,exr))/((1+GeneralDiscountRate(r))**(YearVal(y)-smin(yy, YearVal(yy))+0.5)))
++sum(exr,DiscountedNewExogenousTradeCapacityCosts.l(y,'Power',r,exr));
+output_systemcosts('Discounted Power Costs','ExogenousTransmission','Europe',y) = sum(r,(sum((l,exr)$(ExogenousTradeRoute(r,exr,'Power')),ExogenousImport.l(y,l,'Power',r,exr) * ExogenousTradeCosts(y,'Power',r,exr))/((1+GeneralDiscountRate(r))**(YearVal(y)-smin(yy, YearVal(yy))+0.5)))
++sum(exr,DiscountedNewExogenousTradeCapacityCosts.l(y,'Power',r,exr)));
+$endif
+
 * UNDISCOUNTED
 
 output_systemcosts('Nominal System Costs',se,r,y) = sum((t)$(TagTechnologyToSector(t,se)),CapitalInvestment.l(y,t,r)
@@ -145,14 +167,36 @@ output_systemcosts('Nominal Power Costs','Transmission',r,y) = (sum((l,rr)$(Trad
 output_systemcosts('Nominal Power Costs','Transmission','Europe',y) = sum(r,(sum((l,rr)$(TradeRoute(r,'Power',y,rr)),Import.l(y,l,'Power',r,rr) * TradeCosts('Power',r,rr)))
 +sum(rr,NewTradeCapacityCosts.l(y,'Power',r,rr)));
 
+$ifThen %switch_vertical_integration% == 0
 output_systemcosts('Nominal System Costs','Total',r,y) = sum(se,output_systemcosts('Nominal System Costs',se,r,y))+output_systemcosts('Nominal System Costs','Trade',r,y);
 output_systemcosts('Nominal System Costs','Total','Europe',y) = sum(r, output_systemcosts('Nominal System Costs','Total',r,y))+output_systemcosts('Nominal System Costs','Trade','Europe',y);
 
 output_systemcosts('Discounted System Costs','Total',r,y) = sum(se,output_systemcosts('Discounted System Costs',se,r,y))+output_systemcosts('Discounted System Costs','Trade',r,y);
 output_systemcosts('Discounted System Costs','Total','Europe',y) = sum(r, output_systemcosts('Discounted System Costs','Total',r,y))+output_systemcosts('Discounted System Costs','Trade','Europe',y);
-
+$endif
 output_systemcosts('Nominal System Costs','Industry','Europe_AT',y)$(output_systemcosts('Nominal System Costs','Industry','Europe_AT',y) = 0) = na;
 
+$ifThen %switch_vertical_integration% == 1
+output_systemcosts('Nominal System Costs','ExogenousTrade',r,y) = AnnualTotalExogenousTradeCosts.l(y,r)+sum((f,exr),NewExogenousTradeCapacityCosts.l(y,f,r,exr));
+output_systemcosts('Nominal System Costs','ExogenousTrade','Europe',y) = sum(r,output_systemcosts('Nominal System Costs','ExogenousTrade',r,y));
+
+output_systemcosts('Nominal System Cost Split','ExogenousTrade',r,y) = AnnualTotalExogenousTradeCosts.l(y,r)+sum((f,exr),NewExogenousTradeCapacityCosts.l(y,f,r,exr));
+output_systemcosts('Nominal System Cost Split','ExogenousTrade','Europe',y) = sum(r,AnnualTotalExogenousTradeCosts.l(y,r)+sum((f,exr),NewExogenousTradeCapacityCosts.l(y,f,r,exr)));
+
+output_systemcosts('Nominal Power Costs','ExogenousTrade',r,y) = sum((l,exr)$(ExogenousTradeRoute(r,exr,'Power')),ExogenousImport.l(y,l,'Power',r,exr) * ExogenousTradeCosts(y,'Power',r,exr)) + sum((exr),NewExogenousTradeCapacityCosts.l(y,'Power',r,exr));
+output_systemcosts('Nominal Power Costs','ExogenousTrade','Europe',y) = sum(r,sum((l,exr)$(ExogenousTradeRoute(r,exr,'Power')),ExogenousImport.l(y,l,'Power',r,exr) * ExogenousTradeCosts(y,'Power',r,exr)) + sum((rr),NewExogenousTradeCapacityCosts.l(y,'Power',r,exr)));
+
+output_systemcosts('Nominal Power Costs','ExogenousTransmission',r,y) = (sum((l,exr)$(ExogenousTradeRoute(r,exr,'Power')),ExogenousImport.l(y,l,'Power',r,exr) * ExogenousTradeCosts(y,'Power',r,exr)))
++sum(exr,NewExogenousTradeCapacityCosts.l(y,'Power',r,exr));
+output_systemcosts('Nominal Power Costs','ExogenousTransmission','Europe',y) = sum(r,(sum((l,exr)$(ExogenousTradeRoute(r,exr,'Power')),ExogenousImport.l(y,l,'Power',r,exr) * ExogenousTradeCosts(y,'Power',r,exr)))
++sum(exr,NewExogenousTradeCapacityCosts.l(y,'Power',r,exr)));
+
+output_systemcosts('Nominal System Costs','Total',r,y) = sum(se,output_systemcosts('Nominal System Costs',se,r,y))+output_systemcosts('Nominal System Costs','Trade',r,y)+output_systemcosts('Nominal System Costs','ExogenousTrade',r,y);
+output_systemcosts('Nominal System Costs','Total','Europe',y) = sum(r, output_systemcosts('Nominal System Costs','Total',r,y))+output_systemcosts('Nominal System Costs','Trade','Europe',y)+output_systemcosts('Nominal System Costs','ExogenousTrade','Europe',y);
+
+output_systemcosts('Discounted System Costs','Total',r,y) = sum(se,output_systemcosts('Discounted System Costs',se,r,y))+output_systemcosts('Discounted System Costs','Trade',r,y)+output_systemcosts('Discounted System Costs','ExogenousTrade',r,y);
+output_systemcosts('Discounted System Costs','Total','Europe',y) = sum(r, output_systemcosts('Discounted System Costs','Total',r,y))+output_systemcosts('Discounted System Costs','Trade','Europe',y)+output_systemcosts('Discounted System Costs','ExogenousTrade','Europe',y);
+$endif
 
 * -------
 * Electrification rates and volumes (%, TWh of electricity consumed [=production without storages])
@@ -405,8 +449,23 @@ parameter output_interconnection;
 output_interconnection('Transmission Capacity [GW]',r,y) = sum(rr,TotalTradeCapacity.l(y,'Power',r,rr));
 output_interconnection('Net Trade Volumes [TWh]',r,y) = NetTradeAnnual.l(y,'Power',r)/3.6;
 output_interconnection('Absolute Import Volume [TWh]',r,y) = sum((l,rr), Import.l(y,l,'Power',r,rr));
-output_interconnection('Import Dependency [%]',r,y) = (-1)*min(0,NetTradeAnnual.l(y,'Power',r))/(UseAnnual.l(y,'Power',r)-sum(StorageDummies,UseByTechnologyAnnual.l(y,StorageDummies,'Power',r))+SpecifiedAnnualDemand(r,'Power',y));
 output_interconnection('Transmission Capacity [GW]','Europe_AT',y)$(output_interconnection('Transmission Capacity [GW]','Europe_AT',y) = 0) = na;
+
+$ifThen %switch_vertical_integration% == 0
+output_interconnection('Import Dependency [%]',r,y) = (-1)*min(0,NetTradeAnnual.l(y,'Power',r))/(UseAnnual.l(y,'Power',r)-sum(StorageDummies,UseByTechnologyAnnual.l(y,StorageDummies,'Power',r))+SpecifiedAnnualDemand(r,'Power',y));
+$endif
+
+$ifThen %switch_vertical_integration% == 1
+output_interconnection('Import Dependency [%]',r,y) = (-1)*min(0,NetTradeAnnual.l(y,'Power',r))/(UseAnnual.l(y,'Power',r)-sum(StorageDummies,UseByTechnologyAnnual.l(y,StorageDummies,'Power',r))+SpecifiedAnnualDemand(r,'Power',y));
+
+parameter output_ExogenousInterconnection;
+output_ExogenousInterconnection('ExogenousTransmission Capacity [GW]',r,y) = sum(exr,TotalExogenousTradeCapacity.l(y,'Power',r,exr));
+output_ExogenousInterconnection('Net ExogenousTrade Volumes [TWh]',r,y) = ExogenousNetTradeAnnual.l(y,'Power',r)/3.6;
+output_ExogenousInterconnection('Absolute ExogenousImport Volume [TWh]',r,y) = sum((l,exr), ExogenousImport.l(y,l,'Power',r,exr));
+output_ExogenousInterconnection('Absolute ExogenousExport Volume [TWh]',r,y) = sum((l,exr), ExogenousExport.l(y,l,'Power',r,exr));
+output_ExogenousInterconnection('ExogenousImport Dependency [%]',r,y) = (-1)*min(0,ExogenousNetTradeAnnual.l(y,'Power',r))/(UseAnnual.l(y,'Power',r)-sum(StorageDummies,UseByTechnologyAnnual.l(y,StorageDummies,'Power',r))+SpecifiedAnnualDemand(r,'Power',y));
+output_ExogenousInterconnection('ExogenousTransmission Capacity [GW]','Europe_AT',y)$(output_ExogenousInterconnection('ExogenousTransmission Capacity [GW]','Europe_AT',y) = 0) = na;
+$endif
 
 * -------
 * Emissions

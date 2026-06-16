@@ -33,7 +33,7 @@ set REGION_FULL All regions included in the input data;
 alias (REGION_FULL,r_full,rr_full);
 
 set REGION(REGION_FULL) Subset of regions for which computation should actually happen;
-alias (REGION,r,rr)
+alias (REGION,r,rr);
 
 set TECHNOLOGY List of all available technologies
                /Infeasibility_Power,
@@ -42,7 +42,6 @@ set TECHNOLOGY List of all available technologies
                 Infeasibility_HMI,
                 Infeasibility_HHI,
                 Infeasibility_HRI,
-                Infeasibility_HD,
                 Infeasibility_Mob_Passenger,
                 Infeasibility_Mob_Freight,
                 Infeasibility_Natural_Gas /;
@@ -63,6 +62,14 @@ alias (s,STORAGE);
 
 set MODALTYPE List of all modal types for transport;
 alias (mt,MODALTYPE);
+
+$ifthen %switch_vertical_integration% == 1
+set EXOGENOUS_REGION_FULL All exogenous regions included in the input data but should not be modelled as regions;
+alias (EXOGENOUS_REGION_FULL,exr_full);
+
+set EXOGENOUS_REGION(EXOGENOUS_REGION_FULL) Subset of exogenous regions for which computation should actually happen;
+alias (EXOGENOUS_REGION,exr);
+$endIf
 
 *
 * ####################
@@ -219,6 +226,26 @@ parameter TagTechnologyToModalType(TECHNOLOGY,MODE_OF_OPERATION,MODALTYPE);
 parameter TagModalTypeToModalGroups(MODALTYPE,*);
 
 parameter ProductionGrowthLimit(FUEL,YEAR_FULL);
+
+*
+* ######### Exogenous Trade #############
+*
+$ifThen %switch_vertical_integration% == 1
+parameter ExogenousDemand(YEAR_FULL,TIMESLICE_FULL,FUEL,EXOGENOUS_REGION_FULL) The total value of export of model regions to exogenous region; 
+parameter ExogenousProduction(YEAR_FULL,TIMESLICE_FULL,FUEL,EXOGENOUS_REGION_FULL) The total value of import of model regions from exogenous region;
+
+parameter ExogenousTradeRoute(REGION_FULL,EXOGENOUS_REGION_FULL,FUEL) The length of possible trade routes between model regions and exogenous regions;
+
+Parameter ResidualExogenousTradeCapacity(REGION_FULL,EXOGENOUS_REGION_FULL,FUEL,YEAR_FULL) The trade capacity that already existed between model regions and exogenous regions for the bas year before supermodel run;
+Parameter CommissionedExogenousTradeCapacity(REGION_FULL,EXOGENOUS_REGION_FULL,FUEL,YEAR_FULL) The trade capacity between model regions and exogenous regions which has in reality been commissioned which the model does not need to account cost for;
+
+Parameter GrowthRateExogenousTradeCapacity(REGION_FULL,EXOGENOUS_REGION_FULL,FUEL,YEAR_FULL) The growth rate factor for the exogenous trade capacity;
+parameter ExogenousTradeCapacityGrowthCosts(REGION_FULL,EXOGENOUS_REGION_FULL,FUEL) Cost of increasing trade capacity between model regions and exogenous regions; 
+
+parameter ExogenousTradeCosts(YEAR_FULL,FUEL,REGION_FULL,EXOGENOUS_REGION_FULL) Cost for trading fuels without trade capacity to exogenous regions;
+
+parameter ExogenousTradeLossBetweenRegions(y_full,FUEL,REGION_FULL,EXOGENOUS_REGION_FULL);
+$endIf
 
 * #####################
 * # Model Variables #
@@ -427,4 +454,24 @@ parameter CoalJobs;
 parameter output_energyjobs;
 $endif
 
+*
+* ######### Exogenous Trade #############
+*
+free variable AllDiscountedExogenousTradeCosts Sum of exogenous trade costs for capacity and flows;
 
+$ifThen %switch_vertical_integration% == 1
+positive variable ExogenousExport(YEAR_FULL,TIMESLICE_FULL,FUEL,REGION_FULL,EXOGENOUS_REGION_FULL) The export a modelled region does to a region outside system boundaries;
+positive variable ExogenousImport(YEAR_FULL,TIMESLICE_FULL,FUEL,REGION_FULL,EXOGENOUS_REGION_FULL) The import a modelled region does to a region outside system boundaries;
+
+Positive Variable TotalExogenousTradeCapacity(YEAR_FULL,FUEL,REGION_FULL,EXOGENOUS_REGION_FULL) The total trade capacity existing between model regions and exogenous regions;
+Positive Variable NewExogenousTradeCapacity(YEAR_FULL,FUEL,REGION_FULL,EXOGENOUS_REGION_FULL) The new trade capacity between model regions and exogenous regions;
+
+free variable ExogenousNetTrade(YEAR_FULL,TIMESLICE_FULL,FUEL,REGION_FULL);
+free variable ExogenousNetTradeAnnual(YEAR_FULL,FUEL,REGION_FULL);
+
+positive variable NewExogenousTradeCapacityCosts(YEAR_FULL, FUEL, REGION_FULL, EXOGENOUS_REGION_FULL) The cost of building new trade capacity to exogenous regions;
+positive variable DiscountedNewExogenousTradeCapacityCosts(YEAR_FULL, FUEL, REGION_FULL, EXOGENOUS_REGION_FULL) Discounted cost for building trade capacity;
+
+free variable AnnualTotalExogenousTradeCosts(YEAR_FULL,REGION_FULL) Annual cost of trading fuels without trade capacity;
+free variable DiscountedAnnualTotalExogenousTradeCosts(YEAR_FULL,REGION_FULL) Discounted annual cost of trade with exogenous regions;
+$endIf
