@@ -35,7 +35,19 @@ equations
 accEps$(runAug = 1)..
     zAcc + sAcc =e= epsAcc;
 
-* Minimizing zAug => minimize cost, and secondarily drive sAcc -> 0 (tight epsilon)
+* Minimizing zAug => minimize cost, and secondarily REWARD slack so that among
+* all cost-equivalent solutions the one with the LOWEST zAcc (best acceptance)
+* is selected. This is the standard AUGMECON augmentation and guarantees the
+* reported points are strictly Pareto-efficient, not weakly-dominated.
+*
+* NOTE: the sign was previously '+', which PENALISED slack and therefore drove
+* zAcc UP to epsAcc at every point (sAcc = 0 everywhere in the output). Near the
+* cost-optimal end that produced a spurious "free-lunch" frontier segment
+* (k7-k10): identical generation capacity, near-flat cost, yet zAcc smeared from
+* 56.7 up to 63.4 purely because the augmentation forced zAcc onto the epsilon
+* bound. With the corrected '-' sign, those dominated points collapse onto the
+* true minimum-resistance cost-optimal solution, and the remaining frontier is
+* genuinely efficient.
 augObj$(runAug = 1)..
-    zAug =e= z + rho * (sAcc / rangeAcc);
+    zAug =e= z - rho * (sAcc / rangeAcc);
 

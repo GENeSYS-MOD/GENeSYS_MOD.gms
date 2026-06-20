@@ -24,7 +24,7 @@ starttime = jnow;
 
 $if not set data_file                    $setglobal data_file input_Germany_H2_v25_joh_02_03_2026
 $if not set hourly_data_file             $setglobal hourly_data_file input_timeseries_DE_v04_nim_18-06-2024
-$if not set elmod_nthhour                $setglobal elmod_nthhour 724
+$if not set elmod_nthhour                $setglobal elmod_nthhour 484
 $if not set elmod_starthour              $setglobal elmod_starthour 8
 $if not set year                         $setglobal year 2018
 $if not set data_base_region             $setglobal data_base_region DE_BY
@@ -105,7 +105,7 @@ $if not set emissionScenario             $setglobal emissionScenario globalLimit
 * AUGMECON controls (same as AUGMECON version)
 * ============================================================
 $if not set switch_augmecon              $setglobal switch_augmecon 1
-$if not set augmecon_points              $setglobal augmecon_points 2
+$if not set augmecon_points              $setglobal augmecon_points 3
 
 $ifthen %switch_unixPath% == 1
 $if not set inputdir                     $setglobal inputdir Inputdata/

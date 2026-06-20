@@ -8,9 +8,16 @@
 *   • Import fixes                    — always active
 *
 * switch_guard_mode = 1  :  Dispatch-Guard (new)
-*   • RateOfActivity.fx for all non-opt-sector technologies
+*   • RateOfActivity pinned to Anchor-1 values for all non-opt-sector
+*     technologies: literal .fx = 0 where Anchor-1 value is exactly zero
+*     (no roundoff risk, fully eliminated in presolve); a tight .lo/.up
+*     band (+/- epsDispatchGuard, 1e-6) around the Anchor-1 value where it
+*     is nonzero (only there does the .l -> parameter -> .fx roundtrip
+*     risk floating-point noise)
 *     → applied PROCEDURALLY in genesysmod_augmecon_driver.gms
-*     → eliminates variables in presolve (model becomes SMALLER)
+*     → effectively fixed for solver purposes; avoids both the literal-
+*       equality EB2 floating-point infeasibility AND the numerical-
+*       conditioning blowup a uniform near-zero band caused at 364h/484h/724h
 *   • FIX_NewCapacity_NonOpt still active as capacity safety net
 *   • FIX_TotalCapacityAnnual_Sector INACTIVE for opt sectors
 *     Rationale: the energy balance (EB2_EnergyBalanceEachTS) already
@@ -27,7 +34,7 @@
 
 scalar switch_guard_mode /0/;
 * 0 = Capacity-Guard  (FIX_TotalCapacityAnnual_Sector, original)
-* 1 = Dispatch-Guard  (RateOfActivity.fx via driver, no capacity eq.)
+* 1 = Dispatch-Guard  (RateOfActivity .fx=0 / .lo-.up band via driver, no capacity eq.)
 
 scalar capDrop /0.00/;
 * (not used; kept for easy switching if needed)
@@ -66,6 +73,8 @@ RefNewCap(y_full,TECHNOLOGY,REGION_FULL) = 0;
 * Dispatch baseline per technology/timeslice/mode/region (Dispatch-Guard)
 * Populated from Anchor1 .l values in the driver; used for .fx assignment.
 * Dimensions match RateOfActivity exactly so GDX load/save is trivial.
+* This is the original, validated parameter (exact 595.6 GW Power-sector
+* capacity constancy confirmed at 244h/364h resolution).
 * ------------------------------------------------------------------
 parameter RefRateOfActivity(y_full,TIMESLICE_FULL,TECHNOLOGY,MODE_OF_OPERATION,REGION_FULL);
 RefRateOfActivity(y_full,l_full,TECHNOLOGY,MODE_OF_OPERATION,REGION_FULL) = 0;
@@ -131,8 +140,8 @@ FIX_TotalCapacityAnnual_Sector(se,y)$(
 * Prevents cascading effects: e.g. fewer EVs (Transportation) reduces
 * electricity demand, indirectly reshaping the Power sector in a way
 * that looks acceptance-driven but is not.
-* In Dispatch-Guard mode, RateOfActivity.fx (applied in driver) is the
-* primary constraint; this equation is a redundant safety net that
+* In Dispatch-Guard mode, RateOfActivity .lo/.up pinning (applied in driver)
+* is the primary constraint; this equation is a redundant safety net that
 * prevents the accumulation equations from building excess capacity.
 * ------------------------------------------------------------------
 FIX_NewCapacity_NonOpt(y,t,r)$(
@@ -146,17 +155,23 @@ FIX_NewCapacity_NonOpt(y,t,r)$(
 * solution did not invest in.
 
 * ------------------------------------------------------------------
-* Dispatch-Guard: RateOfActivity.fx for non-opt-sector technologies
+* Dispatch-Guard: RateOfActivity .lo/.up band for non-opt-sector technologies
 *
-* NOT implemented as an equation here — applied as .fx variable bounds
-* in genesysmod_augmecon_driver.gms immediately after Anchor 1 is saved.
+* NOT implemented as an equation here — applied as .lo/.up variable bounds
+* (+/- epsDispatchGuard around the Anchor-1 value, NOT a literal .fx) in
+* genesysmod_augmecon_driver.gms immediately after Anchor 1 is saved.
+* A literal .fx was used originally but over-determined
+* EB2_EnergyBalanceEachTS for fuels served exclusively by non-opt-sector
+* technologies via floating-point roundoff in the .l -> parameter -> .fx
+* roundtrip (confirmed at 364h/484h/724h); the tiny band absorbs that
+* noise while remaining numerically indistinguishable from a true fix.
 *
-* Why .fx and not an equation?
+* Why .lo/.up (not .fx) and not an equation?
 *   An equation FIX_RateOfActivity_NonOpt(y,l,t,m,r) over all non-opt
 *   technologies would add several million rows to the LP (y × 244l × t × m × r).
-*   Variable fixing via .fx is handled in presolve: the solver REMOVES
-*   these variables before factorisation, so the LP actually gets SMALLER,
-*   improving Barrier convergence (fewer rows, better scaling).
+*   Variable bounding via .lo/.up is handled in presolve much like .fx:
+*   Gurobi can still substitute these effectively-fixed variables out
+*   before factorisation, keeping the LP small and Barrier convergence fast.
 *
 * See genesysmod_augmecon_driver.gms, section "DISPATCH-GUARD ANCHOR1 CAPTURE"
 * for the exact implementation.

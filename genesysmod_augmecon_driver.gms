@@ -1,6 +1,34 @@
 * ============================================================
 * GENeSYS-MOD: AUGMECON driver
 * ============================================================
+*
+* ============================================================
+* *** CENTRAL CONFIGURATION — only edit this block ***
+* ============================================================
+
+* Number of Pareto points (10 for final runs, 5 for sensitivity tests)
+$setglobal augmecon_points 10
+
+* Guard mode:
+*   0 = Capacity-Guard (original, fixes total sector capacity)
+*   1 = Dispatch-Guard (new, fixes RateOfActivity for non-opt sectors)
+$setglobal cfg_guard_mode 1
+
+* Sensitivity run (leave empty for baseline):
+*   ''              = baseline (no AcceptanceFactor override)
+*   'wind_plus10'   = Wind Onshore +10pp acceptance
+*   'h2boiler_low'  = HLR_H2_Boiler acceptance = 45%
+*   'h2boiler_mean' = HLR_H2_Boiler acceptance = 63.2% (mean fallback)
+*   'wind_plus10_h2boiler_low' = combined
+$setglobal cfg_sensitivity ''
+
+* ============================================================
+* *** END OF CONFIGURATION — do not edit below this line ***
+* ============================================================
+
+* Apply sensitivity override (only if cfg_sensitivity is not empty)
+$if not '%cfg_sensitivity%'=='' $setglobal switch_sensitivity %cfg_sensitivity%
+$if set switch_sensitivity $include genesysmod_sensitivity.gms
 
 $if not set augmecon_points $setglobal augmecon_points 3
 * Derive base GDX name from the -gdx= command line argument.
@@ -20,6 +48,42 @@ parameter epsGrid(k);
 
 scalar zStar, zAccAtCost, zAccMin;
 scalar zAccLo, zAccHi;
+scalar nEB2Skip;
+
+* -------------------------------------------------
+* Base-year capacity lock (switch_fix_baseyear)
+* The acceptance objective (genesysmod_acceptance_factor.gms) counts
+* NewCapacity only for YearVal > 2020, exempting the base year (2018).
+* Because zAcc is built from NewCapacity (a flow) rather than the capacity
+* stock, the optimiser can retime cheap Resources-sector builds (roundwood,
+* grass, rooftop PV) across the 2018/2025 boundary to move zAcc up or down at
+* near-zero cost, while the physical stock (TotalCapacity) stays identical.
+* This produced the spurious flat "free-lunch" tail of the Pareto frontier.
+* Locking base-year NewCapacity to the cost-optimal Anchor 1 values removes
+* that accounting lever: the base year (a calibration year) can no longer be
+* used as an acceptance-free buffer, so zAcc can only change through genuine
+* in-window (2025+) capacity decisions that carry real cost.
+* -------------------------------------------------
+scalar switch_fix_baseyear /1/;
+parameter RefNewCapacityBase(YEAR_FULL,TECHNOLOGY,REGION_FULL);
+
+* Dispatch-Guard floating-point tolerance (see Block 2 below).
+* Diagnosed from genesysmod.lst EB2_EnergyBalanceEachTS infeasibility reports
+* at 364h/484h/724h: residuals from the RateOfActivity.l -> RefRateOfActivity
+* -> .fx roundtrip cluster at 1e-15 to 3.75e-13 (IEEE double epsilon scale).
+* Smallest real RHS magnitude observed in the same runs is 5e-6.
+* 1e-6 sits comfortably above the worst observed residual (3.75e-13) and
+* far below any economically meaningful activity level (RefRateOfActivity
+* values observed up to ~1e3), while staying away from extreme near-zero
+* bound widths. Only applied to instances with Anchor1 value != 0 (see
+* Block 2 Step 2): exact-zero instances use a literal .fx = 0 instead,
+* since summing exact zeros carries no roundoff risk and keeps those
+* (numerous) variables fully eliminated in presolve rather than leaving
+* them as near-zero-but-nonzero boxes, which is what broke Gurobi's
+* Barrier/Crossover numerics in the first attempt (Bound range collapsed
+* to [1e-09, 1e+03] alongside RHS up to 7e6 when the band was applied
+* uniformly, including to exact-zero instances).
+scalar epsDispatchGuard /1e-6/;
 
 file pareto /%resultdir%pareto_augmecon.csv/;
 put pareto;
@@ -67,8 +131,24 @@ $endif.sel
 *       implicitly fixed by the energy balance because all non-opt
 *       sector consumption and all imports are frozen.
 * -------------------------------------------------
-* *** TO SWITCH MODES: change the value on the next line (0 or 1) ***
-switch_guard_mode = 0;
+* Read from central configuration block above
+switch_guard_mode = %cfg_guard_mode%;
+
+* -------------------------------------------------
+* Secondary Gurobi option file (optfile=2): identical to gurobi.opt
+* (set up by genesysmod.gms) except crossover=0. Used ONLY for the
+* Anchor-2 (zAcc minimisation) solve below, where the LP is highly
+* degenerate in the dispatch dimension and crossover can take hours
+* to find a basic solution we do not actually need (see Anchor 2 note).
+* -------------------------------------------------
+$onecho > gurobi.op2
+threads %threads%
+method 2
+names yes
+barhomogeneous 1
+timelimit 1000000
+crossover 0
+$offecho
 
 * -------------------------------------------------
 * Anchors
@@ -102,6 +182,12 @@ RefNewCap(y,t,r)$(
     sum(se$(TagTechnologyToSector(t,se)=1 and accOptSector(se)=0), 1) > 0
 ) = NewCapacity.l(y,t,r);
 
+* Capture base-year (YearVal <= 2020) NewCapacity from the cost-optimal Anchor 1.
+* Reference is Anchor 1 because it has no acceptance objective and therefore no
+* incentive to game the base year — a clean, cost-driven calibration value.
+* Applied (fixed) below, just before Anchor 2, when switch_fix_baseyear = 1.
+RefNewCapacityBase(y,t,r)$(YearVal(y) <= 2020) = NewCapacity.l(y,t,r);
+
 * -------------------------------------------------
 * [BLOCK 2] DISPATCH-GUARD ANCHOR1 CAPTURE
 * Only executed when switch_guard_mode = 1.
@@ -110,7 +196,11 @@ RefNewCap(y,t,r)$(
 * -------------------------------------------------
 if(switch_guard_mode = 1,
 
-*   Step 1: save RateOfActivity from Anchor 1 for non-opt-sector technologies.
+*   DISPATCH-GUARD: Fix RateOfActivity per timeslice for all non-opt-sector,
+*   non-Storage technologies. This is the original, validated formulation
+*   (confirmed exact 595.6 GW Power-sector capacity constancy across all
+*   k-points at 244h/364h resolution).
+*
 *   Storages sector is EXCLUDED: S2_StorageLevelTSStart is a time-sequential
 *   balance (StorageLevel(t+1) = StorageLevel(t) + charge.fx - discharge.fx).
 *   Fixing both charge and discharge per timeslice fully determines the storage
@@ -118,6 +208,25 @@ if(switch_guard_mode = 1,
 *   can push StorageLevel outside its bounds, causing GAMS to flag
 *   "Equation infeasible due to rhs value" at equation-generation time.
 *   Storage capacity is still constrained via FIX_NewCapacity_NonOpt.
+*
+*   FIXED (root cause confirmed via genesysmod.lst at 364h/484h/724h):
+*   strict .fx over-determines EB2_EnergyBalanceEachTS for fuels served
+*   EXCLUSIVELY by non-opt-sector technologies (Mobility_Passenger,
+*   Mobility_Freight, Heat_District, Heat_High_Industrial,
+*   Heat_Medium_Industrial — confirmed across all violated instances,
+*   never Power-sector fuels). After .fx removes every free variable from
+*   such an EB2 instance, GAMS's pre-solve equality check requires
+*   sum(fixed terms) = 0 EXACTLY; the RateOfActivity.l -> RefRateOfActivity
+*   -> .fx roundtrip leaves residuals of 1e-15 to 3.75e-13 (IEEE double
+*   epsilon scale), which GAMS then flags as "Equation infeasible due to
+*   rhs value" before the solver is ever invoked. This reproduced
+*   identically and deterministically at 364h, 484h, and 724h baseline
+*   (no sensitivity), so it is NOT resolution- or sensitivity-specific —
+*   only the data path (which fuels happen to be non-opt-exclusive) decides
+*   whether a given run trips it.
+*   Fix: see the zero/nonzero split implemented in Step 2 below.
+
+*   Step 1: save RateOfActivity from Anchor 1 for non-opt-sector technologies.
     RefRateOfActivity(y,l,t,m,r)$(
         sum(se$(TagTechnologyToSector(t,se)=1
                 and accOptSector(se)=0
@@ -126,11 +235,19 @@ if(switch_guard_mode = 1,
                         and sameas(se,'Storages')), 1) > 0
     ) = RateOfActivity.l(y,l,t,m,r);
 
-*   Step 2: fix RateOfActivity to Anchor1 values for non-opt, non-Storage sectors.
-*   .fx sets BOTH lower and upper bound simultaneously.
-*   Gurobi presolve removes these variables before factorisation →
-*   the LP matrix SHRINKS (better Barrier convergence, fewer iterations).
-*   These bounds remain active for both Anchor 2 and the AUGMECON loop.
+*   Step 2: pin RateOfActivity to Anchor1 values for non-opt, non-Storage
+*   sectors via EXACT .fx (single statement, zero- and nonzero-valued alike).
+*   Exact fixing eliminates these variables in Gurobi presolve, so the LP
+*   keeps a clean Bound range (no tiny near-zero boxes) and the Barrier
+*   converges fast as in Anchor 1 -> Crossover is safe again. This restores
+*   bit-exact Power-sector capacity constancy (595.6 GW across all k-points).
+*   The EB2 over-determination that exact .fx would otherwise trigger is
+*   handled NOT by widening bounds (the superseded +/- epsDispatchGuard band,
+*   which left tens of thousands of [val-1e-6, val+1e-6] boxes next to RHS up
+*   to 7e6, wrecked Barrier/Crossover numerics) but by SKIPPING the affected
+*   EB2 rows at generation time (TagEB2Skip below + gated condition in
+*   genesysmod_equ.gms). A skipped row has no free variable, so dropping it
+*   adds no information and introduces no dispatch freedom.
 *   Storage dispatch remains free — determined by energy balance + storage
 *   constraints (S2, S3, S5, S6) with fixed capacity from FIX_NewCapacity_NonOpt.
     RateOfActivity.fx(y,l,t,m,r)$(
@@ -141,15 +258,63 @@ if(switch_guard_mode = 1,
                         and sameas(se,'Storages')), 1) > 0
     ) = RefRateOfActivity(y,l,t,m,r);
 
+*   Step 3: build the EB2 skip tag. A row (y,f,r) is skippable iff its whole
+*   EB2 balance is frozen by the guard, i.e.:
+*     - it is a per-timeslice fuel (TagTimeIndependentFuel = 0, so EB2 applies)
+*     - NetTrade is fixed (no trade route -> NetTrade.fx = 0 upstream)
+*     - it has at least one contributing technology term, AND
+*     - NONE of its contributing technologies is free, where "free" means in
+*       an opt sector (accOptSector = 1) or in Storages. Equivalently: every
+*       producer/consumer of that fuel is a non-opt, non-Storage (now-fixed)
+*       technology. These are exactly the rows that error with
+*       "Equation infeasible due to rhs value" under a strict .fx.
+*   The tag is purely topological (technology-fuel ratios + accOptSector +
+*   Storage membership). The acceptance sensitivities only override
+*   AcceptanceFactor (a zAcc input), so this set is identical across baseline
+*   and every sensitivity scenario, and it auto-adapts if accOptSector changes.
+    TagEB2Skip(y,f,r) = 0;
+    TagEB2Skip(y,f,r)$(
+        TagTimeIndependentFuel(y,f,r) = 0
+        and sum(rr, TradeRoute(r,f,y,rr)) = 0
+        and sum((t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0
+                       or InputActivityRatio(r,t,f,m,y) <> 0), 1) > 0
+        and sum((t,m)$(
+                (OutputActivityRatio(r,t,f,m,y) <> 0
+                 or InputActivityRatio(r,t,f,m,y) <> 0)
+                and ( sum(se$(TagTechnologyToSector(t,se)=1
+                              and accOptSector(se)=1), 1) > 0
+                      or sum(se$(TagTechnologyToSector(t,se)=1
+                                 and sameas(se,'Storages')), 1) > 0 )
+            ), 1) = 0
+    ) = 1;
+
+*   Activate the gated EB2 skip for Anchor 2 and the whole AUGMECON loop.
+*   (guardActive was 0 during Anchor 1, so that solve was untouched.)
+    guardActive = 1;
+
+*   Sanity guard: report how many (y,f,r) rows are skipped and abort if the
+*   count is implausibly large. Expected: a handful of non-opt-exclusive fuels
+*   (Mobility_Passenger, Mobility_Freight, Heat_District, Heat_High_Industrial,
+*   Heat_Medium_Industrial) x affected regions x years. A large number would
+*   mean an opt-sector (e.g. Power/electricity) fuel was wrongly captured —
+*   stop before producing misleading results.
+    nEB2Skip = sum((y,f,r)$(TagEB2Skip(y,f,r) = 1), 1);
+    display nEB2Skip;
+    abort$(nEB2Skip > 2000)
+        "Dispatch-Guard EB2 skip captured an unexpectedly large number of "
+        "(y,f,r) rows. Check accOptSector and the technology-fuel topology "
+        "before trusting results.";
+
 *   Note on opt-sector behaviour in Dispatch-Guard mode:
 *   After fixing non-opt (excl. Storages) RateOfActivity, the electricity
 *   balance EB2_EnergyBalanceEachTS has:
 *     Power_production(free) + Storage_dispatch(free) - fixed_loads = Demand(exog.)
 *   The opt sector (Power, Resources) and storage dispatch are FREE to choose
 *   any technology/region combination. Storage provides timeslice flexibility
-*   for the Power sector reallocation.
-*   Acceptance reallocation within the opt sector is therefore driven purely
-*   by the zAcc objective — not by capacity bounds imposed by the guard.
+*   for the Power sector reallocation. Total opt-sector capacity per timeslice
+*   is therefore implicitly pinned by the now fully-determined residual
+*   demand — confirmed empirically (exact 595.6 GW Power capacity constancy
+*   across all k-points at 244h/364h resolution).
 );
 * -------------------------------------------------
 * END BLOCK 2
@@ -185,10 +350,41 @@ put_utility 'gdxout' / "%anchor1_gdx%.gdx";
 execute_unload;
 
 * IMPORTANT: compute zAccMin under SAME guard constraints (runGuard=1 activates your guard)
+*
+* CROSSOVER DISABLED FOR THIS SOLVE ONLY:
+* zAcc (acceptance objective) depends only on capacity-related variables
+* (NewCapacity / TotalCapacityAnnual), NOT on the intra-year dispatch profile.
+* With the annual-total dispatch guard, intra-year timeslice distribution is
+* completely free for both opt- and non-opt-sector technologies — meaning
+* there are vast numbers of dispatch profiles that achieve the exact same
+* zAcc value (primal degeneracy). Crossover must pivot through this
+* degenerate space to find a basic (vertex) solution, which can take many
+* hours or never terminate at high time resolutions (e.g. 484+ timeslices).
+* We only need the scalar zAccMin (objective value) here — no .l values from
+* this solve are used downstream (no GDX is saved, see note below) — so a
+* basic solution is unnecessary. gurobi.op2 is identical to gurobi.opt except
+* crossover=0, letting Gurobi report the barrier objective directly.
+* -------------------------------------------------
+* Lock the base year before any acceptance-constrained solve.
+* From here on (Anchor 2 + entire AUGMECON loop) base-year capacity is frozen
+* to the cost-optimal Anchor 1 values; the 2018 acceptance-free buffer is shut.
+* .fx persists across all following solves until released. Fixing ALL techs
+* (not just Resources) is intentional: 2018 is a calibration year and should
+* not flex with acceptance preferences. For non-opt techs this coincides with
+* the Dispatch-Guard's own NewCapacity fix (same Anchor 1 value -> consistent).
+* -------------------------------------------------
+if(switch_fix_baseyear = 1,
+    NewCapacity.fx(y,t,r)$(YearVal(y) <= 2020) = RefNewCapacityBase(y,t,r);
+);
+
+genesys.optfile = 2;
 runGuard = 1;
 solve genesys minimizing zAcc using lp;
 zAccMin = zAcc.l;
 runGuard = 0;
+genesys.optfile = 1;
+* Restored to default (crossover=1) for Anchor 1 already done, and required
+* for all AUGMECON loop solves below (GDX export needs a basic solution).
 
 * Anchor 2 GDX intentionally NOT saved here.
 * Saving it would pass the guard-constrained solution as warm start

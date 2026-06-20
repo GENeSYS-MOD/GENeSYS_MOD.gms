@@ -282,8 +282,30 @@ Import.fx(y,l,f,r,rr)$(TradeRoute(r,f,y,rr) = 0) = 0;
 Export.fx(y,l,f,rr,r)$(TradeRoute(r,f,y,rr) = 0) = 0;
 NetTrade.fx(y,l,f,r)$(sum(rr,TradeRoute(r,f,y,rr)) = 0) = 0;
 
+* ============================================================
+* Dispatch-Guard EB2 skip (gated drop-in addition; inert by default)
+* ------------------------------------------------------------
+* guardActive = 0 during Anchor 1 and whenever the Dispatch-Guard is off,
+* so EB2 below generates EXACTLY as in the upstream model (true no-op).
+* The AUGMECON driver sets guardActive = 1 and populates TagEB2Skip(y,f,r)
+* AFTER Block 2, only for (y,f,r) whose entire EB2 balance is frozen by the
+* dispatch guard: every contributing technology is non-opt & non-Storage
+* (RateOfActivity fixed) AND NetTrade is fixed (no trade route). Such a row
+* contains no free variable; re-imposing it adds no information and only
+* triggers GAMS's bit-exact fixed-row check ("Equation infeasible due to
+* rhs value", residuals ~1e-15..4e-13 from float re-summation). Skipping it
+* removes that false infeasibility WITHOUT introducing any dispatch freedom,
+* so Power-sector capacity stays bit-exact (the property the band broke).
+* Tag depends only on topology + accOptSector + Storage membership, none of
+* which the acceptance sensitivities touch -> identical set across baseline
+* and all sensitivity scenarios.
+* ============================================================
+scalar guardActive /0/;
+parameter TagEB2Skip(YEAR_FULL,FUEL,REGION_FULL);
+TagEB2Skip(YEAR_FULL,FUEL,REGION_FULL) = 0;
+
 equation EB2_EnergyBalanceEachTS(YEAR_FULL,TIMESLICE_FULL,FUEL,REGION_FULL);
-EB2_EnergyBalanceEachTS(y,l,f,r)$(TagTimeIndependentFuel(y,f,r) = 0).. sum((t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y))*YearSplit(l,y) =e= Demand(y,l,f,r) + sum((t,m)$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*InputActivityRatio(r,t,f,m,y)*TimeDepEfficiency(r,t,l,y))*YearSplit(l,y) + NetTrade(y,l,f,r);
+EB2_EnergyBalanceEachTS(y,l,f,r)$(TagTimeIndependentFuel(y,f,r) = 0 and (guardActive = 0 or TagEB2Skip(y,f,r) = 0)).. sum((t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y))*YearSplit(l,y) =e= Demand(y,l,f,r) + sum((t,m)$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*InputActivityRatio(r,t,f,m,y)*TimeDepEfficiency(r,t,l,y))*YearSplit(l,y) + NetTrade(y,l,f,r);
 
 equation EB3_EnergyBalanceEachYear(YEAR_FULL,FUEL,REGION_FULL);
 EB3_EnergyBalanceEachYear(y,f,r)$(TagTimeIndependentFuel(y,f,r)).. sum((l,t,m)$(OutputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*OutputActivityRatio(r,t,f,m,y)*YearSplit(l,y)) =g= sum((l,t,m)$(InputActivityRatio(r,t,f,m,y) <> 0), RateOfActivity(y,l,t,m,r)*InputActivityRatio(r,t,f,m,y)*YearSplit(l,y)*TimeDepEfficiency(r,t,l,y)) + NetTradeAnnual(y,f,r);
