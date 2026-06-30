@@ -64,6 +64,11 @@ alias (s,STORAGE);
 set MODALTYPE List of all modal types for transport;
 alias (mt,MODALTYPE);
 
+set TechGroup(*) Technology subset labels used in the group capacity limits;
+set RegionGroup(*) Region subset labels used in the group capacity limits;
+alias (tg,TechGroup);
+alias (rg,RegionGroup);
+
 *
 * ####################
 * # Parameters #
@@ -107,6 +112,7 @@ parameter RegionalBaseYearProduction(REGION_FULL,TECHNOLOGY,FUEL,YEAR_FULL);
 parameter TagElectricTechnology(TECHNOLOGY);
 parameter TagTechnologyToSubsets(TECHNOLOGY,*);
 parameter TagFuelToSubsets(FUEL,*);
+parameter TagRegionToSubsets(REGION_FULL,*);
 parameter TimeDepEfficiency(REGION_FULL,TECHNOLOGY,TIMESLICE_FULL,YEAR_FULL) Time dependent efficiency for technologies like heatpumps;
 
 
@@ -138,6 +144,8 @@ parameter StorageE2PRatio(STORAGE);
 *
 parameter TotalAnnualMaxCapacity(REGION_FULL,TECHNOLOGY,YEAR_FULL);
 parameter TotalAnnualMinCapacity(REGION_FULL,TECHNOLOGY,YEAR_FULL);
+parameter GroupTotalAnnualMaxCapacity(*,*,YEAR_FULL) Aggregated upper bound on summed TotalCapacityAnnual over a technology and region subset;
+parameter GroupTotalAnnualMinCapacity(*,*,YEAR_FULL) Aggregated lower bound on summed TotalCapacityAnnual over a technology and region subset;
 parameter NewCapacityExpansionStop(REGION_FULL,TECHNOLOGY);
 parameter AnnualMinNewCapacity(REGION_FULL,TECHNOLOGY,YEAR_FULL);
 parameter AnnualMaxNewCapacity(REGION_FULL,TECHNOLOGY,YEAR_FULL);

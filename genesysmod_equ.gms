@@ -505,6 +505,13 @@ TotalCapacityAnnual.fx(y,t,r)$(TotalAnnualMaxCapacity(r,t,y) = 0) = 0;
 equation TCC2_TotalAnnualMinCapacityConstraint(YEAR_FULL,TECHNOLOGY,REGION_FULL);
 TCC2_TotalAnnualMinCapacityConstraint(y,t,r)$(TotalAnnualMinCapacity(r,t,y)>0).. TotalCapacityAnnual(y,t,r) =g= TotalAnnualMinCapacity(r,t,y);
 
+* aggregated capacity limits over a technology subset and a region subset
+equation TCC3_GroupTotalAnnualMaxCapacityConstraint(*,*,YEAR_FULL);
+TCC3_GroupTotalAnnualMaxCapacityConstraint(tg,rg,y)$(GroupTotalAnnualMaxCapacity(tg,rg,y) < 999999 and GroupTotalAnnualMaxCapacity(tg,rg,y) > 0).. sum((t,r)$(TagTechnologyToSubsets(t,tg) and TagRegionToSubsets(r,rg)), TotalCapacityAnnual(y,t,r)) =l= GroupTotalAnnualMaxCapacity(tg,rg,y);
+
+equation TCC4_GroupTotalAnnualMinCapacityConstraint(*,*,YEAR_FULL);
+TCC4_GroupTotalAnnualMinCapacityConstraint(tg,rg,y)$(GroupTotalAnnualMinCapacity(tg,rg,y) > 0).. sum((t,r)$(TagTechnologyToSubsets(t,tg) and TagRegionToSubsets(r,rg)), TotalCapacityAnnual(y,t,r)) =g= GroupTotalAnnualMinCapacity(tg,rg,y);
+
 *
 * ############### New Capacity Constraints ##############
 *

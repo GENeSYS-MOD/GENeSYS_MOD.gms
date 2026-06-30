@@ -259,6 +259,16 @@ $onEmbeddedCode Connect:
         rowDimension: 3
         columnDimension: 0
 
+      - name: GroupTotalAnnualMaxCapacity
+        range: "Par_GroupTotalAnnualMaxCapacity!A2"
+        rowDimension: 3
+        columnDimension: 0
+
+      - name: GroupTotalAnnualMinCapacity
+        range: "Par_GroupTotalAnnualMinCapacity!A2"
+        rowDimension: 3
+        columnDimension: 0
+
       - name: NewCapacityExpansionStop
         range: "Par_NewCapacityExpansionStop!A2"
         rowDimension: 2
@@ -366,6 +376,11 @@ $onEmbeddedCode Connect:
 
       - name: TagTechnologyToSubsets
         range: "Par_TagTechnologyToSubsets!A2"
+        rowDimension: 2
+        columnDimension: 0
+
+      - name: TagRegionToSubsets
+        range: "Par_TagRegionToSubsets!A2"
         rowDimension: 2
         columnDimension: 0
 
