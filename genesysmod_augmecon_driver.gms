@@ -20,7 +20,7 @@ $setglobal cfg_guard_mode 1
 *   'h2boiler_low'  = HLR_H2_Boiler acceptance = 45%
 *   'h2boiler_mean' = HLR_H2_Boiler acceptance = 63.2% (mean fallback)
 *   'wind_plus10_h2boiler_low' = combined
-$setglobal cfg_sensitivity ''
+$setglobal cfg_sensitivity 'wind_plus10'
 
 * ============================================================
 * *** END OF CONFIGURATION — do not edit below this line ***
@@ -39,6 +39,12 @@ $setNames "%gams.gdx%" gdx_fp gdx_fn gdx_fe
 $if not set run_gdx $setglobal run_gdx "%gdxdir%%gdx_fn%"
 $if not set anchor1_gdx $setglobal anchor1_gdx "%run_gdx%_anchor1"
 * Example: -gdx=myrun_netzero produces myrun_netzero_anchor1.gdx, myrun_netzero_k1.gdx
+
+* Tag for result-file names (pareto CSV) so parallel runs / sensitivity
+* scenarios do not overwrite each other. Taken from the -gdx= run name;
+* falls back to 'baseline' if no -gdx= was given on the command line.
+$if not set run_tag $setglobal run_tag %gdx_fn%
+$if '%run_tag%'=='' $setglobal run_tag baseline
 $if not set switch_acc_sector_select $setglobal switch_acc_sector_select 1
 
 $eval NPOINTS %augmecon_points%
@@ -85,7 +91,7 @@ parameter RefNewCapacityBase(YEAR_FULL,TECHNOLOGY,REGION_FULL);
 * uniformly, including to exact-zero instances).
 scalar epsDispatchGuard /1e-6/;
 
-file pareto /%resultdir%pareto_augmecon.csv/;
+file pareto /%resultdir%pareto_augmecon_%run_tag%.csv/;
 put pareto;
 put "k,epsAcc,z,zAcc,sAcc,modelstat,solvestat" /;
 

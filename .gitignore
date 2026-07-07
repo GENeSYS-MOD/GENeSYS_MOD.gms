@@ -9,3 +9,12 @@
 *.gdx
 *~*
 225*
+
+# --- run artifacts (large / local-only) ---
+GdxFiles/
+TempFiles/
+Results/AUGMECON/
+Results/AUGMECON_Sensitivity/
+*.put
+*.op2
+*.g00
