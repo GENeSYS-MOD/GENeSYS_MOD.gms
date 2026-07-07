@@ -147,12 +147,16 @@ FIX_TotalCapacityAnnual_Sector(se,y)$(
 FIX_NewCapacity_NonOpt(y,t,r)$(
     ((runAug=1) or (runGuard=1))
     and sum(se$(TagTechnologyToSector(t,se) = 1 and accOptSector(se) = 0), 1) > 0
-    and TotalAnnualMaxCapacity(r,t,y) > 0
 )..
     NewCapacity(y,t,r) =e= RefNewCap(y,t,r);
-* TotalAnnualMaxCapacity > 0 limits to buildable technologies.
 * RefNewCap = 0 is valid: prevents building techs the cost-optimal
 * solution did not invest in.
+* NB (fix 2026-07-07): an earlier `and TotalAnnualMaxCapacity(r,t,y) > 0`
+* condition exempted the 19 non-opt techs WITHOUT MaxCapacity rows
+* (incl. D_PHS_Residual, which is also skipped by the dispatch guard as
+* a storage) — leaving acceptance-invisible free capacity across Pareto
+* points. The condition is removed; pinning every non-opt tech to its
+* Anchor-1 value is always feasible by construction.
 
 * ------------------------------------------------------------------
 * Dispatch-Guard: RateOfActivity .lo/.up band for non-opt-sector technologies
