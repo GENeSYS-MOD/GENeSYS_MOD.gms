@@ -34,12 +34,17 @@ $if not set solver                       $setglobal solver gurobi
 $if not set switch_FEP                   $setglobal switch_FEP 1
 $if not set switch_Policy_Scenario       $setglobal switch_Policy_Scenario 1
 $if not set switch_central_h2         $setglobal switch_central_h2 0
-$if not set switch_h2_waste_heat         $setglobal switch_h2_waste_heat 0
+* 2026-07-07: default 0 -> 1 to match the calibrated Dec-2024 PolicyScenario
+* reference run (electrolysis Heat_Waste output 0.10-0.15 active).
+$if not set switch_h2_waste_heat         $setglobal switch_h2_waste_heat 1
 
 
 *$if not set switch_import_costs_h2         $setglobal switch_import_costs_h2 1.82
 $if not set h2_pricetarget_h2         $setglobal h2_pricetarget 1.82
-$if not set switch_growth_rate_power $setglobal switch_growth_rate_power 1
+* 2026-07-07: default 1 -> 0 to match the calibrated Dec-2024 PolicyScenario
+* reference run: 0 = keep the input data's GrowthRateTradeCapacity (0.1 on
+* trade routes) instead of overriding Power trade growth to 100 %/a.
+$if not set switch_growth_rate_power $setglobal switch_growth_rate_power 0
 $if not set switch_transport_costs_h2    $setglobal switch_transport_costs_h2 1
 
 
