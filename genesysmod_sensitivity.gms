@@ -11,7 +11,16 @@
 *
 * Without --switch_sensitivity: baseline (no override, normal run).
 *
-* AcceptanceFactor(r,t,y) is on a 0-100 scale.
+* IMPORTANT — SCALE: this file is included from the AUGMECON driver,
+* i.e. AFTER genesysmod_acceptance_factor.gms has inverted
+* AcceptanceFactor to RESISTANCE (= 100 - acceptance). All overrides
+* below are therefore written on the RESISTANCE scale:
+*   acceptance +10pp  ==  resistance -10
+*   acceptance = 45   ==  resistance = 55
+*   acceptance = 63.2 ==  resistance = 36.8
+* (Fixed 2026-07-07: overrides were previously written on the
+* acceptance scale and thus acted in the OPPOSITE direction; the
+* wind_plus10 run of 2026-06-20 measured wind MINUS 10pp acceptance.)
 * Override is applied BEFORE Anchor 1 → all results (zAccAtCost,
 * zAccMin, Pareto frontier) reflect the modified values consistently.
 * ============================================================
@@ -26,16 +35,16 @@ $ifthen.sens "%switch_sensitivity%" == "wind_plus10"
 * when Wind Onshore acceptance improves by 10pp in all regions.
 *
 * Technologies: RES_Wind_Onshore_Opt, _Avg, _Inf
-* Change: AcceptanceFactor + 10, capped at 100
+* Change: acceptance +10pp = RESISTANCE - 10, floored at 0
 * ----------------------------------------------------------------
     AcceptanceFactor(r,'RES_Wind_Onshore_Opt',y)
-        = min(100, AcceptanceFactor(r,'RES_Wind_Onshore_Opt',y) + 10);
+        = max(0, AcceptanceFactor(r,'RES_Wind_Onshore_Opt',y) - 10);
     AcceptanceFactor(r,'RES_Wind_Onshore_Avg',y)
-        = min(100, AcceptanceFactor(r,'RES_Wind_Onshore_Avg',y) + 10);
+        = max(0, AcceptanceFactor(r,'RES_Wind_Onshore_Avg',y) - 10);
     AcceptanceFactor(r,'RES_Wind_Onshore_Inf',y)
-        = min(100, AcceptanceFactor(r,'RES_Wind_Onshore_Inf',y) + 10);
+        = max(0, AcceptanceFactor(r,'RES_Wind_Onshore_Inf',y) - 10);
 
-    display "SENSITIVITY: Wind Onshore +10pp applied.";
+    display "SENSITIVITY: Wind Onshore +10pp acceptance (resistance -10) applied.";
     display AcceptanceFactor;
 
 $elseif.sens "%switch_sensitivity%" == "h2boiler_low"
@@ -50,9 +59,10 @@ $elseif.sens "%switch_sensitivity%" == "h2boiler_low"
 * to this single assumption, given HLR_H2_Boiler is the largest
 * capacity driver in the baseline results (+830 GW toward k1).
 * ----------------------------------------------------------------
-    AcceptanceFactor(r,'HLR_H2_Boiler',y) = 45;
+*   acceptance 45 -> resistance 100-45 = 55
+    AcceptanceFactor(r,'HLR_H2_Boiler',y) = 55;
 
-    display "SENSITIVITY: HLR_H2_Boiler acceptance set to 45%.";
+    display "SENSITIVITY: HLR_H2_Boiler acceptance set to 45% (resistance 55).";
     display AcceptanceFactor;
 
 $elseif.sens "%switch_sensitivity%" == "h2boiler_mean"
@@ -65,9 +75,10 @@ $elseif.sens "%switch_sensitivity%" == "h2boiler_mean"
 * Setting it to the mean fallback (63.2%) tests whether results
 * change qualitatively when the technology receives a neutral weight.
 * ----------------------------------------------------------------
-    AcceptanceFactor(r,'HLR_H2_Boiler',y) = 63.2;
+*   acceptance 63.2 (mean) -> resistance 100-63.2 = 36.8 (cf. acceptance_factor.gms mean-fill)
+    AcceptanceFactor(r,'HLR_H2_Boiler',y) = 36.8;
 
-    display "SENSITIVITY: HLR_H2_Boiler acceptance set to 63.2% (mean fallback).";
+    display "SENSITIVITY: HLR_H2_Boiler acceptance set to 63.2% (resistance 36.8, mean fallback).";
     display AcceptanceFactor;
 
 $elseif.sens "%switch_sensitivity%" == "wind_plus10_h2boiler_low"
@@ -81,14 +92,15 @@ $elseif.sens "%switch_sensitivity%" == "wind_plus10_h2boiler_low"
 * AND wind is more attractive simultaneously.
 * ----------------------------------------------------------------
     AcceptanceFactor(r,'RES_Wind_Onshore_Opt',y)
-        = min(100, AcceptanceFactor(r,'RES_Wind_Onshore_Opt',y) + 10);
+        = max(0, AcceptanceFactor(r,'RES_Wind_Onshore_Opt',y) - 10);
     AcceptanceFactor(r,'RES_Wind_Onshore_Avg',y)
-        = min(100, AcceptanceFactor(r,'RES_Wind_Onshore_Avg',y) + 10);
+        = max(0, AcceptanceFactor(r,'RES_Wind_Onshore_Avg',y) - 10);
     AcceptanceFactor(r,'RES_Wind_Onshore_Inf',y)
-        = min(100, AcceptanceFactor(r,'RES_Wind_Onshore_Inf',y) + 10);
-    AcceptanceFactor(r,'HLR_H2_Boiler',y) = 45;
+        = max(0, AcceptanceFactor(r,'RES_Wind_Onshore_Inf',y) - 10);
+*   acceptance 45 -> resistance 55
+    AcceptanceFactor(r,'HLR_H2_Boiler',y) = 55;
 
-    display "SENSITIVITY: Wind +10pp AND HLR_H2_Boiler = 45% applied.";
+    display "SENSITIVITY: Wind +10pp acceptance AND HLR_H2_Boiler = 45% acceptance applied (resistance scale).";
     display AcceptanceFactor;
 
 $else.sens
