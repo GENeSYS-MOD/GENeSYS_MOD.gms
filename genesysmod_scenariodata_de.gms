@@ -366,3 +366,39 @@ DistrictHeatingShareHLR(y,f)..sum(r,ProductionByTechnologyAnnual('2050','HLR_Con
 
 equation DistrictHeatingShareHLI(YEAR_FULL,FUEL);
 DistrictHeatingShareHLI(y,f)..sum(r,ProductionByTechnologyAnnual('2050','HLI_Convert_DH','Heat_Low_Industrial',r)) =g= 0.1*sum((r,t),ProductionByTechnologyAnnual('2050',t,'Heat_Low_Industrial',r));
+
+*###### Limit FRT_Road_OH (overhead-catenary trucks) ######
+* Cap: Mobility_Freight output of FRT_Road_OH summed over ALL regions
+* must not exceed 450 PJ in each model year. (Added 2026-07-07)
+equation FRT_Road_OH_ProductionLimit(YEAR_FULL);
+FRT_Road_OH_ProductionLimit(y)..
+    sum(r, ProductionByTechnologyAnnual(y,'FRT_Road_OH','Mobility_Freight',r)) =l= 450;
+
+
+*###### Regional equity: 2%-Flaechenziel analogue (Wind-an-Land-Gesetz) ######
+* Scenario switch (--switch_area_equity=1): every Flaechenland must host
+* onshore-wind capacity of at least 0.8 x its area share of the national
+* onshore total (corridor factor 0.8 reflects the 1.8-2.2% target spread),
+* binding from 2035 (WindBG milestone 2032). City states and offshore
+* regions (DE_Baltic/DE_Nord) are excluded from both sides.
+* Research question: what does regional burden equity cost in EUR and zAcc?
+* (Added 2026-07-08)
+$if not set switch_area_equity $setglobal switch_area_equity 0
+$ifthen %switch_area_equity% == 1
+
+set eq_onshore(t) / RES_Wind_Onshore_Opt, RES_Wind_Onshore_Avg, RES_Wind_Onshore_Inf /;
+set eq_land(r_full) / DE_BW, DE_BY, DE_BB, DE_HE, DE_MV, DE_NI, DE_NRW,
+                      DE_RP, DE_SL, DE_SN, DE_ST, DE_SH, DE_TH /;
+parameter LandAreaShare(r_full) area share of the 13 Flaechenlaender (km2 basis - sums to 1) /
+    DE_BW  0.10055, DE_BY  0.19841, DE_BB  0.08341, DE_HE  0.05939,
+    DE_MV  0.06552, DE_NI  0.13420, DE_NRW 0.09595, DE_RP  0.05586,
+    DE_SL  0.00723, DE_SN  0.05190, DE_ST  0.05753, DE_SH  0.04445,
+    DE_TH  0.04558 /;
+
+equation AreaEquityOnshore(YEAR_FULL, REGION_FULL);
+AreaEquityOnshore(y,eq_land)$(YearVal(y) >= 2035)..
+    sum(eq_onshore, TotalCapacityAnnual(y,eq_onshore,eq_land))
+    =g= 0.8 * LandAreaShare(eq_land) *
+        sum((eq_onshore,rr)$(eq_land(rr)), TotalCapacityAnnual(y,eq_onshore,rr));
+
+$endif

@@ -6,21 +6,26 @@
 * *** CENTRAL CONFIGURATION — only edit this block ***
 * ============================================================
 
-* Number of Pareto points (10 for final runs, 5 for sensitivity tests)
-$setglobal augmecon_points 10
+* Number of Pareto points (10 for final runs, 5 for screening)
+* All three settings are command-line overridable since 2026-07-08,
+* e.g.  gams genesysmod.gms --augmecon_points=5 --cfg_sensitivity=cable
+$if not set augmecon_points $setglobal augmecon_points 10
 
 * Guard mode:
 *   0 = Capacity-Guard (original, fixes total sector capacity)
 *   1 = Dispatch-Guard (new, fixes RateOfActivity for non-opt sectors)
-$setglobal cfg_guard_mode 1
+$if not set cfg_guard_mode $setglobal cfg_guard_mode 1
 
-* Sensitivity run (leave empty for baseline):
-*   ''              = baseline (no AcceptanceFactor override)
-*   'wind_plus10'   = Wind Onshore +10pp acceptance
-*   'h2boiler_low'  = HLR_H2_Boiler acceptance = 45%
-*   'h2boiler_mean' = HLR_H2_Boiler acceptance = 63.2% (mean fallback)
-*   'wind_plus10_h2boiler_low' = combined
-$setglobal cfg_sensitivity 'wind_plus10'
+* Sensitivity run (leave empty for baseline; see genesysmod_sensitivity.gms):
+*   ''              = baseline (no override)
+*   'wind_plus10'   = Wind Onshore +10pp acceptance (§6 EEG participation)
+*   'h2boiler_low' / 'h2boiler_mean' / 'wind_plus10_h2boiler_low'
+*   'cable'         = underground-cabling regime (powerline resistance x0.2,
+*                     Power trade capacity growth costs x2.5)
+*   'familiarity'   = exposure effect: RES wind/PV resistance -10 from 2040
+*   'meanfill_50' / 'meanfill_low' = mean-fill robustness (36.8 -> 50 / 38.5)
+*   'accounting_zero' = A_*/Z_Import_* accounting techs resistance = 0
+$if not set cfg_sensitivity $setglobal cfg_sensitivity ''
 
 * ============================================================
 * *** END OF CONFIGURATION — do not edit below this line ***
@@ -123,6 +128,18 @@ $ifthen.sel %switch_acc_sector_select% == 1
     accOptSector('Transformation') = 0;
     accOptSector('CHP') = 0;
 $endif.sel
+* 2 = heat-scope scenario: Buildings additionally in zAcc (heat-pump
+*     resistance 43 counts; GEG/Waermewende research question, 2026-07-08)
+$ifthen.sel2 %switch_acc_sector_select% == 2
+    accOptSector('Power') = 1;
+    accOptSector('Industry') = 0;
+    accOptSector('Buildings') = 1;
+    accOptSector('Transportation') = 0;
+    accOptSector('Resources') = 1;
+    accOptSector('Storages') = 0;
+    accOptSector('Transformation') = 0;
+    accOptSector('CHP') = 0;
+$endif.sel2
 
 * -------------------------------------------------
 * [BLOCK 1] Guard mode selection

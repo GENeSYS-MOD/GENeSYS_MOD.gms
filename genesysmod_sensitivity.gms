@@ -103,7 +103,89 @@ $elseif.sens "%switch_sensitivity%" == "wind_plus10_h2boiler_low"
     display "SENSITIVITY: Wind +10pp acceptance AND HLR_H2_Boiler = 45% acceptance applied (resistance scale).";
     display AcceptanceFactor;
 
+$elseif.sens "%switch_sensitivity%" == "cable"
+* ----------------------------------------------------------------
+* Sensitivity 5: Underground-cabling regime (Erdkabel statt Freileitung)
+*
+* Motivation: >2/3 of residents reject new overhead lines while cables
+* are broadly accepted (Stiftung Energie & Klimaschutz); cable capex is
+* a factor ~2-3 above overhead lines over lifetime (Frontier Economics,
+* SuedWestLink). Tests whether buying grid acceptance is cheaper than
+* re-siting generation.
+* NB semantics of AcceptanceFactorPowerLines are unresolved (147.79>100
+* outlier); scaling the factor toward 0 shrinks the zAcc powerline term
+* regardless of orientation, so the scenario is semantics-robust.
+* ----------------------------------------------------------------
+    AcceptanceFactorPowerLines(r,rr,'Power',y) = 0.2 * AcceptanceFactorPowerLines(r,rr,'Power',y);
+    TradeCapacityGrowthCosts(r,'Power',rr) = 2.5 * TradeCapacityGrowthCosts(r,'Power',rr);
+
+    display "SENSITIVITY: cable regime - powerline resistance x0.2, Power grid growth costs x2.5.";
+
+$elseif.sens "%switch_sensitivity%" == "familiarity"
+* ----------------------------------------------------------------
+* Sensitivity 6: Exposure/familiarity effect (Gewoehnungseffekt)
+*
+* Motivation: SNB/AEE surveys consistently find ~+10pp acceptance where
+* installations are already known (RE in neighbourhood 60->70%, heat
+* pumps 49->68%). Approximated exogenously: RES wind/PV resistance
+* falls by 10 points from 2040 (post-buildout familiarisation).
+* ----------------------------------------------------------------
+    AcceptanceFactor(r,'RES_Wind_Onshore_Opt',y)$(YearVal(y) >= 2040)  = max(0, AcceptanceFactor(r,'RES_Wind_Onshore_Opt',y) - 10);
+    AcceptanceFactor(r,'RES_Wind_Onshore_Avg',y)$(YearVal(y) >= 2040)  = max(0, AcceptanceFactor(r,'RES_Wind_Onshore_Avg',y) - 10);
+    AcceptanceFactor(r,'RES_Wind_Onshore_Inf',y)$(YearVal(y) >= 2040)  = max(0, AcceptanceFactor(r,'RES_Wind_Onshore_Inf',y) - 10);
+    AcceptanceFactor(r,'RES_Wind_Offshore_Deep',y)$(YearVal(y) >= 2040) = max(0, AcceptanceFactor(r,'RES_Wind_Offshore_Deep',y) - 10);
+    AcceptanceFactor(r,'RES_Wind_Offshore_Shallow',y)$(YearVal(y) >= 2040) = max(0, AcceptanceFactor(r,'RES_Wind_Offshore_Shallow',y) - 10);
+    AcceptanceFactor(r,'RES_Wind_Offshore_Transitional',y)$(YearVal(y) >= 2040) = max(0, AcceptanceFactor(r,'RES_Wind_Offshore_Transitional',y) - 10);
+    AcceptanceFactor(r,'RES_PV_Utility_Opt',y)$(YearVal(y) >= 2040)    = max(0, AcceptanceFactor(r,'RES_PV_Utility_Opt',y) - 10);
+    AcceptanceFactor(r,'RES_PV_Utility_Avg',y)$(YearVal(y) >= 2040)    = max(0, AcceptanceFactor(r,'RES_PV_Utility_Avg',y) - 10);
+    AcceptanceFactor(r,'RES_PV_Utility_Inf',y)$(YearVal(y) >= 2040)    = max(0, AcceptanceFactor(r,'RES_PV_Utility_Inf',y) - 10);
+    AcceptanceFactor(r,'RES_PV_Utility_Tracking',y)$(YearVal(y) >= 2040) = max(0, AcceptanceFactor(r,'RES_PV_Utility_Tracking',y) - 10);
+    AcceptanceFactor(r,'RES_PV_Rooftop_Commercial',y)$(YearVal(y) >= 2040) = max(0, AcceptanceFactor(r,'RES_PV_Rooftop_Commercial',y) - 10);
+    AcceptanceFactor(r,'RES_PV_Rooftop_Residential',y)$(YearVal(y) >= 2040) = max(0, AcceptanceFactor(r,'RES_PV_Rooftop_Residential',y) - 10);
+
+    display "SENSITIVITY: familiarity - RES wind/PV resistance -10 from 2040.";
+
+$elseif.sens "%switch_sensitivity%" == "meanfill_50"
+* ----------------------------------------------------------------
+* Sensitivity 7a: mean-fill robustness — neutral 50
+* Techs without survey rows sit at resistance exactly 36.8 (=100-63.2
+* mean-fill in genesysmod_acceptance_factor.gms). Set them to 50
+* (indifferent) to test how much the fill constant drives the frontier.
+* ----------------------------------------------------------------
+    AcceptanceFactor(r,t,y)$(abs(AcceptanceFactor(r,t,y) - 36.8) < 0.011) = 50;
+
+    display "SENSITIVITY: mean-fill robustness - filled techs resistance 36.8 -> 50.";
+
+$elseif.sens "%switch_sensitivity%" == "meanfill_low"
+* ----------------------------------------------------------------
+* Sensitivity 7b: mean-fill robustness — empirical mean
+* The v07 sheet's own empirical mean acceptance (excluding its 63.2
+* hard-coded fill rows) is 61.5 -> resistance 38.5.
+* ----------------------------------------------------------------
+    AcceptanceFactor(r,t,y)$(abs(AcceptanceFactor(r,t,y) - 36.8) < 0.011) = 38.5;
+
+    display "SENSITIVITY: mean-fill robustness - filled techs resistance 36.8 -> 38.5.";
+
+$elseif.sens "%switch_sensitivity%" == "accounting_zero"
+* ----------------------------------------------------------------
+* Sensitivity 8: accounting techs carry no local resistance
+* A_* (area supply) and Z_Import_* (import accounting) are not
+* physically sited installations; mean-fill gives them resistance 36.8
+* which e.g. shadows rooftop PV (via A_Rooftop_*) and penalises
+* imports. Set their resistance to 0.
+* ----------------------------------------------------------------
+    AcceptanceFactor(r,'A_Air',y) = 0;
+    AcceptanceFactor(r,'A_Rooftop_Commercial',y) = 0;
+    AcceptanceFactor(r,'A_Rooftop_Residential',y) = 0;
+    AcceptanceFactor(r,'Z_Import_Gas',y) = 0;
+    AcceptanceFactor(r,'Z_Import_H2',y) = 0;
+    AcceptanceFactor(r,'Z_Import_Hardcoal',y) = 0;
+    AcceptanceFactor(r,'Z_Import_LNG',y) = 0;
+    AcceptanceFactor(r,'Z_Import_Oil',y) = 0;
+
+    display "SENSITIVITY: accounting techs (A_*, Z_Import_*) resistance = 0.";
+
 $else.sens
     abort "Unknown switch_sensitivity value: %switch_sensitivity%. "
-          "Valid options: wind_plus10, h2boiler_low, h2boiler_mean, wind_plus10_h2boiler_low";
+          "Valid options: wind_plus10, h2boiler_low, h2boiler_mean, wind_plus10_h2boiler_low, cable, familiarity, meanfill_50, meanfill_low, accounting_zero";
 $endif.sens

@@ -95,24 +95,30 @@ equations
 * ------------------------------------------------------------------
 * Import fixes — active in BOTH guard modes
 * Prevents acceptance-driven substitution of domestic generation by imports.
+* Off-switch for the 'acceptance outsourcing' scenario (2026-07-08):
+* --switch_import_guard=0 disables the five equalities so acceptance
+* points MAY buy resistance reduction via imports (comparison run).
 * ------------------------------------------------------------------
-FIX_H2Import$((runAug=1) or (runGuard=1))..
+$if not set switch_import_guard $setglobal switch_import_guard 1
+scalar importGuardOn / %switch_import_guard% /;
+
+FIX_H2Import$(((runAug=1) or (runGuard=1)) and (importGuardOn=1))..
     sum((y,r), ProductionByTechnologyAnnual(y,"Z_Import_H2","H2",r))
     =e= RefTotalH2Import;
 
-FIX_GasImport$((runAug=1) or (runGuard=1))..
+FIX_GasImport$(((runAug=1) or (runGuard=1)) and (importGuardOn=1))..
     sum((y,r), ProductionByTechnologyAnnual(y,"Z_Import_Gas","Gas_Natural",r))
     =e= RefTotalGasImport;
 
-FIX_HardcoalImport$((runAug=1) or (runGuard=1))..
+FIX_HardcoalImport$(((runAug=1) or (runGuard=1)) and (importGuardOn=1))..
     sum((y,r), ProductionByTechnologyAnnual(y,"Z_Import_Hardcoal","Hardcoal",r))
     =e= RefTotalHardcoalImport;
 
-FIX_LNGImport$((runAug=1) or (runGuard=1))..
+FIX_LNGImport$(((runAug=1) or (runGuard=1)) and (importGuardOn=1))..
     sum((y,r), ProductionByTechnologyAnnual(y,"Z_Import_LNG","LNG",r))
     =e= RefTotalLNGImport;
 
-FIX_OilImport$((runAug=1) or (runGuard=1))..
+FIX_OilImport$(((runAug=1) or (runGuard=1)) and (importGuardOn=1))..
     sum((y,r), ProductionByTechnologyAnnual(y,"Z_Import_Oil","Oil",r))
     =e= RefTotalOilImport;
 
