@@ -55,6 +55,30 @@ scalar meanAcceptance /63.2/;
 AcceptanceFactor(r,t,y)$(AcceptanceFactor(r,t,y) = 0) = meanAcceptance;
 AcceptanceFactor(r,t,y)$(AcceptanceFactor(r,t,y) > 0) = 100 - AcceptanceFactor(r,t,y);
 
+* ------------------------------------------------------------
+* Accounting technologies carry NO local resistance (fix 2026-07-08).
+* A_* (area-supply dummies) and Z_Import_* (import bookkeeping) are not
+* physically sited installations; the mean-fill above gave them
+* resistance 36.8, which (a) added ~28% dead weight to zAcc that the
+* optimizer cannot reduce (imports are demand-driven) and (b) double-
+* charged rooftop PV via its A_Rooftop_* area twin (~67% hidden
+* surcharge on the MOST accepted technology). Resistance = 0 keeps
+* them in the opt sector (free to move, no guard pin) with zero
+* zAcc contribution. Screening run scr5_acct0 (2026-07-08) verified:
+* pure level shift -15.7, physical solution unchanged at the cost
+* anchor, only ~3 GW utility->rooftop PV re-siting at the acc end.
+* NB deliberately NOT zeroed: R_* extraction and biomass supply
+* (RES_Residues etc.) - land-use acceptance is real for those.
+* ------------------------------------------------------------
+AcceptanceFactor(r,'A_Air',y) = 0;
+AcceptanceFactor(r,'A_Rooftop_Commercial',y) = 0;
+AcceptanceFactor(r,'A_Rooftop_Residential',y) = 0;
+AcceptanceFactor(r,'Z_Import_Gas',y) = 0;
+AcceptanceFactor(r,'Z_Import_H2',y) = 0;
+AcceptanceFactor(r,'Z_Import_Hardcoal',y) = 0;
+AcceptanceFactor(r,'Z_Import_LNG',y) = 0;
+AcceptanceFactor(r,'Z_Import_Oil',y) = 0;
+
 equation Acceptance1_Acceptance(r_full,TECHNOLOGY,y_full);
 Acceptance1_Acceptance(r,t,y)..
                  NewCapacity(y,t,r)*AcceptanceFactor(r,t,y)
