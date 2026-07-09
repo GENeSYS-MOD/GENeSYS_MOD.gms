@@ -409,12 +409,20 @@ solve genesys minimizing zAcc using lp;
 * epsilon grid and every k-point silently reproduced the cost anchor.
 * Retry once with optfile 1 (default barrier + crossover), then abort
 * rather than burn hours on a degenerate frontier.
-if((genesys.modelstat > 2),
+* modelstat 7 (sub-optimal termination, solution AVAILABLE) is acceptable
+* for an anchor: zAccMin only sets the epsilon-grid end and the grid
+* starts 5% above it anyway. Observed 2026-07-09 (noimp run): attempt 1
+* delivered zAccMin=31.97 with modelstat 7 after 7h; the crossover retry
+* then died with LP status 12 and the strict abort wasted the run.
+if((genesys.modelstat > 2) and (genesys.modelstat <> 7),
     put_utility 'log' / 'AUGMECON WARNING: Anchor 2 modelstat ' genesys.modelstat:0:0 ' - retrying with optfile 1 (crossover)';
     genesys.optfile = 1;
     solve genesys minimizing zAcc using lp;
 );
-abort$(genesys.modelstat > 2) "Anchor 2 (min zAcc) not optimal after retry - aborting instead of producing a degenerate frontier.";
+if((genesys.modelstat = 7),
+    put_utility 'log' / 'AUGMECON WARNING: Anchor 2 sub-optimal (modelstat 7) - accepting available zAccMin for the epsilon grid';
+);
+abort$((genesys.modelstat > 2) and (genesys.modelstat <> 7)) "Anchor 2 (min zAcc) has no usable solution after retry - aborting instead of producing a degenerate frontier.";
 zAccMin = zAcc.l;
 runGuard = 0;
 genesys.optfile = 1;
