@@ -403,6 +403,18 @@ if(switch_fix_baseyear = 1,
 genesys.optfile = 2;
 runGuard = 1;
 solve genesys minimizing zAcc using lp;
+* Robustness (added 2026-07-09 after a 5.5h degenerate heat run): the
+* crossover-0 barrier can die with 'Numerical trouble' (LP status 12,
+* modelstat 6+). Without this check the garbage zAccMin collapsed the
+* epsilon grid and every k-point silently reproduced the cost anchor.
+* Retry once with optfile 1 (default barrier + crossover), then abort
+* rather than burn hours on a degenerate frontier.
+if((genesys.modelstat > 2),
+    put_utility 'log' / 'AUGMECON WARNING: Anchor 2 modelstat ' genesys.modelstat:0:0 ' - retrying with optfile 1 (crossover)';
+    genesys.optfile = 1;
+    solve genesys minimizing zAcc using lp;
+);
+abort$(genesys.modelstat > 2) "Anchor 2 (min zAcc) not optimal after retry - aborting instead of producing a degenerate frontier.";
 zAccMin = zAcc.l;
 runGuard = 0;
 genesys.optfile = 1;
