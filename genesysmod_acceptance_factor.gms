@@ -78,6 +78,25 @@ AcceptanceFactor(r,'Z_Import_H2',y) = 0;
 AcceptanceFactor(r,'Z_Import_Hardcoal',y) = 0;
 AcceptanceFactor(r,'Z_Import_LNG',y) = 0;
 AcceptanceFactor(r,'Z_Import_Oil',y) = 0;
+AcceptanceFactor(r,'Z_ETS_Buy',y) = 0;
+AcceptanceFactor(r,'Z_ETS_Sell',y) = 0;
+
+* ------------------------------------------------------------
+* Capacity-unit normalisation of the resistance (fix 2026-07-10).
+* Acceptance1 charges NewCapacity x resistance in the capacity
+* variable's NATIVE unit. Techs with CapacityToActivityUnit = 1 are
+* measured in PJ/a-units (1 unit = 31.7 MW), not GW - their resistance
+* was therefore inflated ~31.5x per unit of real capacity. Verified
+* consequence (k10f_heat): HLR_Convert_DH (28.2 per PJ/a-unit) was
+* penalised ~48x per unit of peak service vs HLR_Geothermal (18.7/GW),
+* driving an artificial DH -> geothermal swap; biomass supply techs
+* (RES_Residues etc., sector Resources = always in zAcc) carried the
+* same inflation in EVERY run. Normalise: resistance per real GW.
+* (Zeroed accounting techs stay zero; CtA is populated for all techs
+* by dataload/bounds before this include runs.)
+* ------------------------------------------------------------
+AcceptanceFactor(r,t,y)$(CapacityToActivityUnit(t) > 0)
+    = AcceptanceFactor(r,t,y) * CapacityToActivityUnit(t) / 31.536;
 
 equation Acceptance1_Acceptance(r_full,TECHNOLOGY,y_full);
 Acceptance1_Acceptance(r,t,y)..
