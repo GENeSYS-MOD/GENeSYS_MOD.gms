@@ -425,9 +425,21 @@ if((genesys.modelstat = 7),
 abort$((genesys.modelstat > 2) and (genesys.modelstat <> 7)) "Anchor 2 (min zAcc) has no usable solution after retry - aborting instead of producing a degenerate frontier.";
 zAccMin = zAcc.l;
 runGuard = 0;
+* Loop solver config (2026-07-11): crossover for the epsilon-sweep solves is
+* now switchable via --cfg_loop_crossover (default 1 = previous behaviour).
+* Rationale: under the capacity-unit-normalised resistance, the cable
+* scenario's eps-constrained LPs are so degenerate that a single k-point
+* crossover took ~4 h (it did converge - the sweep is just untenably slow),
+* while the same solve without crossover (optfile 2, cf. Anchor 2) finishes
+* in minutes. Barrier-only solutions carry full variable levels; GDX export
+* works fine without a basic solution (the earlier comment here claiming
+* otherwise was wrong - verified by the Anchor-2 GDX and the Julia port).
+$if not set cfg_loop_crossover $setglobal cfg_loop_crossover 1
+$ifthen %cfg_loop_crossover% == 1
 genesys.optfile = 1;
-* Restored to default (crossover=1) for Anchor 1 already done, and required
-* for all AUGMECON loop solves below (GDX export needs a basic solution).
+$else
+genesys.optfile = 2;
+$endif
 
 * Anchor 2 GDX intentionally NOT saved here.
 * Saving it would pass the guard-constrained solution as warm start
