@@ -1,6 +1,12 @@
 AvailabilityFactor(r,'X_DAC_HT',y) = 0;
 AvailabilityFactor(r,'X_DAC_LT',y) = 0;
 
+* CS9: PT coal (all sectors, tagged 'Coal' in Par_TagTechnologyToSubsets) produces 0
+* energy but ResidualCapacity keeps carrying leftover TotalCapacity beyond 2025 -
+* zero out remaining capacity and block new build
+ResidualCapacity('PT',t,y)$(TagTechnologyToSubsets(t,'Coal') and YearVal(y)>=2025) = 0;
+NewCapacity.up(y,t,'PT')$(TagTechnologyToSubsets(t,'Coal') and YearVal(y)>=2025) = 0;
+
 
 
 parameter warning_TotalAnnualMinCapacityTooHigh;
