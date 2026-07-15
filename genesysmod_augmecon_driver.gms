@@ -140,6 +140,23 @@ $ifthen.sel2 %switch_acc_sector_select% == 2
     accOptSector('Transformation') = 0;
     accOptSector('CHP') = 0;
 $endif.sel2
+* 3 = full demand-side scope: Power + Resources + Buildings + Transportation
+*     in zAcc (2026-07-11). Passenger transport carries real SNB survey values
+*     (BEV/ICE/H2/rail); freight is mean-filled (neutral). Sector-stock
+*     normalisation (wAccSector = 1/C_ref) plus the capacity-unit
+*     normalisation keep the large transport capacities from dominating.
+*     NB: with Transportation opt, its dispatch is no longer guard-fixed;
+*     modal-split constraints govern mode choice endogenously.
+$ifthen.sel3 %switch_acc_sector_select% == 3
+    accOptSector('Power') = 1;
+    accOptSector('Industry') = 0;
+    accOptSector('Buildings') = 1;
+    accOptSector('Transportation') = 1;
+    accOptSector('Resources') = 1;
+    accOptSector('Storages') = 0;
+    accOptSector('Transformation') = 0;
+    accOptSector('CHP') = 0;
+$endif.sel3
 
 * -------------------------------------------------
 * [BLOCK 1] Guard mode selection
