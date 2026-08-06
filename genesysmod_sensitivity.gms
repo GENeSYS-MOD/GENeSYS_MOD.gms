@@ -185,7 +185,59 @@ $elseif.sens "%switch_sensitivity%" == "accounting_zero"
 
     display "SENSITIVITY: accounting techs (A_*, Z_Import_*) resistance = 0.";
 
+$elseif.sens "%switch_sensitivity%" == "acc_up"
+* ----------------------------------------------------------------
+* Sensitivity 9a: acceptance POLICY SUCCESS (2026-07-16)
+* Acceptance of the key transition technologies (onshore wind,
+* utility PV, BEV, heat pumps) rises by cfg_acc_delta points from
+* cfg_acc_start (default 2030; participation schemes,
+* familiarisation, better siting). cfg_acc_start parameterises the
+* ONSET YEAR for the timing experiment (early vs late acceptance
+* shift, e.g. --cfg_acc_start=2035).
+* NB: runs AFTER the capacity-unit normalisation, so the delta is
+* scaled by CtA/31.536 per tech (wind/PV are GW-native, BEV and
+* heat pumps are PJ/a-native).
+* ----------------------------------------------------------------
+$if not set cfg_acc_delta $setglobal cfg_acc_delta 1
+$if not set cfg_acc_start $setglobal cfg_acc_start 2030
+set acc_sens_tech(t) /
+    RES_Wind_Onshore_Opt, RES_Wind_Onshore_Avg, RES_Wind_Onshore_Inf,
+    RES_PV_Utility_Opt, RES_PV_Utility_Avg, RES_PV_Utility_Inf,
+    RES_PV_Utility_Tracking,
+    PSNG_Road_BEV,
+    HLR_Heatpump_Aerial, HLR_Heatpump_Ground,
+    HLR_Heatpump_Geo_Surface, HLR_Heatpump_Geo_Deep /;
+    AcceptanceFactor(r,acc_sens_tech,y)$(YearVal(y) >= %cfg_acc_start%)
+        = max(0, AcceptanceFactor(r,acc_sens_tech,y)
+                 - %cfg_acc_delta% * CapacityToActivityUnit(acc_sens_tech) / 31.536);
+
+    display "SENSITIVITY: acc_up - key-tech resistance -%cfg_acc_delta% pts (unit-scaled) from %cfg_acc_start%.";
+
+$elseif.sens "%switch_sensitivity%" == "acc_down"
+* ----------------------------------------------------------------
+* Sensitivity 9b: acceptance POLICY FAILURE (2026-07-16)
+* Mirror of acc_up: acceptance of the key transition technologies
+* falls by cfg_acc_delta points from cfg_acc_start (default 2030;
+* backlash, failed participation). Same unit scaling; resistance
+* capped at the unit-scaled equivalent of 100.
+* ----------------------------------------------------------------
+$if not set cfg_acc_delta $setglobal cfg_acc_delta 1
+$if not set cfg_acc_start $setglobal cfg_acc_start 2030
+set acc_sens_tech(t) /
+    RES_Wind_Onshore_Opt, RES_Wind_Onshore_Avg, RES_Wind_Onshore_Inf,
+    RES_PV_Utility_Opt, RES_PV_Utility_Avg, RES_PV_Utility_Inf,
+    RES_PV_Utility_Tracking,
+    PSNG_Road_BEV,
+    HLR_Heatpump_Aerial, HLR_Heatpump_Ground,
+    HLR_Heatpump_Geo_Surface, HLR_Heatpump_Geo_Deep /;
+    AcceptanceFactor(r,acc_sens_tech,y)$(YearVal(y) >= %cfg_acc_start%)
+        = min(100 * CapacityToActivityUnit(acc_sens_tech) / 31.536,
+              AcceptanceFactor(r,acc_sens_tech,y)
+              + %cfg_acc_delta% * CapacityToActivityUnit(acc_sens_tech) / 31.536);
+
+    display "SENSITIVITY: acc_down - key-tech resistance +%cfg_acc_delta% pts (unit-scaled) from %cfg_acc_start%.";
+
 $else.sens
     abort "Unknown switch_sensitivity value: %switch_sensitivity%. "
-          "Valid options: wind_plus10, h2boiler_low, h2boiler_mean, wind_plus10_h2boiler_low, cable, familiarity, meanfill_50, meanfill_low, accounting_zero";
+          "Valid options: wind_plus10, h2boiler_low, h2boiler_mean, wind_plus10_h2boiler_low, cable, familiarity, meanfill_50, meanfill_low, accounting_zero, acc_up, acc_down";
 $endif.sens

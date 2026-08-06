@@ -157,6 +157,52 @@ $ifthen.sel3 %switch_acc_sector_select% == 3
     accOptSector('Transformation') = 0;
     accOptSector('CHP') = 0;
 $endif.sel3
+* 4 = passenger-transport scope (2026-07-16): same sector switches as 3, but
+*     freight (FRT_*) resistance is zeroed in genesysmod_acceptance_factor.gms
+*     and freight capacity is removed from the Transportation reference stock
+*     below, so zAcc prices passenger transport (PSNG_*) only. Freight remains
+*     free inside the opt sector (cost-driven, no zAcc contribution).
+$ifthen.sel4 %switch_acc_sector_select% == 4
+    accOptSector('Power') = 1;
+    accOptSector('Industry') = 0;
+    accOptSector('Buildings') = 1;
+    accOptSector('Transportation') = 1;
+    accOptSector('Resources') = 1;
+    accOptSector('Storages') = 0;
+    accOptSector('Transformation') = 0;
+    accOptSector('CHP') = 0;
+$endif.sel4
+* 5 = passenger scope + CHP (2026-07-16): like 4, additionally the CHP sector
+*     enters zAcc (CHP plants are physically sited in both power and heat
+*     supply; acceptance values inherit the fuel survey items, e.g.
+*     CHP_Hydrogen_FuelCell 78-83). Freight stays zeroed as in mode 4.
+$ifthen.sel5 %switch_acc_sector_select% == 5
+    accOptSector('Power') = 1;
+    accOptSector('Industry') = 0;
+    accOptSector('Buildings') = 1;
+    accOptSector('Transportation') = 1;
+    accOptSector('Resources') = 1;
+    accOptSector('Storages') = 0;
+    accOptSector('Transformation') = 0;
+    accOptSector('CHP') = 1;
+$endif.sel5
+* 6 = extended scope (2026-07-16): mode 5 + Storages and Transformation in
+*     zAcc. Batteries (SNB item 70-86) and electrolysers (SNB P2G item) are
+*     large frozen new-build blocks otherwise (228 / 279 GW-eq cumulative);
+*     freezing them forces the acceptance optimum to keep the cost anchor's
+*     storage/H2 pattern. Freight stays zeroed. Industry stays out.
+*     NB Storages: dispatch was never guard-fixed (storage-level balance);
+*     opt status additionally frees NewCapacity (drops out of RefNewCap).
+$ifthen.sel6 %switch_acc_sector_select% == 6
+    accOptSector('Power') = 1;
+    accOptSector('Industry') = 0;
+    accOptSector('Buildings') = 1;
+    accOptSector('Transportation') = 1;
+    accOptSector('Resources') = 1;
+    accOptSector('Storages') = 1;
+    accOptSector('Transformation') = 1;
+    accOptSector('CHP') = 1;
+$endif.sel6
 
 * -------------------------------------------------
 * [BLOCK 1] Guard mode selection
@@ -199,6 +245,54 @@ runGuard = 0;
 solve genesys minimizing z using lp;
 zStar = z.l;
 
+* -------------------------------------------------
+* [LEXICO ANCHOR, 2026-08-01] Second lexicographic stage (Mavrotas 2009):
+* among all cost-optimal solutions, pick the one with MINIMAL zAcc.
+* Without it, f2 at the cost anchor is an arbitrary vertex of the
+* degenerate optimal face, and eps grid, guard references, and the
+* normalisation stock all inherit solver noise. Cost tolerance 1e-5
+* relative. NB: zAcc here is measured with the pre-normalisation
+* uniform weights (wAccSector=1); the reported zAccAtCost is
+* re-evaluated after normalisation as before.
+* -------------------------------------------------
+$if not set switch_lexico_anchor $setglobal switch_lexico_anchor 1
+$ifthen.lex %switch_lexico_anchor% == 1
+z.up = zStar * (1 + 1e-5);
+* optfile 3 = barrier WITH crossover, 4h time limit. bratio=1 discards the
+* anchor-1 basis: with an advanced basis available Gurobi ignores method=2 and
+* warm-starts primal simplex, which crawls on the degenerate cost-optimal face
+* (observed 2026-08-01: 16h, 1.7M iterations, no convergence).
+* Crossover is REQUIRED here (2026-08-02): the guard references downstream fix
+* millions of RateOfActivity values to this solution's .l values. A crossover-0
+* interior point carries ~1e-6 residuals, and fixing to those values makes the
+* guarded anchor-2 LP presolve-infeasible (observed: 'Model is infeasible' in
+* 0 iterations across all 7 F-runs). Only a basic (crossover) solution is an
+* exact vertex whose values are mutually consistent.
+genesys.optfile = 3;
+genesys.bratio = 1;
+solve genesys minimizing zAcc using lp;
+genesys.bratio = 0.25;
+* Accept ONLY modelstat 1 (proven optimal, basic after crossover). A timeout
+* (modelstat 7) leaves an incomplete crossover, i.e. a non-basic solution
+* whose .l values would make the guarded anchor-2 LP infeasible (see above).
+* In every other case fall back to the plain cost anchor with optfile 1
+* (barrier + crossover), whose basic solution is guard-safe by construction.
+if((genesys.modelstat <> 1),
+    put_utility 'log' / 'AUGMECON WARNING: lexico anchor modelstat '
+        genesys.modelstat:0:0 ' - falling back to plain cost anchor';
+    z.up = +inf;
+    genesys.optfile = 1;
+    genesys.bratio = 1;
+    solve genesys minimizing z using lp;
+    genesys.bratio = 0.25;
+else
+    put_utility 'log' / 'LEXICO ANCHOR ok: raw zAcc at cost optimum = '
+        zAcc.l:0:4;
+);
+z.up = +inf;
+genesys.optfile = 1;
+$endif.lex
+
 ***** Set Baseline (from cost-min run) — must happen before any $include
 ***** that might overwrite .l values
 RefTotalH2Import =
@@ -214,6 +308,16 @@ RefTotalOilImport =
 
 RefTotalCapYearSector(se,y) =
     sum((r,t)$(TagTechnologyToSector(t,se) = 1), TotalCapacityAnnual.l(y,t,r));
+
+* Passenger-only scope: remove freight from the Transportation reference
+* stock so wAccSector normalises passenger resistance by passenger capacity
+* (freight carries zero resistance; leaving its large stock in C_ref would
+* dilute the transport weight).
+$ifthen.psng %psng_scope% == 1
+RefTotalCapYearSector('Transportation',y) =
+    sum((r,t)$(TagTechnologyToSector(t,'Transportation') = 1
+               and not frt_acc_zero(t)), TotalCapacityAnnual.l(y,t,r));
+$endif.psng
 
 * Save NewCapacity for non-acceptance-optimized sectors (technology-level fix).
 * This prevents cascading demand effects (e.g. EV->electricity) from
@@ -361,10 +465,65 @@ if(switch_guard_mode = 1,
 * -------------------------------------------------
 
 $ifthen.accW %switch_acceptance_factor% == 1
+* switch_acc_norm (2026-07-17):
+*   0 = per-sector normalisation (original): wAccSector = w/C_ref(se).
+*       Weights small sectors 3-8x per GW and mixes native units ->
+*       flexibility retreat provided 85% of the acceptance gain in
+*       k10g_ext (not literature-backed; see storage/H2 salience check).
+*   1 = GLOBAL per-real-GW normalisation (option C): one common
+*       denominator, the CtA-consistent real-GW capacity stock of all
+*       acceptance-optimised sectors in the cost-optimal baseline.
+*       Every real GW of new build carries its survey resistance at
+*       equal weight -> the survey hierarchy (wind < battery/electro-
+*       lysis acceptance) drives the trade-off, not sector fractions.
+$if not set switch_acc_norm $setglobal switch_acc_norm 0
+$ifthen.norm %switch_acc_norm% == 1
+parameter RefTotalCapGlobal(y_full);
+RefTotalCapGlobal(y) =
+    sum((se,r,t)$(TagTechnologyToSector(t,se) = 1 and accOptSector(se) = 1),
+        TotalCapacityAnnual.l(y,t,r) * CapacityToActivityUnit(t) / 31.536);
+    wAccSector(se,y) = 0;
+    wAccSector(se,y)$(accOptSector(se) = 1 and RefTotalCapGlobal(y) > 0) =
+        SectorAcceptanceWeight(se) / RefTotalCapGlobal(y);
+$else.norm
     wAccSector(se,y) = 0;
     wAccSector(se,y)$(RefTotalCapYearSector(se,y) > 0) =
         SectorAcceptanceWeight(se) / RefTotalCapYearSector(se,y);
+$endif.norm
 $endif.accW
+
+* switch_acc_energy_weight (2026-08-06, KS2 robustness check):
+*   1 = reweight each technology's resistance by its expected annual energy
+*       yield per real GW: the anchor-solution capacity factor relative to
+*       the capacity-weighted mean CF of the in-scope stock. Resistance is
+*       then charged per unit of energy served rather than per installed
+*       real GW. Corridor factors (pure siting externality without an
+*       energy dimension) stay per GW. Techs without anchor build keep
+*       their per-GW factor (neutral CF = CFref). Applied AFTER Anchor 1,
+*       so the guard references and the cost anchor itself are unchanged;
+*       Anchor 2 and the whole epsilon-grid run on the energy-weighted
+*       factors.
+$if not set switch_acc_energy_weight $setglobal switch_acc_energy_weight 0
+$ifthen.ewgt %switch_acc_energy_weight% == 1
+parameter CFanchor(r_full,TECHNOLOGY), CFref, realGWyrs(r_full,TECHNOLOGY);
+realGWyrs(r,t) = sum(y$(YearVal(y) > 2020),
+    TotalCapacityAnnual.l(y,t,r) * CapacityToActivityUnit(t) / 31.536);
+CFanchor(r,t)$(realGWyrs(r,t) > 1e-6) =
+    sum((y,f)$(YearVal(y) > 2020), ProductionByTechnologyAnnual.l(y,t,f,r))
+    / (realGWyrs(r,t) * 31.536);
+CFref = sum((se,r,t)$(TagTechnologyToSector(t,se) = 1 and accOptSector(se) = 1
+                      and CFanchor(r,t) > 0),
+            realGWyrs(r,t) * CFanchor(r,t))
+      / sum((se,r,t)$(TagTechnologyToSector(t,se) = 1 and accOptSector(se) = 1
+                      and CFanchor(r,t) > 0), realGWyrs(r,t));
+display CFref;
+abort$(CFref <= 0) "energy-weighting: CFref is zero - check anchor levels";
+AcceptanceFactor(r,t,y)$(AcceptanceFactor(r,t,y) > 0 and CFanchor(r,t) > 0)
+    = AcceptanceFactor(r,t,y) * CFanchor(r,t) / CFref;
+* refresh Anchor-1 Acceptance levels so the zAccAtCost re-evaluation below
+* prices the (unchanged) cost-anchor build at the new factors
+Acceptance.l(r,t,y) = NewCapacity.l(y,t,r) * AcceptanceFactor(r,t,y);
+$endif.ewgt
 
 * Re-evaluate zAccAtCost AFTER wAccSector normalization so both anchor points
 * use the same normalized units. Using .l values from Anchor 1 still in memory.
@@ -419,6 +578,10 @@ if(switch_fix_baseyear = 1,
 
 genesys.optfile = 2;
 runGuard = 1;
+* Cold-start (2026-08-02): with the lexico-anchor basis in memory Gurobi
+* would warm-start simplex despite method=2 (same pathology as the lexico
+* solve itself, see above) - discard the basis so the barrier actually runs.
+genesys.bratio = 1;
 solve genesys minimizing zAcc using lp;
 * Robustness (added 2026-07-09 after a 5.5h degenerate heat run): the
 * crossover-0 barrier can die with 'Numerical trouble' (LP status 12,
@@ -432,10 +595,16 @@ solve genesys minimizing zAcc using lp;
 * delivered zAccMin=31.97 with modelstat 7 after 7h; the crossover retry
 * then died with LP status 12 and the strict abort wasted the run.
 if((genesys.modelstat > 2) and (genesys.modelstat <> 7),
-    put_utility 'log' / 'AUGMECON WARNING: Anchor 2 modelstat ' genesys.modelstat:0:0 ' - retrying with optfile 1 (crossover)';
-    genesys.optfile = 1;
+    put_utility 'log' / 'AUGMECON WARNING: Anchor 2 modelstat ' genesys.modelstat:0:0 ' - retrying with optfile 4 (non-homogeneous barrier + crossover, cold start, 4h limit)';
+* Retry cold as well (2026-08-02): the old retry inherited the failed
+* attempt's basis and crawled in primal simplex for hours. optfile 4 also
+* switches barhomogeneous off - the homogeneous barrier is what falsely
+* declares infeasibility (modelstat 19) on this numerically hard instance.
+    genesys.optfile = 4;
+    genesys.bratio = 1;
     solve genesys minimizing zAcc using lp;
 );
+genesys.bratio = 0.25;
 if((genesys.modelstat = 7),
     put_utility 'log' / 'AUGMECON WARNING: Anchor 2 sub-optimal (modelstat 7) - accepting available zAccMin for the epsilon grid';
 );
@@ -492,6 +661,26 @@ loop(k,
     epsAcc = epsGrid(k);
 
     solve genesys minimizing zAug using lp;
+
+* Retry on sub-optimal termination (2026-08-04, after the equity-k7 bump):
+* the crossover-0 barrier occasionally returns modelstat 7 (feasible, not
+* proven optimal). At the deep end that is cosmetic, but mid-frontier it
+* produces a visibly non-monotone Pareto point (observed: equity k7 ~6.7 bn
+* above the true optimum). Re-solve that single point with optfile 1
+* (barrier + crossover, cold start); only affected points pay the crossover
+* cost. modelstat 7 after the retry is accepted as before.
+    if((genesys.modelstat = 7),
+        put_utility 'log' / 'AUGMECON WARNING: k' ord(k):0:0
+            ' modelstat 7 - retrying with crossover (optfile 1)';
+        genesys.optfile = 1;
+        genesys.BRatio = 1;
+        solve genesys minimizing zAug using lp;
+$ifthen %cfg_loop_crossover% == 1
+        genesys.optfile = 1;
+$else
+        genesys.optfile = 2;
+$endif
+    );
 
     elapsed = (jnow - starttime)*24*3600;
 

@@ -271,20 +271,31 @@ equation TotalCapOffshoreNord2025(YEAR_FULL,TECHNOLOGY,REGION_FULL);
 TotalCapOffshoreNord2025(y,t,r)..sum((offshore,offshore_nordic), TotalCapacityAnnual('2025',Offshore,offshore_nordic)) =e= 9.4;
 equation TotalCapOffshoreNord2030(YEAR_FULL,TECHNOLOGY,REGION_FULL);
 TotalCapOffshoreNord2030(y,t,r)..sum((Offshore,offshore_nordic), TotalCapacityAnnual('2030',Offshore,offshore_nordic)) =e= 31.38;
+* switch_free_expansion = 1 (2026-07-16): drop the post-2030 capacity
+* prescriptions (FEP offshore path 2045: Nord 64.4, Baltic 5.6, total
+* >= 70 GW) — the system expands freely after 2030. 2025/2030 targets
+* and all emission constraints stay untouched.
+$if not set switch_free_expansion $setglobal switch_free_expansion 0
+$ifthen.freexp %switch_free_expansion% == 0
 equation TotalCapOffshoreNord2045(YEAR_FULL,TECHNOLOGY,REGION_FULL);
 TotalCapOffshoreNord2045(y,t,r)..sum((Offshore,offshore_nordic), TotalCapacityAnnual('2045',Offshore,offshore_nordic)) =e= 64.4;
+$endif.freexp
 
 
 equation TotalCapOffshoreBaltic2030(YEAR_FULL,TECHNOLOGY,REGION_FULL);
 TotalCapOffshoreBaltic2030(y,t,r)..sum((Offshore,offshore_baltic), TotalCapacityAnnual('2030',Offshore,offshore_baltic)) =e= 2.4;
+$ifthen.freexp2 %switch_free_expansion% == 0
 equation TotalCapOffshoreBaltic2045(YEAR_FULL,TECHNOLOGY,REGION_FULL);
 TotalCapOffshoreBaltic2045(y,t,r)..sum((Offshore,offshore_baltic), TotalCapacityAnnual('2045',Offshore,offshore_baltic)) =e= 5.6;
+$endif.freexp2
 
 
 equation TotalCapOffshoreTotal2030(YEAR_FULL,TECHNOLOGY);
-TotalCapOffshoreTotal2030(y,t)..sum((Offshore,r), TotalCapacityAnnual('2030',Offshore,r)) =g= 33.78;  
+TotalCapOffshoreTotal2030(y,t)..sum((Offshore,r), TotalCapacityAnnual('2030',Offshore,r)) =g= 33.78;
+$ifthen.freexp3 %switch_free_expansion% == 0
 equation TotalCapOffshoreTotal2045(YEAR_FULL,TECHNOLOGY);
 TotalCapOffshoreTotal2045(y,t)..sum((Offshore,r), TotalCapacityAnnual('2045',Offshore,r)) =g= 70;
+$endif.freexp3
 
 
 OsterpaketCapacity('2030','offshore') = 30;
@@ -305,6 +316,18 @@ $endif
 *
 ProductionByTechnologyAnnual.fx('2040',t,'Power',r)$(sum(m,InputActivityRatio(r,t,'Hardcoal',m,'2040'))) = 0;
 ProductionByTechnologyAnnual.fx('2040',t,'Power',r)$(sum(m,InputActivityRatio(r,t,'Lignite',m,'2040'))) = 0;
+* Coal new-build ban (2026-08-01): the KVBG (Kohleverstromungsbeendigungs-
+* gesetz) prohibits NEW coal plants; only the stock phase-out was encoded
+* (AvailabilityFactor below). Without this bound the acceptance optimum
+* built 5.4 GW new lignite + 2.3 GW coal CHP for pre-2035 operation.
+TotalAnnualMaxCapacityInvestment(r,'P_Coal_Lignite',y)$(YearVal(y)>=2025) = 0;
+TotalAnnualMaxCapacityInvestment(r,'P_Coal_Hardcoal',y)$(YearVal(y)>=2025) = 0;
+TotalAnnualMaxCapacityInvestment(r,'P_Coal_Lignite_CCS',y)$(YearVal(y)>=2025) = 0;
+TotalAnnualMaxCapacityInvestment(r,'P_Coal_Hardcoal_CCS',y)$(YearVal(y)>=2025) = 0;
+TotalAnnualMaxCapacityInvestment(r,'CHP_Coal_Lignite',y)$(YearVal(y)>=2025) = 0;
+TotalAnnualMaxCapacityInvestment(r,'CHP_Coal_Hardcoal',y)$(YearVal(y)>=2025) = 0;
+TotalAnnualMaxCapacityInvestment(r,'CHP_Coal_Lignite_CCS',y)$(YearVal(y)>=2025) = 0;
+TotalAnnualMaxCapacityInvestment(r,'CHP_Coal_Hardcoal_CCS',y)$(YearVal(y)>=2025) = 0;
 AvailabilityFactor(r,'P_Nuclear',y)$(YearVal(y)>2020) = 0;
 AvailabilityFactor(r,'P_Coal_Lignite',y)$(YearVal(y)>2035) = 0;
 AvailabilityFactor('DE_NRW','P_Coal_Lignite',y)$(YearVal(y)>2030) = 0;

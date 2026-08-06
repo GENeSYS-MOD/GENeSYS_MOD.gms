@@ -82,6 +82,52 @@ AcceptanceFactor(r,'Z_ETS_Buy',y) = 0;
 AcceptanceFactor(r,'Z_ETS_Sell',y) = 0;
 
 * ------------------------------------------------------------
+* Passenger-only transport scope (switch_acc_sector_select = 4, 2026-07-16):
+* freight technologies (FRT_*) carry zero resistance, so zAcc prices
+* passenger transport (PSNG_*) only. Freight stays in the opt sector
+* (free, cost-driven) with no zAcc contribution — same treatment as the
+* accounting techs above. The Transportation reference stock C_ref is
+* correspondingly reduced to passenger capacity in the driver.
+* ------------------------------------------------------------
+$if not set switch_acc_sector_select $setglobal switch_acc_sector_select 1
+$if %switch_acc_sector_select% == 4 $setglobal psng_scope 1
+$if %switch_acc_sector_select% == 5 $setglobal psng_scope 1
+$if %switch_acc_sector_select% == 6 $setglobal psng_scope 1
+$if not set psng_scope $setglobal psng_scope 0
+$ifthen.frt0 %psng_scope% == 1
+set frt_acc_zero(TECHNOLOGY) /
+    FRT_Rail_Conv, FRT_Rail_Electric,
+    FRT_Road_BEV, FRT_Road_H2, FRT_Road_ICE, FRT_Road_LNG,
+    FRT_Road_OH, FRT_Road_PHEV,
+    FRT_Ship_Bio, FRT_Ship_Conv, FRT_Ship_LNG /;
+AcceptanceFactor(r,t,y)$frt_acc_zero(t) = 0;
+$endif.frt0
+
+* ------------------------------------------------------------
+* Flexibility zero-resistance (option B, 2026-07-17, user decision):
+* Storages and Transformation technologies carry NO resistance. They
+* stay in the opt scope (capacity adapts cost-optimally to the re-sited
+* system) but contribute nothing to zAcc. Rationale (literature check
+* 2026-07-16): storage/H2 infrastructure is absent from German
+* acceptance instruments (AEE, Ariadne-SNB have no items) and from
+* reported local conflicts; survey values for never-experienced
+* technologies are unstable pseudo-opinions. Their inclusion made the
+* model dismantle flexibility "unnecessarily" (batteries 89->19.5 GW
+* even under global normalisation). Future-research candidate once
+* local BESS conflicts become measurable (Devine-Wright et al. 2017).
+* ------------------------------------------------------------
+$if not set switch_flex_zero $setglobal switch_flex_zero 0
+$ifthen.flx0 %switch_flex_zero% == 1
+AcceptanceFactor(r,t,y)$(TagTechnologyToSector(t,'Storages') = 1) = 0;
+AcceptanceFactor(r,t,y)$(TagTechnologyToSector(t,'Transformation') = 1) = 0;
+* Functional, not sectoral, boundary (2026-07-19): H2 re-electrification CHP
+* is the same flexibility layer (brownfield power-plant sites, no documented
+* local siting conflicts) even though it is tagged to the CHP sector.
+* Combustion CHP (biomass/gas/coal) keeps its survey resistance.
+AcceptanceFactor(r,'CHP_Hydrogen_FuelCell',y) = 0;
+$endif.flx0
+
+* ------------------------------------------------------------
 * Capacity-unit normalisation of the resistance (fix 2026-07-10).
 * Acceptance1 charges NewCapacity x resistance in the capacity
 * variable's NATIVE unit. Techs with CapacityToActivityUnit = 1 are
