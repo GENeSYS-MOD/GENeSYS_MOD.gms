@@ -75,7 +75,7 @@ TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'Transport') and not Tot
 TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'ImportTechnology') and not TotalAnnualMaxCapacity(r,t,y)) = 999999;
 TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'Biomass') and not TotalAnnualMaxCapacity(r,t,y)) = 999999;
 TotalAnnualMaxCapacity(r,'P_Biomass',y) = 999999;
-
+GroupTotalAnnualMaxCapacity(tg,rg,y)$(not GroupTotalAnnualMaxCapacity(tg,rg,y)) = 999999;
 
 *AvailabilityFactor(r,t,y)$(TagTechnologyToSubsets(t,'ImportTechnology')) = 1;
 CapacityFactor(r,t,l,y)$(TagTechnologyToSubsets(t,'ImportTechnology')) = 1 ;
@@ -109,7 +109,7 @@ CapitalCostStorage(r,s,y) = max(round(CapitalCostStorage(r,s,y)/365*8760/%elmod_
 CapacityFactor(r,t,l,y)$(sum(ll,CapacityFactor(r,t,ll,y) = 0 and TagTechnologyToSubsets(t,'Heat'))) = 1;
 CapacityFactor(r,'P_PV_Rooftop_Commercial',l,y) = CapacityFactor(r,'P_PV_Utility_Avg',l,y) ;
 CapacityFactor(r,'P_PV_Rooftop_Residential',l,y) = CapacityFactor(r,'P_PV_Utility_Avg',l,y) ;
-CapacityFactor(r,'P_CSP',l,y) = CapacityFactor(r,'P_PV_Utility_Opt',l,y) ;
+CapacityFactor(r,'P_CSP',l,y) = CapacityFactor(r,'P_PV_Utility_Tracking',l,y) ;
 CapacityFactor(r,'HB_Solar_Thermal',l,y) = CapacityFactor(r,'P_PV_Utility_Avg',l,y) ;
 CapacityFactor(r,'HLI_Solar_Thermal',l,y) = CapacityFactor(r,'P_PV_Utility_Avg',l,y) ;
 CapacityFactor(r,'HD_Solar_Thermal',l,y) = CapacityFactor(r,'P_PV_Utility_Avg',l,y) ;

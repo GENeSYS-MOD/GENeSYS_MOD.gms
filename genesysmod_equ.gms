@@ -291,7 +291,9 @@ DiscountedNewTradeCapacityCosts.fx(y,f,r,rr)$(TradeRoute(r,f,y,rr) = 0 or not Tr
 
 $ifthen set set_symmetric_transmission
 equation TrC6_SymmetricalTransmissionExpansion(YEAR_FULL,REGION_FULL,RR_FULL);
-TrC6_SymmetricalTransmissionExpansion(y,r,rr)$(TradeRoute(r,'Power',y,rr) > 0).. NewTradeCapacity(y,'Power',r,rr) =g= NewTradeCapacity(y,'Power',rr,r)*%set_symmetric_transmission%;
+TrC6_SymmetricalTransmissionExpansion(y,r,rr)$(TradeRoute(r,'Power',y,rr) > 0
+  and not (sameas(r,'PT') and sameas(rr,'ES') and YearVal(y)>=2040)
+  and not (sameas(r,'ES') and sameas(rr,'PT') and YearVal(y)>=2040)).. NewTradeCapacity(y,'Power',r,rr) =g= NewTradeCapacity(y,'Power',rr,r)*%set_symmetric_transmission%;
 $endif
 
 equation TrC7_TradeCapacityLimitNonPower(YEAR_FULL,FUEL,REGION_FULL,rr_full);
@@ -673,7 +675,7 @@ S6_StorageActivityLimit(s,t,y,l,r,m)$(TechnologyFromStorage(t,s,m,y)>0)..
 RateOfActivity(y,l,t,m,r)/TechnologyFromStorage(t,s,m,y)*YearSplit(l,y) =l= StorageLevelTSStart(s,y,l,r);
 
 equation S7a_Add_E2PRatio_up(STORAGE,YEAR_FULL,REGION_FULL);
-S7a_Add_E2PRatio_up(s,y,r).. (sum((yy)$(OperationalLifeStorage(s) >= Yearval(y)-Yearval(yy) and Yearval(y)-Yearval(yy) >= 0), NewStorageCapacity(s,yy,r)) + ResidualStorageCapacity(r,s,y)) =l=  sum((t,m)$(TechnologyToStorage(t,s,m,y)),  TotalCapacityAnnual(y,t,r) * StorageE2PRatio(s)* 0.0036 * %switch_e2pratio_deviationfactor%);
+S7a_Add_E2PRatio_up(s,y,r)$(not (sameas(r,'PT') and sameas(s,'S_Battery_Li-Ion'))).. (sum((yy)$(OperationalLifeStorage(s) >= Yearval(y)-Yearval(yy) and Yearval(y)-Yearval(yy) >= 0), NewStorageCapacity(s,yy,r)) + ResidualStorageCapacity(r,s,y)) =l=  sum((t,m)$(TechnologyToStorage(t,s,m,y)),  TotalCapacityAnnual(y,t,r) * StorageE2PRatio(s) * 0.0036 * %switch_e2pratio_deviationfactor%);
 
 equation S7b_Add_E2PRatio_low(STORAGE,YEAR_FULL,REGION_FULL);
 S7b_Add_E2PRatio_low(s,y,r).. (sum((yy)$(OperationalLifeStorage(s) >= Yearval(y)-Yearval(yy) and Yearval(y)-Yearval(yy) >= 0), NewStorageCapacity(s,yy,r)) + ResidualStorageCapacity(r,s,y)) =g=  sum((t,m)$(TechnologyToStorage(t,s,m,y)),  TotalCapacityAnnual(y,t,r) * StorageE2PRatio(s) * 0.0036 * (1/%switch_e2pratio_deviationfactor%));
@@ -695,6 +697,20 @@ SI4_SalvageValueStorageDiscountedToStartYear(s,y,r).. SalvageValueStorage(s,y,r)
 equation SI5_TotalDiscountedCostByStorage(STORAGE,YEAR_FULL,REGION_FULL);
 SI5_TotalDiscountedCostByStorage(s,y,r).. DiscountedCapitalInvestmentStorage(s,y,r)-DiscountedSalvageValueStorage(s,y,r) =e= TotalDiscountedStorageCost(s,y,r);
 
+
+
+
+*
+* ######### District Heating Equations #############
+*
+equation DH1a_DistrictHeatProductionAnnualLowerLimit(r_full, FUEL, y_full);
+DH1a_DistrictHeatProductionAnnualLowerLimit(r,f,y)$(sameas(f,'Heat_District') and DistrictHeatDemand(r,y)).. sum(t,ProductionByTechnologyAnnual(y,t,'Heat_District',r)) =g= DistrictHeatDemand(r,y)*InputActivityRatio(r,'X_Convert_HD',f,'1',y)*0.95;
+
+equation DH1b_DistrictHeatProductionAnnualUpperLimit(r_full, FUEL, y_full);
+DH1b_DistrictHeatProductionAnnualUpperLimit(r,f,y)$(sameas(f,'Heat_District') and DistrictHeatDemand(r,y)).. sum(t,ProductionByTechnologyAnnual(y,t,'Heat_District',r)) =l= DistrictHeatDemand(r,y)*InputActivityRatio(r,'X_Convert_HD',f,'1',y)*1.05;
+
+equation DH2_DistrictHeatProductionSplit(r_full, Sector, y_full);
+DH2_DistrictHeatProductionSplit(r,se,y)$(DistrictHeatSplit(r,se,y)).. sum((f,t)$(TagDemandFuelToSector(f,se) and TagTechnologyToSubsets(t,'Convert')),ProductionByTechnologyAnnual(y,t,f,r)) =g= DistrictHeatDemand(r,y)*DistrictHeatSplit(r,se,y);
 
 *
 * ######### Transportation Equations #############
@@ -773,13 +789,6 @@ $endif
 * ######### Peaking Equations #############
 *
 $ifthen.equ_peaking_capacity %switch_peaking_capacity% == 1
-positive variable PeakingDemand(YEAR_FULL,REGION_FULL);
-positive variable PeakingCapacity(YEAR_FULL,REGION_FULL);
-scalar GWh_to_PJ /0.0036/;
-scalar PeakingSlack /%set_peaking_slack%/;
-scalar MinRunShare /%set_peaking_minrun_share%/;
-scalar RenewableCapacityFactorReduction /%set_peaking_res_cf%/;
-scalar MinThermalShare /%set_peaking_min_thermal%/;
 
 equation PC1_PowerPeakingDemand(YEAR_FULL,REGION_FULL);
 PC1_PowerPeakingDemand(y,r)..
@@ -808,12 +817,12 @@ $endif.equ_peaking_with_trade
 $ifthen.equ_peaking_with_storages %switch_peaking_with_storages% == 1
 + sum(t$(sum(m,OutputActivityRatio(r,t,'power',m,y)) and sum((s,m),TechnologyToStorage(t,s,m,y))), TotalCapacityAnnual(y,t,r))
 $endif.equ_peaking_with_storages
-=g= PeakingDemand(y,r)*PeakingSlack
+=g= PeakingDemand(y,r)*PeakingSlack(r,y)
 ;
 
 $ifthen.equ_peaking_minThermal %switch_peaking_with_storages% == 1
 equation PC3b_PeakingConstraint_Thermal(YEAR_FULL,REGION_FULL);
-PC3b_PeakingConstraint_Thermal(y,r)$(YearVal(y) > %set_peaking_startyear%).. PeakingCapacity(y,r) =g= MinThermalShare*PeakingDemand(y,r)*PeakingSlack;
+PC3b_PeakingConstraint_Thermal(y,r)$(YearVal(y) > %set_peaking_startyear%).. PeakingCapacity(y,r) =g= MinThermalShare*PeakingDemand(y,r)*PeakingSlack(r,y);
 $endif.equ_peaking_minThermal
 
 $ifthen.equ_peaking_minrun %switch_peaking_minrun% == 1
