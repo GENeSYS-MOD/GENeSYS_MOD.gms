@@ -55,16 +55,6 @@ ProductionByTechnologyAnnual.lo('2025','HB_Oil_Boiler','Heat_Buildings',r) = Reg
 CurtailmentCostFactor = 45;
 
 
-equation DistrictHeatProductionAnnualLowerLimit(r_full, FUEL, y_full);
-DistrictHeatProductionAnnualLowerLimit(r,f,y)$(sameas(f,'Heat_District') and DistrictHeatDemand(r,y)).. sum(t,ProductionByTechnologyAnnual(y,t,'Heat_District',r)) =g= DistrictHeatDemand(r,y)*InputActivityRatio(r,'X_Convert_HD',f,'1',y)*0.95;
-
-equation DistrictHeatProductionAnnualUpperLimit(r_full, FUEL, y_full);
-DistrictHeatProductionAnnualUpperLimit(r,f,y)$(sameas(f,'Heat_District') and DistrictHeatDemand(r,y)).. sum(t,ProductionByTechnologyAnnual(y,t,'Heat_District',r)) =l= DistrictHeatDemand(r,y)*InputActivityRatio(r,'X_Convert_HD',f,'1',y)*1.05;
-
-equation DistrictHeatProductionSplit(r_full, Sector, y_full);
-DistrictHeatProductionSplit(r,se,y)$(DistrictHeatSplit(r,se,y)).. sum((f,t)$(TagDemandFuelToSector(f,se) and TagTechnologyToSubsets(t,'Convert')),ProductionByTechnologyAnnual(y,t,f,r)) =g= DistrictHeatDemand(r,y)*DistrictHeatSplit(r,se,y);
-
-
 
 $ifthen %emissionPathway% == NECPEssentials
 

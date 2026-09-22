@@ -697,6 +697,18 @@ SI5_TotalDiscountedCostByStorage(s,y,r).. DiscountedCapitalInvestmentStorage(s,y
 
 
 *
+* ######### District Heating Equations #############
+*
+equation DH1a_DistrictHeatProductionAnnualLowerLimit(r_full, FUEL, y_full);
+DH1a_DistrictHeatProductionAnnualLowerLimit(r,f,y)$(sameas(f,'Heat_District') and DistrictHeatDemand(r,y)).. sum(t,ProductionByTechnologyAnnual(y,t,'Heat_District',r)) =g= DistrictHeatDemand(r,y)*InputActivityRatio(r,'X_Convert_HD',f,'1',y)*0.95;
+
+equation DH1b_DistrictHeatProductionAnnualUpperLimit(r_full, FUEL, y_full);
+DH1b_DistrictHeatProductionAnnualUpperLimit(r,f,y)$(sameas(f,'Heat_District') and DistrictHeatDemand(r,y)).. sum(t,ProductionByTechnologyAnnual(y,t,'Heat_District',r)) =l= DistrictHeatDemand(r,y)*InputActivityRatio(r,'X_Convert_HD',f,'1',y)*1.05;
+
+equation DH2_DistrictHeatProductionSplit(r_full, Sector, y_full);
+DH2_DistrictHeatProductionSplit(r,se,y)$(DistrictHeatSplit(r,se,y)).. sum((f,t)$(TagDemandFuelToSector(f,se) and TagTechnologyToSubsets(t,'Convert')),ProductionByTechnologyAnnual(y,t,f,r)) =g= DistrictHeatDemand(r,y)*DistrictHeatSplit(r,se,y);
+
+*
 * ######### Transportation Equations #############
 *
 equation T1_SpecifiedAnnualDemandByModalSplit(MODALTYPE,TIMESLICE_FULL,REGION_FULL,FUEL,YEAR_FULL);
