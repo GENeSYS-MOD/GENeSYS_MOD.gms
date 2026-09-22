@@ -141,6 +141,11 @@ TagDispatchableTechnology('P_Hydro_RoR') = 0;
 
 CurtailmentCostFactor = 0.1;
 
+$ifthen.bnd_peaking %switch_peaking_capacity% == 1
+PeakingSlack(r,y)  = %set_peaking_slack%;
+PeakingSlackAdd(r) = 0;
+$endif.bnd_peaking
+
 *
 * ####### Dummy-Technologies [enable for test purposes, if model runs infeasible] #############
 *
