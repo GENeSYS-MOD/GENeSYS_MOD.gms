@@ -9,7 +9,7 @@ warning_TotalAnnualMinCapacityTooHigh(r,t,y)$(TotalAnnualMaxCapacity(r,t,y)<Tota
 TotalAnnualMaxCapacity(r,t,y)$(TotalAnnualMaxCapacity(r,t,y)<TotalAnnualMinCapacity(r,t,'2025')) = TotalAnnualMinCapacity(r,t,'2025');
 
 * Limit capacity expansion in 2025 to only actually (historically) installed capacities
-NewCapacity.up('2025',t,r)$(TagTechnologyToSubsets(t,'PowerSupply') and not AnnualMinNewCapacity(r,t,'2025') and not TotalAnnualMinCapacity(r,t,'2025')) = 0;
+NewCapacity.up('2025',t,r)$(TagTechnologyToSubsets(t,'PowerSupply') and not AnnualMinNewCapacity(r,t,'2025') and not TotalAnnualMinCapacity(r,t,'2025') and not sum((tg,rg)$(TagTechnologyToSubsets(t,tg) and TagRegionToSubsets(r,rg)), GroupTotalAnnualMinCapacity(tg,rg,'2025'))) = 0;
 
 ProductionByTechnologyAnnual.up(y,'CHP_WasteToEnergy','Heat_District',r) = RegionalBaseYearProduction(r,'CHP_WasteToEnergy','Heat_District','2018');
 OutputActivityRatio(r,'CHP_WasteToEnergy',f,'1',y) = 0;

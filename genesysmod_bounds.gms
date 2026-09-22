@@ -75,6 +75,7 @@ TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'Transport') and not Tot
 TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'ImportTechnology') and not TotalAnnualMaxCapacity(r,t,y)) = 999999;
 TotalAnnualMaxCapacity(r,t,y)$(TagTechnologyToSubsets(t,'Biomass') and not TotalAnnualMaxCapacity(r,t,y)) = 999999;
 TotalAnnualMaxCapacity(r,'P_Biomass',y) = 999999;
+GroupTotalAnnualMaxCapacity(tg,rg,y)$(not GroupTotalAnnualMaxCapacity(tg,rg,y)) = 999999;
 
 
 *AvailabilityFactor(r,t,y)$(TagTechnologyToSubsets(t,'ImportTechnology')) = 1;
