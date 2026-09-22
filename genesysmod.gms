@@ -23,12 +23,14 @@
 * ### settings for data file, region, startyear, scenario
 
 $if not set data_file                    $setglobal data_file RegularParameters_None
-$if not set hourly_data_file             $setglobal hourly_data_file Timeseries_Europe_EnVis_REPowerEU++
+$if not set hourly_data_file             $setglobal hourly_data_file Timeseries_None
 $if not set model_region                 $setglobal model_region europe
 $if not set data_base_region             $setglobal data_base_region DE
 $if not set year                         $setglobal year 2018
 $if not set emissionPathway              $setglobal emissionPathway NECPEssentials
 $if not set emissionScenario             $setglobal emissionScenario globalLimit
+* ### optional project-specific scenario overlay, loaded after the region scenario data
+$if not set project_scenario             $setglobal project_scenario none
 
 * ### settings for time series reduction
 
@@ -102,28 +104,19 @@ $if not set inputdir                     $setglobal inputdir Inputdata/
 $if not set gdxdir                       $setglobal gdxdir GdxFiles/
 $if not set tempdir                      $setglobal tempdir TempFiles/
 $if not set resultdir                    $setglobal resultdir Results/
+$if not set projectdir                   $setglobal projectdir projects/
 $else
 $if not set inputdir                     $setglobal inputdir Inputdata\
 $if not set gdxdir                       $setglobal gdxdir GdxFiles\
 $if not set tempdir                      $setglobal tempdir TempFiles\
 $if not set resultdir                    $setglobal resultdir Results\
+$if not set projectdir                   $setglobal projectdir projects\
 $endif
 
 option dnlp = ipopt;
 
-$ifthen %emissionPathway% == REPowerEU
-$setglobal data_file RegularParameters_Europe_EnVis_REPowerEU++
-$setglobal hourly_data_file Timeseries_Europe_EnVis_REPowerEU++
-$elseif %emissionPathway% == NECPEssentials
-$setglobal data_file RegularParameters_Europe_EnVis_NECPEssentials
-$setglobal hourly_data_file Timeseries_Europe_EnVis_NECPEssentials
-$elseif %emissionPathway% == Green
-$setglobal data_file RegularParameters_Europe_EnVis_Green
-$setglobal hourly_data_file Timeseries_Europe_EnVis_Green
-$elseif %emissionPathway% == Trinity
-$setglobal data_file RegularParameters_Europe_EnVis_Trinity
-$setglobal hourly_data_file Timeseries_Europe_EnVis_Trinity
-$endif
+* emissionPathway selects scenario assumptions only. Set data_file and
+* hourly_data_file explicitly for the input data you want to run.
 
 $ifthen %model_region% == middleearth
 $setglobal data_file RegularParameters_MiddleEarth
@@ -182,6 +175,17 @@ $include genesysmod_scenariodata_%model_region%.gms
 $else
 display "HINT: No scenario data for region %model_region% found!";
 $endif
+
+*
+* ####### load an optional project-specific scenario overlay #############
+*
+$ifthen.project not %project_scenario% == none
+$ifthen.projectfile exist %projectdir%genesysmod_scenariodata_%project_scenario%.gms
+$include %projectdir%genesysmod_scenariodata_%project_scenario%.gms
+$else.projectfile
+$abort "project_scenario %project_scenario% requested but %projectdir%genesysmod_scenariodata_%project_scenario%.gms was not found"
+$endif.projectfile
+$endif.project
 
 $offlisting
 $include genesysmod_errorcheck.gms
