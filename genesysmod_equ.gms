@@ -790,6 +790,9 @@ $endif
 *
 $ifthen.equ_peaking_capacity %switch_peaking_capacity% == 1
 
+* apply any region-specific peaking slack additions set by scenario data (no-op if none)
+PeakingSlack(r,y)$(YearVal(y) >= 2030 and PeakingSlackAdd(r) > 0) = PeakingSlack(r,y) + PeakingSlackAdd(r);
+
 equation PC1_PowerPeakingDemand(YEAR_FULL,REGION_FULL);
 PC1_PowerPeakingDemand(y,r)..
 PeakingDemand(y,r) =e=

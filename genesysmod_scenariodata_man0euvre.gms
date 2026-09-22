@@ -6,20 +6,6 @@ NewCapacity.up(y,t,'PT')$(TagTechnologyToSubsets(t,'Coal') and YearVal(y)>=2025)
 TotalCapacityAnnual.fx(y,t,'PT')$(TagTechnologyToSubsets(t,'Coal') and YearVal(y)>=2025) = 0;
 
 
-$ifthen.equ_peaking_capacity %switch_peaking_capacity% == 1
-positive variable PeakingDemand(YEAR_FULL,REGION_FULL);
-positive variable PeakingCapacity(YEAR_FULL,REGION_FULL);
-scalar GWh_to_PJ /0.0036/;
-parameter PeakingSlack(REGION_FULL, YEAR_FULL);
-PeakingSlack(r, y) = %set_peaking_slack%;
-scalar MinRunShare /%set_peaking_minrun_share%/;
-scalar RenewableCapacityFactorReduction /%set_peaking_res_cf%/;
-scalar MinThermalShare /%set_peaking_min_thermal%/;
-parameter PeakingSlackAdd(REGION_FULL);
-PeakingSlackAdd(r) = 0;
-$endif.equ_peaking_capacity
-
-
 TotalAnnualMaxCapacity(r,t,y)$(TotalAnnualMaxCapacity(r,t,y)<TotalAnnualMinCapacity(r,t,'2025')) = TotalAnnualMinCapacity(r,t,'2025');
 
 ProductionByTechnologyAnnual.up(y,'CHP_WasteToEnergy','Heat_District',r) = RegionalBaseYearProduction(r,'CHP_WasteToEnergy','Heat_District','2018');
@@ -75,16 +61,6 @@ PeakingSlackAdd('FR') = 0.0198;
 $endif
 
 
-equation DistrictHeatProductionAnnualLowerLimit(r_full, FUEL, y_full);
-DistrictHeatProductionAnnualLowerLimit(r,f,y)$(sameas(f,'Heat_District') and DistrictHeatDemand(r,y)).. sum(t,ProductionByTechnologyAnnual(y,t,'Heat_District',r)) =g= DistrictHeatDemand(r,y)*InputActivityRatio(r,'X_Convert_HD',f,'1',y)*0.95;
-
-equation DistrictHeatProductionAnnualUpperLimit(r_full, FUEL, y_full);
-DistrictHeatProductionAnnualUpperLimit(r,f,y)$(sameas(f,'Heat_District') and DistrictHeatDemand(r,y)).. sum(t,ProductionByTechnologyAnnual(y,t,'Heat_District',r)) =l= DistrictHeatDemand(r,y)*InputActivityRatio(r,'X_Convert_HD',f,'1',y)*1.05;
-
-equation DistrictHeatProductionSplit(r_full, Sector, y_full);
-DistrictHeatProductionSplit(r,se,y)$(DistrictHeatSplit(r,se,y)).. sum((f,t)$(TagDemandFuelToSector(f,se) and TagTechnologyToSubsets(t,'Convert')),ProductionByTechnologyAnnual(y,t,f,r)) =g= DistrictHeatDemand(r,y)*DistrictHeatSplit(r,se,y);
-
-
 *increase the lower and upper battery duration for Portugal
 equation PT_LiIon_MinDuration(STORAGE,YEAR_FULL,REGION_FULL);
 PT_LiIon_MinDuration(s,y,r)$(sameas(r,'PT') and sameas(s,'S_Battery_Li-Ion'))..
@@ -102,11 +78,6 @@ S9_PT_LiIon_MaxDuration(s,y,r)$(sameas(r,'PT') and sameas(s,'S_Battery_Li-Ion'))
 equation PTES_TradeConvergence(FUEL,YEAR_FULL,REGION_FULL,RR_FULL);
 PTES_TradeConvergence(f,y,r,rr)$(sameas(f,'Power') and sameas(r,'PT') and sameas(rr,'ES') and YearVal(y)>=2040)..
   TotalTradeCapacity(y,f,r,rr) =e= TotalTradeCapacity(y,f,rr,r);
-
-
-
-*additional peaking slack for non-served electricity according to CS8
-PeakingSlack(r,y)$(YearVal(y) >= 2030 and PeakingSlackAdd(r) > 0) = PeakingSlack(r,y) + PeakingSlackAdd(r);  
 
 
 
