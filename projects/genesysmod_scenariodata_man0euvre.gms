@@ -10,10 +10,10 @@
 * were deliberately not upstreamed, because they hardcoded region names:
 *   - TrC6_SymmetricalTransmissionExpansion skipped the PT-ES pair from 2040 on
 *   - S7a_Add_E2PRatio_up skipped PT / S_Battery_Li-Ion
-* Without them both original constraints stay active alongside this overlay, so
-* S9_PT_LiIon_MaxDuration below is held at StorageE2PRatio * the deviation
-* factor (6h with the shipped data) rather than the intended 8h, and PT-ES
-* transmission carries the symmetry band as well as PTES_TradeConvergence.
+* Here the PT-ES convergence is instead expressed as data (commissioned capacity,
+* see below), which keeps PTES_TradeConvergence compatible with the TrC6 band;
+* S9_PT_LiIon_MaxDuration is held at StorageE2PRatio * the deviation factor
+* (6h with the shipped data) rather than the intended 8h.
 * The exact state used for the published runs is tagged man0euvre-final-asrun.
 *
 
@@ -87,6 +87,11 @@ S9_PT_LiIon_MaxDuration(s,y,r)$(sameas(r,'PT') and sameas(s,'S_Battery_Li-Ion'))
 equation PTES_TradeConvergence(FUEL,YEAR_FULL,REGION_FULL,RR_FULL);
 PTES_TradeConvergence(f,y,r,rr)$(sameas(f,'Power') and sameas(r,'PT') and sameas(rr,'ES') and YearVal(y)>=2040)..
   TotalTradeCapacity(y,f,r,rr) =e= TotalTradeCapacity(y,f,rr,r);
+
+* the ES->PT direction is 0.7 GW larger after the 2025 commissioning; LNEG feedback is that grid
+* reinforcement brings PT->ES to parity by 2040, so the difference is commissioned exogenously.
+* Totals are recursive (TrC2b), which makes PTES_TradeConvergence feasible under the TrC6 band.
+CommissionedTradeCapacity('PT','Power','2040','ES') = CommissionedTradeCapacity('PT','Power','2040','ES') + 0.7;
 
 
 $ifthen %emissionPathway% == NECPEssentials
