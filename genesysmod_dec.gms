@@ -365,6 +365,17 @@ positive variable DiscountedAnnualProductionChangeCost(y_full,TECHNOLOGY,REGION_
 
 $endif.dec_ramping
 
+$ifthen.dec_peaking %switch_peaking_capacity% == 1
+positive variable PeakingDemand(YEAR_FULL,REGION_FULL);
+positive variable PeakingCapacity(YEAR_FULL,REGION_FULL);
+scalar GWh_to_PJ /0.0036/;
+scalar MinRunShare /%set_peaking_minrun_share%/;
+scalar RenewableCapacityFactorReduction /%set_peaking_res_cf%/;
+scalar MinThermalShare /%set_peaking_min_thermal%/;
+parameter PeakingSlack(REGION_FULL,YEAR_FULL)  Capacity margin required on top of peak demand. Unit: Factor;
+parameter PeakingSlackAdd(REGION_FULL)  Region-specific addition to PeakingSlack - set by scenario data. Unit: Factor;
+$endif.dec_peaking
+
 Parameter PhaseOut(YEAR_FULL) this is an upper limit for fossil generation based on the previous year - to remove choose large value
 /        2020    3
          2025    3

@@ -200,6 +200,13 @@ if(sum((r,t,y),warning_ResidualAboveMaxCapacity(r,t,y)),
    display "WARNING: ResidualCapacity exceeds TotalAnnualMaxCapacity. The capacity bound will clip existing capacity.", warning_ResidualAboveMaxCapacity;
 );
 
+* Warning if TotalAnnualMaxCapacity falls below the 2025 TotalAnnualMinCapacity
+parameter warning_TotalAnnualMinCapacityTooHigh(r_full,t,y_full);
+warning_TotalAnnualMinCapacityTooHigh(r,t,y)$(TotalAnnualMaxCapacity(r,t,y)<TotalAnnualMinCapacity(r,t,'2025')) = 1;
+if(sum((r,t,y),warning_TotalAnnualMinCapacityTooHigh(r,t,y)),
+   display "WARNING: TotalAnnualMaxCapacity is below the 2025 TotalAnnualMinCapacity. The cap is raised to that minimum below.", warning_TotalAnnualMinCapacityTooHigh;
+);
+
 * Warning if demand is set in the start year but zero in a later year
 parameter warning_DemandYearGap(r_full,f,y_full);
 warning_DemandYearGap(r,f,y)$(SpecifiedAnnualDemand(r,f,'%year%') and YearVal(y) > %year% and not SpecifiedAnnualDemand(r,f,y)) = 1;
@@ -241,3 +248,9 @@ if(sum(t,warning_DeadCapacity(t,'ResidualCapacitySet')+warning_DeadCapacity(t,'M
 );
 
 $endif.errorcheck
+
+* Raise TotalAnnualMaxCapacity to the 2025 TotalAnnualMinCapacity wherever it falls
+* below it, so the two bounds cannot contradict each other. Kept outside the guard
+* above because the repair has to happen even when the checks are switched off, and
+* placed after it so warning_TotalAnnualMinCapacityTooHigh still sees the raw data.
+TotalAnnualMaxCapacity(r,t,y)$(TotalAnnualMaxCapacity(r,t,y)<TotalAnnualMinCapacity(r,t,'2025')) = TotalAnnualMinCapacity(r,t,'2025');
