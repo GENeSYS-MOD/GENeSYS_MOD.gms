@@ -93,6 +93,13 @@ PTES_TradeConvergence(f,y,r,rr)$(sameas(f,'Power') and sameas(r,'PT') and sameas
 * Totals are recursive (TrC2b), which makes PTES_TradeConvergence feasible under the TrC6 band.
 CommissionedTradeCapacity('PT','Power','2040','ES') = CommissionedTradeCapacity('PT','Power','2040','ES') + 0.7;
 
+* Germany: Klimaschutzgesetz par. 3 as regional annual limit incl. exogenous emissions (2025: UBA emission data; 2035 interpolated)
+RegionalAnnualEmissionLimit('DE','CO2','2025') = 649;
+RegionalAnnualEmissionLimit('DE','CO2','2030') = 438;
+RegionalAnnualEmissionLimit('DE','CO2','2035') = 294;
+RegionalAnnualEmissionLimit('DE','CO2','2040') = 150;
+RegionalAnnualEmissionLimit('DE','CO2',y)$(YearVal(y) >= 2045) = 0;
+
 
 $ifthen %emissionPathway% == NECPEssentials
 
