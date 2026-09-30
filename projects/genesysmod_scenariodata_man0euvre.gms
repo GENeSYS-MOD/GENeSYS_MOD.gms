@@ -100,6 +100,11 @@ RegionalAnnualEmissionLimit('DE','CO2','2035') = 294;
 RegionalAnnualEmissionLimit('DE','CO2','2040') = 150;
 RegionalAnnualEmissionLimit('DE','CO2',y)$(YearVal(y) >= 2045) = 0;
 
+* Germany: CCS only in high-temperature industry and BECCS
+AvailabilityFactor('DE',t,y)$(TagTechnologyToSubsets(t,'CCS')
+                              and not TagTechnologyToSubsets(t,'BECCS')
+                              and not (sameas(t,'HHI_BF_BOF_CCS') or sameas(t,'HHI_DRI_EAF_CCS'))) = 0;
+
 
 $ifthen %emissionPathway% == NECPEssentials
 
