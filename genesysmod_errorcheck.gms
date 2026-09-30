@@ -102,9 +102,13 @@ error_MinAboveMax('AnnualNewMinAboveMax',r,t,y)$(AnnualMaxNewCapacity(r,t,y) < 9
 error_MinAboveMax('ActivityLowerAboveUpper',r,t,y)$(TotalTechnologyAnnualActivityUpperLimit(r,t,y) < 999999 and TotalTechnologyAnnualActivityLowerLimit(r,t,y) > TotalTechnologyAnnualActivityUpperLimit(r,t,y)) = 1;
 parameter error_GroupMinAboveMax(*,*,y_full);
 error_GroupMinAboveMax(tg,rg,y)$(GroupTotalAnnualMaxCapacity(tg,rg,y) < 999999 and GroupTotalAnnualMinCapacity(tg,rg,y) > GroupTotalAnnualMaxCapacity(tg,rg,y)) = 1;
-if(sum((r,t,y),error_MinAboveMax('TotalAnnualMinAboveMax',r,t,y)+error_MinAboveMax('AnnualNewMinAboveMax',r,t,y)+error_MinAboveMax('ActivityLowerAboveUpper',r,t,y))+sum((tg,rg,y),error_GroupMinAboveMax(tg,rg,y)),
-   display error_MinAboveMax, error_GroupMinAboveMax;
-   abort$(errorcheck_level = 2) "A minimum bound exceeds its maximum counterpart, making the model infeasible.";
+if(sum((r,t,y),error_MinAboveMax('TotalAnnualMinAboveMax',r,t,y)+error_MinAboveMax('AnnualNewMinAboveMax',r,t,y)+error_MinAboveMax('ActivityLowerAboveUpper',r,t,y)),
+   display error_MinAboveMax;
+   abort$(errorcheck_level = 2) "A technology's minimum capacity or activity bound exceeds its maximum (see error_MinAboveMax), making the model infeasible.";
+);
+if(sum((tg,rg,y),error_GroupMinAboveMax(tg,rg,y)),
+   display error_GroupMinAboveMax;
+   abort$(errorcheck_level = 2) "A GroupTotalAnnualMinCapacity exceeds its GroupTotalAnnualMaxCapacity (see error_GroupMinAboveMax), making the model infeasible.";
 );
 
 * Check if an annual emission limit lies below the exogenous emission floor
