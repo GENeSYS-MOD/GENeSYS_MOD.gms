@@ -102,9 +102,13 @@ error_MinAboveMax('AnnualNewMinAboveMax',r,t,y)$(AnnualMaxNewCapacity(r,t,y) < 9
 error_MinAboveMax('ActivityLowerAboveUpper',r,t,y)$(TotalTechnologyAnnualActivityUpperLimit(r,t,y) < 999999 and TotalTechnologyAnnualActivityLowerLimit(r,t,y) > TotalTechnologyAnnualActivityUpperLimit(r,t,y)) = 1;
 parameter error_GroupMinAboveMax(*,*,y_full);
 error_GroupMinAboveMax(tg,rg,y)$(GroupTotalAnnualMaxCapacity(tg,rg,y) < 999999 and GroupTotalAnnualMinCapacity(tg,rg,y) > GroupTotalAnnualMaxCapacity(tg,rg,y)) = 1;
-if(sum((r,t,y),error_MinAboveMax('TotalAnnualMinAboveMax',r,t,y)+error_MinAboveMax('AnnualNewMinAboveMax',r,t,y)+error_MinAboveMax('ActivityLowerAboveUpper',r,t,y))+sum((tg,rg,y),error_GroupMinAboveMax(tg,rg,y)),
-   display error_MinAboveMax, error_GroupMinAboveMax;
-   abort$(errorcheck_level = 2) "A minimum bound exceeds its maximum counterpart, making the model infeasible.";
+if(sum((r,t,y),error_MinAboveMax('TotalAnnualMinAboveMax',r,t,y)+error_MinAboveMax('AnnualNewMinAboveMax',r,t,y)+error_MinAboveMax('ActivityLowerAboveUpper',r,t,y)),
+   display error_MinAboveMax;
+   abort$(errorcheck_level = 2) "A technology's minimum capacity or activity bound exceeds its maximum (see error_MinAboveMax), making the model infeasible.";
+);
+if(sum((tg,rg,y),error_GroupMinAboveMax(tg,rg,y)),
+   display error_GroupMinAboveMax;
+   abort$(errorcheck_level = 2) "A GroupTotalAnnualMinCapacity exceeds its GroupTotalAnnualMaxCapacity (see error_GroupMinAboveMax), making the model infeasible.";
 );
 
 * Check if an annual emission limit lies below the exogenous emission floor
@@ -200,6 +204,13 @@ if(sum((r,t,y),warning_ResidualAboveMaxCapacity(r,t,y)),
    display "WARNING: ResidualCapacity exceeds TotalAnnualMaxCapacity. The capacity bound will clip existing capacity.", warning_ResidualAboveMaxCapacity;
 );
 
+* Warning if TotalAnnualMaxCapacity falls below the 2025 TotalAnnualMinCapacity
+parameter warning_TotalAnnualMinCapacityTooHigh(r_full,t,y_full);
+warning_TotalAnnualMinCapacityTooHigh(r,t,y)$(TotalAnnualMaxCapacity(r,t,y)<TotalAnnualMinCapacity(r,t,'2025')) = 1;
+if(sum((r,t,y),warning_TotalAnnualMinCapacityTooHigh(r,t,y)),
+   display "WARNING: TotalAnnualMaxCapacity is below the 2025 TotalAnnualMinCapacity. The cap is raised to that minimum below.", warning_TotalAnnualMinCapacityTooHigh;
+);
+
 * Warning if demand is set in the start year but zero in a later year
 parameter warning_DemandYearGap(r_full,f,y_full);
 warning_DemandYearGap(r,f,y)$(SpecifiedAnnualDemand(r,f,'%year%') and YearVal(y) > %year% and not SpecifiedAnnualDemand(r,f,y)) = 1;
@@ -241,3 +252,9 @@ if(sum(t,warning_DeadCapacity(t,'ResidualCapacitySet')+warning_DeadCapacity(t,'M
 );
 
 $endif.errorcheck
+
+* Raise TotalAnnualMaxCapacity to the 2025 TotalAnnualMinCapacity wherever it falls
+* below it, so the two bounds cannot contradict each other. Kept outside the guard
+* above because the repair has to happen even when the checks are switched off, and
+* placed after it so warning_TotalAnnualMinCapacityTooHigh still sees the raw data.
+TotalAnnualMaxCapacity(r,t,y)$(TotalAnnualMaxCapacity(r,t,y)<TotalAnnualMinCapacity(r,t,'2025')) = TotalAnnualMinCapacity(r,t,'2025');
